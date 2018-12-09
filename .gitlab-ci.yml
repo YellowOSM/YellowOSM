@@ -4,9 +4,16 @@ before_script:
   - npm install @angular/cli
   - npm --version
 
-build:
+build_and_deploy:
   stage: build
   script:
+    # ssh
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    # /ssh
     - echo 'hello world'
     - ls -a
     - cd frontend
