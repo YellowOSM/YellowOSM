@@ -1,9 +1,6 @@
 image: node:latest
 
 before_script:
-  - npm install @angular/cli
-  - npm --version
-
   ## Install ssh-agent if not already installed, it is required by Docker.
   ## (change apt-get to yum if you use an RPM-based image)
   ##
@@ -22,7 +19,6 @@ before_script:
   ## 
   ## DON'T use protected variables for this!!
   ##
-  # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | base64 -d | ssh-add - > /dev/null
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
 
   ##
@@ -39,7 +35,8 @@ before_script:
   #-  ssh-keyscan host.example.com >> ~/.ssh/known_hosts
   - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
-
+  - ssh root@toddvm5.klienux.net echo test_ssh.txt
+  
   ##
   ## Alternatively, assuming you created the SSH_SERVER_HOSTKEYS variable
   ## previously, uncomment the following two lines instead.
@@ -59,6 +56,9 @@ before_script:
 build_and_deploy:
   stage: build
   script:
+    - npm install @angular/cli
+    - npm --version
+    - ng --version
     - echo 'hello world'
     - ls -a
     - cd frontend
@@ -66,4 +66,3 @@ build_and_deploy:
     - ls -R dist
   only:
     - master
-
