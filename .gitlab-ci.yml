@@ -35,7 +35,7 @@ before_script:
   #-  ssh-keyscan host.example.com >> ~/.ssh/known_hosts
   - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
-  - ssh root@toddvm5.klienux.net echo test_ssh.txt
+  - ssh root@toddvm5.klienux.net cat test_ssh.txt
   
   ##
   ## Alternatively, assuming you created the SSH_SERVER_HOSTKEYS variable
