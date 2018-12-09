@@ -56,7 +56,7 @@ before_script:
 build_and_deploy:
   stage: build
   script:
-    - npm install @angular/cli
+    - npm install -g @angular/cli
     - npm --version
     - ng --version
     - echo 'hello world'
