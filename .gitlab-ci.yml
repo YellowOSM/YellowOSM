@@ -19,9 +19,11 @@ before_script:
   ## We're using tr to fix line endings which makes ed25519 keys work
   ## without extra base64 encoding.
   ## https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
+  ## 
+  ## DON'T use protected variables for this!!
   ##
   # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | base64 -d | ssh-add - > /dev/null
-  - echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
 
   ##
   ## Create the SSH directory and give it the right permissions
