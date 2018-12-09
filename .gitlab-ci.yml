@@ -35,9 +35,9 @@ before_script:
   #-  ssh-keyscan host.example.com >> ~/.ssh/known_hosts
   - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
-  # - ssh root@toddvm5.klienux.net cat test_ssh.txt
   - ping -c 1 toddvm5.klienux.net
-  
+  # - ssh root@toddvm5.klienux.net cat test_ssh.txt
+    
   ##
   ## Alternatively, assuming you created the SSH_SERVER_HOSTKEYS variable
   ## previously, uncomment the following two lines instead.
@@ -66,5 +66,7 @@ build_and_deploy:
     - npm install
     - ng build --prod
     - ls -R dist
+    - ssh root@toddvm5.klienux.net cat yellowosm_success.txt
+
   only:
     - master
