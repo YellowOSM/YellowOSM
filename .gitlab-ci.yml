@@ -1,0 +1,17 @@
+image: node:latest
+
+before_script:
+  - npm install @angular/cli
+  - npm --version
+
+build:
+  stage: build
+  script:
+    - echo 'hello world'
+    - ls -a
+    - cd frontend
+    - ng build --prod
+    - ls -R dist
+  only:
+    - master
+
