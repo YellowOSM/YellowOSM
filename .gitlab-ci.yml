@@ -62,6 +62,7 @@ build_and_deploy:
     - echo 'hello world'
     - ls -a
     - cd frontend
+    - npm install
     - ng build --prod
     - ls -R dist
   only:
