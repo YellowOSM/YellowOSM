@@ -23,11 +23,13 @@ export class YellowmapComponent implements OnInit {
   source: OlXYZ;
   layer: OlTileLayer;
   view: OlView;
+  userQuery: string;
 
   constructor() {
   }
 
   ngOnInit() {
+    this.userQuery = '';
     this.source = new OlXYZ({
       url: '//tile.osm.org/{z}/{x}/{y}.png'
     });
@@ -66,9 +68,11 @@ export class YellowmapComponent implements OnInit {
           });
           vectorSource.addFeatures(features);
         });
-        const boundingBox = '(' + epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' + epsg4326Extent[3] + ',' + epsg4326Extent[2] + ')';
-        const query = '(node["amenity"="restaurant"]' + boundingBox + ';);out meta;';
-        client.send(query);
+        if (that.userQuery.length > 3) {
+          const boundingBox = '(' + epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' + epsg4326Extent[3] + ',' + epsg4326Extent[2] + ')';
+          const query = '(node["amenity"="' + that.userQuery + '"]' + boundingBox + ';);out meta;';
+          client.send(query);
+        }
       },
       strategy: bboxStrategy
     });
@@ -89,5 +93,9 @@ export class YellowmapComponent implements OnInit {
       ],
       view: this.view
     });
+  }
+
+  search() {
+    console.log('TODO: trigger map refresh');
   }
 }

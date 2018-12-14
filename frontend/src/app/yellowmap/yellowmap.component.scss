@@ -1,3 +1,14 @@
+.search {
+  display: block;
+  font-size: 18px;
+  padding: 5px;
+  border-radius: 5px;
+  -webkit-appearance: none;
+  border: 1px solid black;
+  margin: 0 0 10px 0;
+  min-width: 320px;
+}
+
 .map {
   width: 100%;
   height: calc(100vh - 100px);
