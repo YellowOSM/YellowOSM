@@ -16,7 +16,7 @@ before_script:
   ## We're using tr to fix line endings which makes ed25519 keys work
   ## without extra base64 encoding.
   ## https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
-  ## 
+  ##
   ## DON'T use protected variables for this!!
   ##
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
@@ -37,7 +37,7 @@ before_script:
   - chmod 644 ~/.ssh/known_hosts
   - ping -c 1 toddvm5.klienux.net
   # - ssh root@toddvm5.klienux.net cat test_ssh.txt
-    
+
   ##
   ## Alternatively, assuming you created the SSH_SERVER_HOSTKEYS variable
   ## previously, uncomment the following two lines instead.
@@ -64,8 +64,10 @@ build_and_deploy:
     - ls -a
     - cd frontend
     - npm install
-    - ng build --prod
+    - ng build --prod --build-optimizer=false
     - ls -R dist
+    - scp -r dist/frontend root@toddvm5.klienux.net:/srv/html_new
+    - ssh root@toddvm5.klienux.net 'mv /srv/html /srv/html_old; mv /srv/html_new /srv/html; rm -r /srv/html_old'
     - ssh root@toddvm5.klienux.net cat yellowosm_success.txt
 
   only:
