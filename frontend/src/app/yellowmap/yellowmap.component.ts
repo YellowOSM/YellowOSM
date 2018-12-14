@@ -8,8 +8,10 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
-import {fromLonLat} from 'ol/proj';
+import {fromLonLat, transformExtent} from 'ol/proj';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
+import OSMXML from 'ol/format/OSMXML';
+import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 
 @Component({
   selector: 'app-yellowmap',
@@ -27,7 +29,7 @@ export class YellowmapComponent implements OnInit {
 
   ngOnInit() {
     this.source = new OlXYZ({
-      url: 'http://tile.osm.org/{z}/{x}/{y}.png'
+      url: '//tile.osm.org/{z}/{x}/{y}.png'
     });
 
     this.layer = new OlTileLayer({
@@ -43,31 +45,48 @@ export class YellowmapComponent implements OnInit {
       'icon': new Style({
         image: new CircleStyle({
           radius: 7,
-          fill: new Fill({color: 'red'}),
+          fill: new Fill({color: 'rgba(255, 211, 3, 0.7)'}),
           stroke: new Stroke({
-            color: 'white', width: 2
+            color: 'rgba(0,0,0,1)', width: 2.5
           })
         })
       })
     };
 
-    const startMarker = new Feature({
-      type: 'icon',
-      geometry: new Point(fromLonLat([15.4395, 47.0707]))
+    const that = this;
+    const vectorSource = new VectorSource({
+      format: new OSMXML(),
+      loader: function (extent, resolution, projection) {
+        const epsg4326Extent = transformExtent(extent, projection, 'EPSG:4326');
+        const client = new XMLHttpRequest();
+        client.open('POST', '//overpass-api.de/api/interpreter');
+        client.addEventListener('load', function () {
+          const features = new OSMXML().readFeatures(client.responseText, {
+            featureProjection: that.map.getView().getProjection()
+          });
+          vectorSource.addFeatures(features);
+        });
+        const boundingBox = '(' + epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' + epsg4326Extent[3] + ',' + epsg4326Extent[2] + ')';
+        const query = '(node["amenity"="restaurant"]' + boundingBox + ';);out meta;';
+        client.send(query);
+      },
+      strategy: bboxStrategy
     });
 
-    const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [startMarker]
-      }),
+    const pharmacyLayer = new VectorLayer({
+      source: vectorSource,
       style: function (feature) {
-        return styles[feature.get('type')];
+        return styles['icon'];
       }
     });
 
+
     this.map = new OlMap({
       target: 'map',
-      layers: [this.layer, vectorLayer],
+      layers: [
+        this.layer,
+        pharmacyLayer
+      ],
       view: this.view
     });
   }
