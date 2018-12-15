@@ -68,7 +68,7 @@ export class YellowmapComponent implements OnInit {
           });
           vectorSource.addFeatures(features);
         });
-        if (that.userQuery.length > 3) {
+        if (that.userQuery.length > 2) {
           const boundingBox = '(' + epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' + epsg4326Extent[3] + ',' + epsg4326Extent[2] + ')';
           const query = '(node["amenity"="' + that.userQuery + '"]' + boundingBox + ';);out meta;';
           client.send(query);
