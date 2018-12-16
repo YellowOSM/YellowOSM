@@ -31,7 +31,7 @@ export class YellowmapComponent implements OnInit {
   ngOnInit() {
     this.userQuery = '';
     this.source = new OlXYZ({
-      url: '//tile.osm.org/{z}/{x}/{y}.png'
+      url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png'
     });
 
     this.layer = new OlTileLayer({
