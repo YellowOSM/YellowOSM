@@ -1,17 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
-import Feature from 'ol/Feature';
-import Point from 'ol/geom/Point';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {fromLonLat, transformExtent} from 'ol/proj';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import OSMXML from 'ol/format/OSMXML';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
+import {ElasticsearchService} from "../services/elasticsearch.service";
 
 @Component({
   selector: 'app-yellowmap',
@@ -24,11 +23,25 @@ export class YellowmapComponent implements OnInit {
   layer: OlTileLayer;
   view: OlView;
   userQuery: string;
+  esIsConnected = false;
+  esStatus: string;
 
-  constructor() {
+  constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
+    this.esIsConnected = false;
   }
 
   ngOnInit() {
+    this.es.isAvailable().then(() => {
+      this.esStatus = 'OK';
+      this.esIsConnected = true;
+    }, error => {
+      this.esStatus = 'ERROR';
+      this.esIsConnected = false;
+      console.error('Server is down', error);
+    }).then(() => {
+      this.cd.detectChanges();
+    });
+
     this.userQuery = '';
     this.source = new OlXYZ({
       url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png'
