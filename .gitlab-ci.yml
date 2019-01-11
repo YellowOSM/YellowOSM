@@ -1,6 +1,9 @@
-image: node:latest
+stages:
+  - build
+  - deploy
 
 before_script:
+  image: node:latest
   ## Install ssh-agent if not already installed, it is required by Docker.
   ## (change apt-get to yum if you use an RPM-based image)
   ##
@@ -54,8 +57,9 @@ before_script:
   #- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
 
-build_and_deploy:
+build_frontend:
   stage: build
+  image: node:latest
   script:
     - npm install -g @angular/cli
     - npm --version
@@ -66,9 +70,20 @@ build_and_deploy:
     - npm install
     - ng build --prod --build-optimizer=false
     - ls -R dist
+  artifacts:
+    paths:
+      - dist
+    expire_in: 3 weeks
+  only:
+    - master
+
+deploy_frontend:
+  stage: deploy
+  image: node:latest
+  script:
+    - ls -R dist
     - scp -r dist/frontend root@toddvm5.klienux.net:/srv/html_new
     - ssh root@toddvm5.klienux.net 'mv /srv/html /srv/html_old; mv /srv/html_new /srv/html; rm -r /srv/html_old'
     - ssh root@toddvm5.klienux.net cat yellowosm_success.txt
-
   only:
     - master
