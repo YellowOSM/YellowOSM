@@ -64,10 +64,6 @@ export class YellowmapComponent implements OnInit {
             name: result['_source']['name'],
             geometry: new Point(fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]))
           });
-          featurething.on('click', function (args) {
-            console.log('click');
-            console.log(featurething);
-          });
           that.esSource.addFeature(featurething);
         });
       },
@@ -78,7 +74,7 @@ export class YellowmapComponent implements OnInit {
       source: this.esSource,
       style: function(feature) {
         let color = 'rgba(255, 211, 3, 0.7)';
-        if (that.selection.hasOwnProperty('ol_uid') && that.selection.ol_uid === feature.ol_uid) {
+        if (that.selection.hasOwnProperty('ol_uid') && that.selection['ol_uid'] === feature.ol_uid) {
           color = 'rgba(200,20,20,0.8)';
         }
         return new Style({
@@ -140,7 +136,7 @@ export class YellowmapComponent implements OnInit {
   private searchElasticSearch() {
     this.es.fullTextSearch().then((result) => {
       this.esStatus = 'OK';
-      console.log(result);
+      console.debug(result);
       if (result !== null && result.hits.total > 0) {
         this.esSearchResult = result['hits']['hits'];
         this.esLayer.getSource().clear();

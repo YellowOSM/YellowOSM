@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  elasticSearchBaseUrl: 'https://dev.yosm.at/elasticsearch'
+  elasticSearchBaseUrl: 'http://toddvm5.klienux.at:9200'
 };
