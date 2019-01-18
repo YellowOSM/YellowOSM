@@ -5,16 +5,11 @@ import responder
 
 api = responder.API()
 
-@api.route("/")
-@api.route("/hello")
+@api.route("/api/")
+@api.route("/api/hello")
 def hello_world(req, resp):
     resp.text = "Hello World!"
 
-
-@api.route("/hello/{user}")
-def hello_user(req, resp, *, user):
-    user = user.strip("/")
-    resp.text = f"Hello, {user}!"
 
 @api.route("/api/hello/{user}")
 @api.route("/api/hello/{user}/json")
@@ -22,13 +17,13 @@ def hello_json(req, resp, *, user):
     user = user.strip("/")
     resp.media = {"hello": user}
 
-@api.route("/error")
+@api.route("/api/error")
 def error(req, resp):
     resp.headers['X-Answer'] = '42'
     resp.status_code = 415
     resp.text = "ooops"
 
-@api.route("/expensive-task")
+@api.route("/api/expensive-task")
 async def handle_task(req, resp):
 
     @api.background.task
