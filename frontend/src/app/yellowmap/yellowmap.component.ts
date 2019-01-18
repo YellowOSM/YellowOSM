@@ -30,6 +30,8 @@ export class YellowmapComponent implements OnInit {
   esStatus: string;
   esSearchResult = [];
   esSource: VectorSource;
+  selection = {};
+  selectionDetails = '';
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
     this.esIsConnected = false;
@@ -52,18 +54,6 @@ export class YellowmapComponent implements OnInit {
       zoom: 16
     });
 
-    const styles = {
-      'icon': new Style({
-        image: new CircleStyle({
-          radius: 7,
-          fill: new Fill({color: 'rgba(255, 211, 3, 0.7)'}),
-          stroke: new Stroke({
-            color: 'rgba(0,0,0,1)', width: 2.5
-          })
-        })
-      })
-    };
-
     const that = this;
 
     this.esSource = new VectorSource({
@@ -74,6 +64,10 @@ export class YellowmapComponent implements OnInit {
             name: result['_source']['name'],
             geometry: new Point(fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]))
           });
+          featurething.on('click', function (args) {
+            console.log('click');
+            console.log(featurething);
+          });
           that.esSource.addFeature(featurething);
         });
       },
@@ -82,8 +76,22 @@ export class YellowmapComponent implements OnInit {
 
     this.esLayer = new VectorLayer({
       source: this.esSource,
-      style: function (feature) {
-        return styles['icon'];
+      style: function(feature) {
+        let color = 'rgba(255, 211, 3, 0.7)';
+        if (that.selection.hasOwnProperty('ol_uid') && that.selection.ol_uid === feature.ol_uid) {
+          color = 'rgba(200,20,20,0.8)';
+        }
+        return new Style({
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({
+              color: color
+            }),
+            stroke: new Stroke({
+              color: 'rgba(0,0,0,1)', width: 2.5
+            })
+          })
+        });
       },
       strategy: bboxStrategy
     });
@@ -95,6 +103,20 @@ export class YellowmapComponent implements OnInit {
         this.esLayer
       ],
       view: this.view
+    });
+
+    this.map.on('click', function (event) {
+      const features = that.map.getFeaturesAtPixel(event.pixel);
+      if (!features) {
+        that.selection = {};
+        that.selectionDetails = '';
+        return;
+      }
+      that.selection = features[0];
+
+      that.selectionDetails = features[0].values_['name'];
+      // force redraw
+      that.esLayer.setStyle(that.esLayer.getStyle());
     });
   }
 

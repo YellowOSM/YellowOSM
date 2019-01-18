@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  elasticSearchBaseUrl: 'https://dev.yosm.at/elasticsearch'
 };
