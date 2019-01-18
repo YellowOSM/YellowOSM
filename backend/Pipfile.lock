@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "917882791309620d0a9e0db483c3cfa04fff7caa701f3bd86c210dbc25e3aa62"
+            "sha256": "bb8daba96850f25605226c489daa0c0af3e0aaeca209896f0783d0576e42ca41"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.6"
+            "python_version": "3.7"
         },
         "sources": [
             {
@@ -179,10 +179,10 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:3133fb98afd627dcd8c06e4705f0ecea1b28003a53820d0266fa6c0ff7cf215c",
-                "sha256:6489e72ea75a30cb07686ce01e24bf65fc7f42edf429153a70abb9e38e56ef52"
+                "sha256:313836a251e67d2ef06631f3bddfffdd7d1c5b16b4efc76244afa6218c5e17b0",
+                "sha256:c850c60dbb840860f58f161b81ae25cf84807eeae3f9a1d9a2f8c704d6bd2b80"
             ],
-            "version": "==3.0.0rc2"
+            "version": "==3.0.0rc3"
         },
         "parse": {
             "hashes": [
@@ -258,9 +258,9 @@
         },
         "starlette": {
             "hashes": [
-                "sha256:01f04283b49a8cb0c8921baa90dbafe47e953f0a265f6ebb38176038e4bd9bf8"
+                "sha256:d0f4b621d3aaf035e8cc3f97925a43dc175ccc00b2d6eb694a3a76368c32489e"
             ],
-            "version": "==0.9.9"
+            "version": "==0.9.10"
         },
         "urllib3": {
             "hashes": [
