@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~ol/ol.css';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+$theme-colors: (
+  "primary":    #ffd303,
+  //"secondary":  $secondary,
+  //"success":    $success,
+  //"info":       $info,
+  //"warning":    $warning,
+  //"danger":     $danger,
+  //"light":      $light,
+  //"dark":       $dark
+);
+
+@import '_yosm';

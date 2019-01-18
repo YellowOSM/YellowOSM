@@ -1,0 +1,37 @@
+.yosm__container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.yosm__search {
+  height: 80px;
+  width: 100%;
+  padding: 15px;
+}
+
+.search__status {
+  font-size: $font-size-sm;
+}
+
+.search__input {
+  font-size: 18px;
+  padding: 5px;
+  border-radius: 5px;
+  appearance: none;
+  border: 2px solid theme-color("primary");
+  min-width: 290px;
+}
+
+.map {
+  width: 100%;
+  height: calc(100vh - 200px);
+}
+
+.details {
+  background-color: theme-color("primary");
+  width: 100%;
+  height: 120px;
+}
