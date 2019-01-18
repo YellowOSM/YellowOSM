@@ -48,7 +48,7 @@ deploy_frontend:
 
 deploy_backend:
   before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git rsync -y )'
     - eval $(ssh-agent -s)
     ## DON'T use protected variables for this!!
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
