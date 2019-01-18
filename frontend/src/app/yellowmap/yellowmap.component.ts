@@ -6,11 +6,13 @@ import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
+import {GeoJSON} from 'ol/format';
 import {fromLonLat, transformExtent} from 'ol/proj';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
-import OSMXML from 'ol/format/OSMXML';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
-import {ElasticsearchService} from "../services/elasticsearch.service";
+import {ElasticsearchService} from '../services/elasticsearch.service';
+import Point from 'ol/geom/Point';
+import Feature from 'ol/Feature';
 
 @Component({
   selector: 'app-yellowmap',
@@ -21,28 +23,22 @@ export class YellowmapComponent implements OnInit {
   map: OlMap;
   source: OlXYZ;
   layer: OlTileLayer;
+  esLayer: VectorLayer;
   view: OlView;
-  userQuery: string;
+  userQuery = '';
   esIsConnected = false;
   esStatus: string;
+  esSearchResult = [];
+  esSource: VectorSource;
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
     this.esIsConnected = false;
   }
 
   ngOnInit() {
-    this.es.isAvailable().then(() => {
-      this.esStatus = 'OK';
-      this.esIsConnected = true;
-    }, error => {
-      this.esStatus = 'ERROR';
-      this.esIsConnected = false;
-      console.error('Server is down', error);
-    }).then(() => {
-      this.cd.detectChanges();
-    });
+    this.initElasticsearch();
+    this.searchElasticSearch();
 
-    this.userQuery = '';
     this.source = new OlXYZ({
       url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png'
     });
@@ -69,40 +65,34 @@ export class YellowmapComponent implements OnInit {
     };
 
     const that = this;
-    const vectorSource = new VectorSource({
-      format: new OSMXML(),
+
+    this.esSource = new VectorSource({
+      format: new GeoJSON(),
       loader: function (extent, resolution, projection) {
-        const epsg4326Extent = transformExtent(extent, projection, 'EPSG:4326');
-        const client = new XMLHttpRequest();
-        client.open('POST', '//overpass-api.de/api/interpreter');
-        client.addEventListener('load', function () {
-          const features = new OSMXML().readFeatures(client.responseText, {
-            featureProjection: that.map.getView().getProjection()
+        that.esSearchResult.forEach(result => {
+          const featurething = new Feature({
+            name: result['_source']['name'],
+            geometry: new Point(fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]))
           });
-          vectorSource.addFeatures(features);
+          that.esSource.addFeature(featurething);
         });
-        if (that.userQuery.length > 2) {
-          const boundingBox = '(' + epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' + epsg4326Extent[3] + ',' + epsg4326Extent[2] + ')';
-          const query = '(node["amenity"="' + that.userQuery + '"]' + boundingBox + ';);out meta;';
-          client.send(query);
-        }
       },
       strategy: bboxStrategy
     });
 
-    const pharmacyLayer = new VectorLayer({
-      source: vectorSource,
+    this.esLayer = new VectorLayer({
+      source: this.esSource,
       style: function (feature) {
         return styles['icon'];
-      }
+      },
+      strategy: bboxStrategy
     });
-
 
     this.map = new OlMap({
       target: 'map',
       layers: [
         this.layer,
-        pharmacyLayer
+        this.esLayer
       ],
       view: this.view
     });
@@ -110,5 +100,38 @@ export class YellowmapComponent implements OnInit {
 
   search() {
     console.log('TODO: trigger map refresh');
+  }
+
+  private initElasticsearch() {
+    this.es.isAvailable().then(() => {
+      this.esStatus = 'OK';
+      this.esIsConnected = true;
+    }, error => {
+      this.esStatus = 'Fehler beim Verbinden';
+      this.esIsConnected = false;
+      console.error('Server is down', error);
+    }).then(() => {
+      this.cd.detectChanges();
+    });
+  }
+
+  private searchElasticSearch() {
+    this.es.fullTextSearch().then((result) => {
+      this.esStatus = 'OK';
+      console.log(result);
+      if (result !== null && result.hits.total > 0) {
+        this.esSearchResult = result['hits']['hits'];
+        this.esLayer.getSource().clear();
+        this.esLayer.getSource().refresh();
+      } else {
+        this.esSearchResult = [];
+      }
+    }, error => {
+      this.esStatus = 'Fehler in der Suche';
+      this.esSearchResult = [];
+      console.error('Server is down', error);
+    }).then(() => {
+      this.cd.detectChanges();
+    });
   }
 }

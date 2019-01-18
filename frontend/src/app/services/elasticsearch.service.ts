@@ -18,14 +18,12 @@ export class ElasticsearchService {
   private connect() {
     this.client = new Client({
       host: 'http://localhost:9200',
-      log: 'trace'
     });
   }
 
   private _connect() {
     this.client = new elasticsearch.Client({
       host: 'localhost:9200',
-      log: 'trace'
     });
   }
 
@@ -33,6 +31,30 @@ export class ElasticsearchService {
     return this.client.ping({
       requestTimeout: Infinity,
       body: 'hello yosm!'
+    });
+  }
+
+  fullTextSearch(): any {
+    return this.client.search({
+      index: 'yosm',
+      type: '_doc',
+      filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
+      body: {
+        'query': {
+          'geo_bounding_box': {
+            'location': {
+              'top_left': {
+                'lat': 48,
+                'lon': 10
+              },
+              'bottom_right': {
+                'lat': 40,
+                'lon': 16
+              }
+            }
+          }
+        }
+      }
     });
   }
 }
