@@ -32,7 +32,7 @@ deploy_frontend:
     - chmod 700 ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - ping -c 1 toddvm5.klienux.net
+    - ping -c 1 toddvm5.klienux.at
     - ls -lha
 
   stage: deploy
@@ -40,9 +40,9 @@ deploy_frontend:
   script:
     - ls -R frontend/dist
     - cd frontend/
-    - scp -r dist/frontend root@toddvm5.klienux.net:/srv/html_new
-    - ssh root@toddvm5.klienux.net 'mv /srv/html /srv/html_old; mv /srv/html_new /srv/html; rm -r /srv/html_old'
-    - ssh root@toddvm5.klienux.net cat yellowosm_success.txt
+    - scp -r dist/frontend root@toddvm5.klienux.at:/srv/html_new
+    - ssh root@toddvm5.klienux.at 'mv /srv/html /srv/html_old; mv /srv/html_new /srv/html; rm -r /srv/html_old'
+    - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - master
 
@@ -56,7 +56,7 @@ deploy_backend:
     - chmod 700 ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - ping -c 1 toddvm5.klienux.net
+    - ping -c 1 toddvm5.klienux.at
     - ls -lha
 
   stage: deploy
