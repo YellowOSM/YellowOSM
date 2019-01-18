@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  elasticSearchBaseUrl: 'http://toddvm5.klienux.at:9200'
+  elasticSearchBaseUrl: 'https://es.yosm.at'
 };
 
 /*
