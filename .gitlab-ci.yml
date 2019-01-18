@@ -45,3 +45,29 @@ deploy_frontend:
     - ssh root@toddvm5.klienux.net cat yellowosm_success.txt
   only:
     - master
+
+deploy_backend:
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    ## DON'T use protected variables for this!!
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ping -c 1 toddvm5.klienux.net
+    - ls -lha
+
+  stage: deploy
+  image: python:3.7-stretch
+  script:
+    - ls -R backend
+    - cd backend/
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv Dockerfile docker-compose.yml ../ ;'
+    - rsync -azvh --progress --delete * .* root@toddvm5.klienux.at:docker-compose/responder/
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv ../Dockerfile ../docker-compose.yml . ;'
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; docker-compose build yosm-backend; docker-compose up yosm-backend;'
+    - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
+  only:
+    - master
