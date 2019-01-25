@@ -74,7 +74,7 @@ deploy_backend:
     - master
 
 ##################### Production ##############################
-build_frontend:
+build_prod_frontend:
   stage: build
   image: node:latest
   script:
@@ -94,7 +94,7 @@ build_frontend:
   only:
     - production
 
-deploy_frontend:
+deploy_prod_frontend:
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
     - eval $(ssh-agent -s)
@@ -118,7 +118,7 @@ deploy_frontend:
   only:
     - production
 
-deploy_backend:
+deploy_prod_backend:
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
     - eval $(ssh-agent -s)
