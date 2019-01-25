@@ -39,7 +39,6 @@ export class YellowmapComponent implements OnInit {
 
   ngOnInit() {
     this.initElasticsearch();
-    this.searchElasticSearch();
 
     this.source = new OlXYZ({
       url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png'
@@ -72,7 +71,7 @@ export class YellowmapComponent implements OnInit {
 
     this.esLayer = new VectorLayer({
       source: this.esSource,
-      style: function(feature) {
+      style: function (feature) {
         let color = 'rgba(255, 211, 3, 0.7)';
         if (that.selection.hasOwnProperty('ol_uid') && that.selection['ol_uid'] === feature.ol_uid) {
           color = 'rgba(200,20,20,0.8)';
@@ -106,18 +105,18 @@ export class YellowmapComponent implements OnInit {
       if (!features) {
         that.selection = {};
         that.selectionDetails = '';
-        return;
+      } else {
+        that.selection = features[0];
+        that.selectionDetails = features[0].values_['name'];
       }
-      that.selection = features[0];
-
-      that.selectionDetails = features[0].values_['name'];
+      
       // force redraw
       that.esLayer.setStyle(that.esLayer.getStyle());
     });
   }
 
   search() {
-    console.log('TODO: trigger map refresh');
+    this.searchElasticSearch();
   }
 
   private initElasticsearch() {
@@ -134,22 +133,34 @@ export class YellowmapComponent implements OnInit {
   }
 
   private searchElasticSearch() {
-    this.es.fullTextSearch().then((result) => {
+    if (this.userQuery.length < 2) {
+      this.clearSearchAndSelection();
+      return;
+    }
+
+    this.es.fullTextSearch(this.userQuery).then((result) => {
       this.esStatus = 'OK';
-      console.debug(result);
+      console.log(result);
       if (result !== null && result.hits.total > 0) {
         this.esSearchResult = result['hits']['hits'];
         this.esLayer.getSource().clear();
         this.esLayer.getSource().refresh();
       } else {
-        this.esSearchResult = [];
+        this.clearSearchAndSelection();
       }
     }, error => {
       this.esStatus = 'Fehler in der Suche';
-      this.esSearchResult = [];
+      this.clearSearchAndSelection();
       console.error('Server is down', error);
     }).then(() => {
       this.cd.detectChanges();
     });
+  }
+
+  private clearSearchAndSelection() {
+    this.esSearchResult = [];
+    this.selectionDetails = '';
+    this.esLayer.getSource().clear();
+    this.esLayer.getSource().refresh();
   }
 }

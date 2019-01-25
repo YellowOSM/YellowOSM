@@ -29,22 +29,31 @@ export class ElasticsearchService {
     });
   }
 
-  fullTextSearch(): any {
+  fullTextSearch(userQuery: string): any {
     return this.client.search({
       index: 'yosm',
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
         'query': {
-          'geo_bounding_box': {
-            'location': {
-              'top_left': {
-                'lat': 48,
-                'lon': 10
-              },
-              'bottom_right': {
-                'lat': 40,
-                'lon': 16
+          'bool': {
+            'must': {
+              'query_string': {
+                'query': userQuery + '*'
+              }
+            },
+            'filter': {
+              'geo_bounding_box': {
+                'location': {
+                  'top_left': {
+                    'lat': 48,
+                    'lon': 10
+                  },
+                  'bottom_right': {
+                    'lat': 40,
+                    'lon': 16
+                  }
+                }
               }
             }
           }

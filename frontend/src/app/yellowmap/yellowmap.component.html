@@ -1,7 +1,6 @@
 <div class="yosm__container">
   <div class="yosm__search">
     <input type="text" placeholder="Suchbegriff..." [(ngModel)]="userQuery" class="search__input" (keyup)="search()">
-    <div class="search__status">Elasticsearch: {{esStatus}}</div>
   </div>
   <div id="map" class="map"></div>
   <div class="details">
