@@ -1,11 +1,12 @@
 @import '~ol/ol.css';
+
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
 $theme-colors: (
   "primary":    #ffd303,
-  //"secondary":  $secondary,
+  "secondary":  #000,
   //"success":    $success,
   //"info":       $info,
   //"warning":    $warning,
@@ -14,4 +15,7 @@ $theme-colors: (
   //"dark":       $dark
 );
 
-@import '_yosm';
+$fa-font-path : "~font-awesome/fonts";
+@import "~font-awesome/scss/font-awesome";
+
+@import "scss/_yosm.scss";

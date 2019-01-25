@@ -116,6 +116,7 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.map.on('moveend', onMapChanged);
+
     function onMapChanged(evt) {
       that.searchElasticSearch();
     }
@@ -172,5 +173,18 @@ export class YellowmapComponent implements OnInit {
     this.selectionDetails = '';
     this.esLayer.getSource().clear();
     this.esLayer.getSource().refresh();
+  }
+
+  public getLocation() {
+    console.log('geolocating... 1');
+    const that = this;
+    navigator.geolocation.getCurrentPosition(function (pos) {
+        const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+        that.map.getView().animate({center: coords});
+        console.log('geolocating... successful');
+      }, function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+      }
+    );
   }
 }

@@ -1,10 +1,14 @@
 <div class="yosm__container">
-  <div class="yosm__search">
-    <input type="text" placeholder="Suchbegriff..." [(ngModel)]="userQuery" class="search__input" (keyup)="search()">
-    <img class="yosm__logo" src="/assets/img/logo.svg">
+  <div class="header">
+    <div class="yosm__search">
+      <input type="text" placeholder="Suchbegriff..." [(ngModel)]="userQuery" class="search__input" (keyup)="search()">
+      <i class="fa fa-crosshairs" aria-hidden="true" (click)="getLocation()"></i>
+    </div>
+    <img class="yosm__logo" src="/assets/img/logo.svg" alt="YellowOSM - Open Locations">
   </div>
   <div id="map" class="map"></div>
-  <div class="details">
+  <div class="details" [className]="selectionDetails ? 'details active' : 'details'">
     <h2>{{selectionDetails}}</h2>
   </div>
 </div>
+

@@ -35,6 +35,7 @@ export class ElasticsearchService {
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
+        'size' : 250,
         'query': {
           'bool': {
             'must': {
