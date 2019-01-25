@@ -7,7 +7,9 @@
 # and save as graz.json
 
 # BASE_URL='localhost:9200'
-BASE_URL='https://es.yosm.at:9200'
+BASE_URL='https://es.yosm.at'
+
+JSONFILE='/home/flo/osm_es_export.json'
 
 # delete yosm index
 curl -X DELETE "{$BASE_URL}/yosm?pretty"
@@ -32,33 +34,33 @@ curl -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
 '
 
 # load sample data set
-curl -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@graz.json"
+curl -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}"
 
 # get index status
-curl "{$BASE_URL}/_cat/indices?v"
+# curl "{$BASE_URL}/_cat/indices?v"
 
 # search index
-curl "{$BASE_URL}/yosm/_search?q=*&pretty"
+# curl "{$BASE_URL}/yosm/_search?q=*&pretty"
 
 # search index by geo bounding box
-curl "{$BASE_URL}/yosm/_search" -H 'Content-Type: application/json' -d'
-{
-  "query": {
-    "geo_bounding_box": {
-      "location": {
-        "top_left": {
-          "lat": 48,
-          "lon": 10
-        },
-        "bottom_right": {
-          "lat": 40,
-          "lon": 16
-        }
-      }
-    }
-  }
-}
-'
+# curl "{$BASE_URL}/yosm/_search" -H 'Content-Type: application/json' -d'
+# {
+#   "query": {
+#     "geo_bounding_box": {
+#       "location": {
+#         "top_left": {
+#           "lat": 48,
+#           "lon": 10
+#         },
+#         "bottom_right": {
+#           "lat": 40,
+#           "lon": 16
+#         }
+#       }
+#     }
+#   }
+# }
+# '
 
 # https://grokonez.com/frontend/angular/angular-6/angular-6-elasticsearch-example-quick-start-how-to-add-elasticsearch-js
 # CORS für Elasticsearch erlauben
