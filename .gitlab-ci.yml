@@ -137,7 +137,7 @@ deploy_backend:
   script:
     - ls -R backend
     - cd backend/
-    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv Dockerfile docker-compose.yml ../ 2> /dev/null;'
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; mv Dockerfile docker-compose.yml ../ 2> /dev/null;'
     - rsync -azvh --progress --delete * .* root@toddvm5.klienux.at:docker-compose/responder_prod/
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; mv ../Dockerfile ../docker-compose.yml . ;'
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; docker-compose build yosm-prod-backend; docker-compose up --detach yosm-prod-backend;'
