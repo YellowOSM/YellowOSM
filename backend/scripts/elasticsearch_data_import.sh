@@ -11,6 +11,14 @@ BASE_URL='https://es.yosm.at'
 
 JSONFILE='/home/flo/osm_es_export.json'
 
+curl -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
+{
+  "index": {
+    "blocks.read_only": false
+  }
+}
+'
+
 # delete yosm index
 curl -X DELETE "{$BASE_URL}/yosm?pretty"
 
@@ -64,3 +72,17 @@ curl -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pre
 
 # https://grokonez.com/frontend/angular/angular-6/angular-6-elasticsearch-example-quick-start-how-to-add-elasticsearch-js
 # CORS für Elasticsearch erlauben
+
+
+# set read_only
+
+
+# set index to read-only
+
+curl -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
+{
+  "index": {
+    "blocks.read_only": true
+  }
+}
+'
