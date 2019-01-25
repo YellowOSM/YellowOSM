@@ -18,8 +18,8 @@ LIMIT = 100000000000
 COMMAND1 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE p.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 if poly:
     COMMAND2 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE p.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
-COMMAND3 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE p.{key} is not null LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
-COMMAND4 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE p.{key} is not null LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
+COMMAND3 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE (p.{key} is not null AND p.{key} != 'vacant') LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
+COMMAND4 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE (p.{key} is not null AND p.{key} != 'vacant') LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
 export_amenity = { "key": "amenity",
                     "values" :
@@ -28,6 +28,7 @@ export_amenity = { "key": "amenity",
                         "bbq",
                         "biergarten",
                         "cafe",
+                        "fuel",
                         "drinking_water",
                         "fast_food",
                         "food_court",
