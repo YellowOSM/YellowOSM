@@ -33,6 +33,7 @@ export class YellowmapComponent implements OnInit {
   esSource: VectorSource;
   selection = {};
   selectionDetails = '';
+  geoLocationLoading = false;
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
     this.esIsConnected = false;
@@ -176,14 +177,16 @@ export class YellowmapComponent implements OnInit {
   }
 
   public getLocation() {
-    console.log('geolocating... 1');
+    console.log('loading geolocation...');
     const that = this;
+    this.geoLocationLoading = true;
     navigator.geolocation.getCurrentPosition(function (pos) {
         const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
         that.map.getView().animate({center: coords});
-        console.log('geolocating... successful');
+        that.geoLocationLoading = false;
       }, function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
+      that.geoLocationLoading = false;
       }
     );
   }

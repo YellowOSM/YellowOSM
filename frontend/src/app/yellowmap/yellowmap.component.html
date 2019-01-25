@@ -2,7 +2,7 @@
   <div class="header">
     <div class="yosm__search">
       <input type="text" placeholder="Suchbegriff..." [(ngModel)]="userQuery" class="search__input" (keyup)="search()">
-      <i class="fa fa-crosshairs" aria-hidden="true" (click)="getLocation()"></i>
+      <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true" (click)="getLocation()"></i>
     </div>
     <img class="yosm__logo" src="/assets/img/logo.svg" alt="YellowOSM - Open Locations">
   </div>
