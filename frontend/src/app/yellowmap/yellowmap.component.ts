@@ -7,7 +7,8 @@ import OlView from 'ol/View';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
-import {fromLonLat, transformExtent} from 'ol/proj';
+import {fromLonLat, toLonLat, transformExtent} from 'ol/proj';
+import {getTopLeft, getBottomRight} from 'ol/extent';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import {ElasticsearchService} from '../services/elasticsearch.service';
@@ -109,10 +110,15 @@ export class YellowmapComponent implements OnInit {
         that.selection = features[0];
         that.selectionDetails = features[0].values_['name'];
       }
-      
+
       // force redraw
       that.esLayer.setStyle(that.esLayer.getStyle());
     });
+
+    this.map.on('moveend', onMapChanged);
+    function onMapChanged(evt) {
+      that.searchElasticSearch();
+    }
   }
 
   search() {
@@ -138,7 +144,11 @@ export class YellowmapComponent implements OnInit {
       return;
     }
 
-    this.es.fullTextSearch(this.userQuery).then((result) => {
+    const extent = this.view.calculateExtent(this.map.getSize());
+    const topLeft = toLonLat(getTopLeft(extent));
+    const bottomRight = toLonLat(getBottomRight(extent));
+
+    this.es.fullTextSearch(this.userQuery, topLeft, bottomRight).then((result) => {
       this.esStatus = 'OK';
       console.log(result);
       if (result !== null && result.hits.total > 0) {

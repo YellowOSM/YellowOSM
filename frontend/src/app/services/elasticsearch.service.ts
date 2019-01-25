@@ -29,7 +29,7 @@ export class ElasticsearchService {
     });
   }
 
-  fullTextSearch(userQuery: string): any {
+  fullTextSearch(userQuery: string, topLeft: any, bottomRight: any): any {
     return this.client.search({
       index: 'yosm',
       type: '_doc',
@@ -46,12 +46,12 @@ export class ElasticsearchService {
               'geo_bounding_box': {
                 'location': {
                   'top_left': {
-                    'lat': 48,
-                    'lon': 10
+                    'lat': topLeft[1],
+                    'lon': topLeft[0]
                   },
                   'bottom_right': {
-                    'lat': 40,
-                    'lon': 16
+                    'lat': bottomRight[1],
+                    'lon': bottomRight[0]
                   }
                 }
               }
