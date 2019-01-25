@@ -18,6 +18,8 @@ LIMIT = 100000000000
 COMMAND1 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE p.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 if poly:
     COMMAND2 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE p.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
+COMMAND3 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE p.{key} is not null LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
+COMMAND4 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE p.{key} is not null LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
 export_amenity = { "key": "amenity",
                     "values" :
@@ -48,6 +50,12 @@ export_leisure = { "key": "leisure",
                        "playground",
                        ]
                  }
+export_shop = { "key": "shop",
+                    "values":
+                       [
+                       "supermarket",
+                       ]
+                 }
 
 # FIXXXXME see how those can be exported
 # export_craft = { "key": "craft",
@@ -75,9 +83,10 @@ export_leisure = { "key": "leisure",
 #                 }
 classes_to_export = [
     export_amenity,
-    # export_leisure,
+    export_leisure,
     # export_craft,
     ]
+any_classes = [export_shop]
 
 # clear
 open(EXPORT_FILE,'w').close()
@@ -85,8 +94,6 @@ open(EXPORT_ES_FILE,'w').close()
 
 for cl in classes_to_export:
     for val in cl['values']:
-
-
         command_now = COMMAND1.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
         print(command_now)
         os.system(command_now)
@@ -94,6 +101,17 @@ for cl in classes_to_export:
             command_now = COMMAND2.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
             print(command_now)
             os.system(command_now)
+
+# export any points or polygons that have `key` set
+for cl in any_classes:
+    command_now = COMMAND3.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
+    print(command_now)
+    os.system(command_now)
+    if poly:
+        command_now = COMMAND4.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
+        print(command_now)
+        os.system(command_now)
+
 
 # # format: name1,name2,lon,lat,type1,type2
 # format: name1,lon,lat,type1
