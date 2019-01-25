@@ -72,3 +72,75 @@ deploy_backend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - master
+
+##################### Production ##############################
+build_frontend:
+  stage: build
+  image: node:latest
+  script:
+    - npm install -g @angular/cli
+    - npm --version
+    - ng --version
+    - echo 'hello world'
+    - ls -a
+    - cd frontend
+    - npm install
+    - ng build --prod --build-optimizer=false
+    - ls -R dist
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 3 weeks
+  only:
+    - production
+
+deploy_frontend:
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    ## DON'T use protected variables for this!!
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ping -c 1 toddvm5.klienux.at
+    - ls -lha
+
+  stage: deploy
+  image: node:latest
+  script:
+    - ls -R frontend/dist
+    - cd frontend/
+    - scp -r dist/frontend root@toddvm5.klienux.at:/srv/html_prod_new
+    - ssh root@toddvm5.klienux.at 'mv /srv/html_prod /srv/html_prod_old; mv /srv/html_prod_new /srv/html_prod; rm -r /srv/html_prod_old'
+    - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
+  only:
+    - production
+
+deploy_backend:
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    ## DON'T use protected variables for this!!
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ping -c 1 toddvm5.klienux.at
+    - ls -lha
+    - 'which rsync || ( apt-get update -y && apt-get install rsync -y )'
+
+  stage: deploy
+  image: python:3.7-stretch
+  script:
+    - ls -R backend
+    - cd backend/
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv Dockerfile docker-compose.yml ../ 2> /dev/null;'
+    - rsync -azvh --progress --delete * .* root@toddvm5.klienux.at:docker-compose/responder_prod/
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; mv ../Dockerfile ../docker-compose.yml . ;'
+    - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; docker-compose build yosm-prod-backend; docker-compose up --detach yosm-prod-backend;'
+    - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
+  only:
+    - production
