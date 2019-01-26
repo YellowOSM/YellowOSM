@@ -24,6 +24,7 @@ COMMAND4 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p
 export_amenity = { "key": "amenity",
                     "values" :
                         [
+                        "atm",
                         "bar",
                         "bbq",
                         "biergarten",
@@ -55,6 +56,7 @@ export_shop = { "key": "shop",
                     "values":
                        [
                        "supermarket",
+                       # Anything goes...
                        ]
                  }
 
@@ -88,6 +90,32 @@ classes_to_export = [
     # export_craft,
     ]
 any_classes = [export_shop]
+
+# additional info:
+amend = {
+    "atm": ["Bankomat", "Geldautomat"],
+    "restaurant": ["Gasthaus", "Wirtshaus"],
+    "pub": ["Gasthaus", "Wirtshaus"],
+    "bar": ["Bar","Beisl"],
+    "fuel": ["Tankstelle"],
+    "toilets": ["Toilette","Klo","Häuschen"],
+    "pharmacy": ["Apotheke","Arzneimittel","Medikamente"],
+    "car_repair": ["Werkstatt"],
+    "kiosk": ["Trafik",],
+    "florist": ["Blumen",],
+    "mall": ["Einkaufszentrum",],
+    "department_store": ["Kaufhaus",],
+    "jewelry": ["Juwelier","Schmuck"],
+    "hairdresser": ["Friseur","Frisör",],
+    "doityourself": ["Baumarkt"],
+    # "": ["",],
+    # "": ["",],
+}
+
+alt_name = {
+    "atm": "Bankomat",
+    "mall": "Einkaufszentrum",
+}
 
 # clear
 open(EXPORT_FILE,'w').close()
@@ -126,6 +154,10 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
         # desc = line[4] if line[4] else line[5]+"_poly"
         name = line[0]
         desc = line[3]
+        if not name and desc:
+            name = alt_name[desc] if desc in alt_name else desc.capitalize()
+        if desc in amend:
+            desc += " " + " ".join(amend[desc])
         # FIXXXXME add special case for multipolygons
         if not line[1]:
             continue
