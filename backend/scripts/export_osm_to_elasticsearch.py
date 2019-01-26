@@ -8,18 +8,80 @@ EXPORT_ES_FILE = "/home/flo/osm_es_export.json"
 
 # also export polygons
 poly = True
-query_db = False
-# LIMIT = 10
+query_db = True
 LIMIT = 100000000000
+# LIMIT = 10
+
 # # COMMAND = "sudo -u postgres psql -d gis -c \"SELECT P.name,N.lon,N.lat,P.{key} from planet_osm_nodes N, planet_osm_point P WHERE N.id = P.osm_id AND P.{key} = '{value}' LIMIT {limit};\" | cat >> {file}"
 # # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT P.name,N.lon,N.lat,P.{key} from planet_osm_nodes N, planet_osm_point P WHERE N.id = P.osm_id AND P.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,l.name,lon,lat,p.{key},l.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id LEFT JOIN planet_osm_polygon AS l ON n.id = l.osm_id WHERE p.{key} = '{value}' OR l.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
-COMMAND1 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE p.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
+COMMAND1 = """sudo -u postgres psql -d gis -c \"\copy (
+        SELECT p.name,lon,lat,p.{key}
+        FROM planet_osm_nodes AS n
+        LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id
+        WHERE p.{key} = '{value}'
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # """
+COMMAND2, COMMAND3 = None, None
 if poly:
-    COMMAND2 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE p.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
-COMMAND3 =     "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,lon,lat,p.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id WHERE (p.{key} is not null AND p.{key} != 'vacant') LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
-COMMAND4 = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,n.lon,n.lat,p.{key} FROM planet_osm_polygon as p LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1] WHERE (p.{key} is not null AND p.{key} != 'vacant') LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
+    COMMAND2 = """sudo -u postgres psql -d gis -c \"\copy (
+        SELECT p.name,n.lon,n.lat,p.{key}
+        FROM planet_osm_polygon as p
+        LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id
+        LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1]
+        WHERE p.{key} = '{value}'
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # """
+
+    # multipolygons
+    # mulitpolygons get a negative osm_id in the polygon table!!
+    COMMAND3 = """sudo -u postgres psql -d gis -c \"\copy (
+        SELECT p.name,n.lon,n.lat,p.{key}
+        FROM planet_osm_polygon as p
+        LEFT JOIN planet_osm_rels as r ON p.osm_id*-1 = r.id
+        LEFT JOIN planet_osm_ways as w ON r.parts[1] = w.id
+        LEFT JOIN planet_osm_nodes as n ON w.nodes[1] = n.id
+        WHERE ( p.{key} = '{value}' AND p.osm_id < 0 )
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # """
+
+
+COMMAND4 = """sudo -u postgres psql -d gis -c \"\copy (
+            SELECT p.name,lon,lat,p.{key}
+            FROM planet_osm_nodes AS n
+            LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id
+            WHERE (p.{key} is not null AND p.{key} != 'vacant')
+            LIMIT {limit}
+            ) TO STDOUT With CSV;\" | cat >> {file}"""
+            # """
+COMMAND5, COMMAND6 = None, None
+if poly:
+    COMMAND5 = """sudo -u postgres psql -d gis -c \"\copy (
+        SELECT p.name,n.lon,n.lat,p.{key}
+        FROM planet_osm_polygon as p
+        LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id
+        LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1]
+        WHERE (p.{key} is not null AND p.{key} != 'vacant')
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # """
+
+    COMMAND6 = """sudo -u postgres psql -d gis -c \"\copy (
+        SELECT p.name,n.lon,n.lat,p.{key}
+        FROM planet_osm_polygon as p
+        LEFT JOIN planet_osm_rels as r ON p.osm_id*-1 = r.id
+        LEFT JOIN planet_osm_ways as w ON r.parts[1] = w.id
+        LEFT JOIN planet_osm_nodes as n ON w.nodes[1] = n.id
+        WHERE ( p.{key} is not null AND p.{key} != 'vacant' AND p.osm_id < 0 )
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # """
+
+commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4, COMMAND5, COMMAND6]
 
 export_amenity = { "key": "amenity",
                     "values" :
@@ -131,25 +193,41 @@ if query_db:
     open(EXPORT_FILE,'w').close()
     open(EXPORT_ES_FILE,'w').close()
 
+
     for cl in classes_to_export:
         for val in cl['values']:
-            command_now = COMMAND1.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
-            print(command_now)
-            os.system(command_now)
-            if poly:
-                command_now = COMMAND2.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+            for command in commands:
+                if command and '{value}' in command:
+                    command_now = command.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT)
                 print(command_now)
                 os.system(command_now)
 
-    # export any points or polygons that have `key` set
     for cl in any_classes:
-        command_now = COMMAND3.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
-        print(command_now)
-        os.system(command_now)
-        if poly:
-            command_now = COMMAND4.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
+        for command in commands:
+            if command and not '{value}' in command:
+                command_now = command.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT)
             print(command_now)
             os.system(command_now)
+
+    # for cl in classes_to_export:
+    #     for val in cl['values']:
+    #         command_now = COMMAND1.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+    #         print(command_now)
+    #         os.system(command_now)
+    #         if poly:
+    #             command_now = COMMAND2.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+    #             print(command_now)
+    #             os.system(command_now)
+    #
+    # # export any points or polygons that have `key` set
+    # for cl in any_classes:
+    #     command_now = COMMAND3.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
+    #     print(command_now)
+    #     os.system(command_now)
+    #     if poly:
+    #         command_now = COMMAND4.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
+    #         print(command_now)
+    #         os.system(command_now)
 
 
 # # format: name1,name2,lon,lat,type1,type2
