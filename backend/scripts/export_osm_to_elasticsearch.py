@@ -8,7 +8,7 @@ EXPORT_ES_FILE = "/home/flo/osm_es_export.json"
 
 # also export polygons
 poly = True
-
+query_db = False
 # LIMIT = 10
 LIMIT = 100000000000
 # # COMMAND = "sudo -u postgres psql -d gis -c \"SELECT P.name,N.lon,N.lat,P.{key} from planet_osm_nodes N, planet_osm_point P WHERE N.id = P.osm_id AND P.{key} = '{value}' LIMIT {limit};\" | cat >> {file}"
@@ -92,6 +92,7 @@ classes_to_export = [
 any_classes = [export_shop]
 
 # additional info:
+# first element will be alternative name!!
 amend = {
     "atm": ["Bankomat", "Geldautomat"],
     "restaurant": ["Gasthaus", "Wirtshaus"],
@@ -102,44 +103,53 @@ amend = {
     "pharmacy": ["Apotheke","Arzneimittel","Medikamente"],
     "car_repair": ["Werkstatt"],
     "kiosk": ["Trafik",],
+    "tobacco": ["Trafik",],
     "florist": ["Blumen",],
     "mall": ["Einkaufszentrum",],
     "department_store": ["Kaufhaus",],
     "jewelry": ["Juwelier","Schmuck"],
     "hairdresser": ["Friseur","Frisör",],
     "doityourself": ["Baumarkt"],
-    # "": ["",],
+    "supermarket": ["Supermarkt"],
+    "playground": ["Spielplatz",],
+    "drinking_water": ["Trinkasser","Wasser",],
+    "fast_food": ["Fast Food","Imbiss",],
+    "bakery": ["Bäckerei","Bäcker","Brot",],
+    "optician": ["Optiker","Brillen"],
+    "perfumery": ["Parfümerie",],
+    "fabric": ["Stoffe",],
+    "luggage": ["Koffer","Gepäck","Taschen",],
+    "photo": ["Fotograf","Photograph","Fotograph","Photograf",],
+    "clothes": ["Kleidung","Bekleidung","Gewand","Gwand","Hemden",],
+    "ice_cream": ["Speiseeis","Eis","Eiscreme",],
     # "": ["",],
 }
 
-alt_name = {
-    "atm": "Bankomat",
-    "mall": "Einkaufszentrum",
-}
 
 # clear
-open(EXPORT_FILE,'w').close()
-open(EXPORT_ES_FILE,'w').close()
+if query_db:
+    open(EXPORT_FILE,'w').close()
+    open(EXPORT_ES_FILE,'w').close()
 
-for cl in classes_to_export:
-    for val in cl['values']:
-        command_now = COMMAND1.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+    for cl in classes_to_export:
+        for val in cl['values']:
+            command_now = COMMAND1.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+            print(command_now)
+            os.system(command_now)
+            if poly:
+                command_now = COMMAND2.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+                print(command_now)
+                os.system(command_now)
+
+    # export any points or polygons that have `key` set
+    for cl in any_classes:
+        command_now = COMMAND3.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
         print(command_now)
         os.system(command_now)
         if poly:
-            command_now = COMMAND2.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
+            command_now = COMMAND4.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
             print(command_now)
             os.system(command_now)
-
-# export any points or polygons that have `key` set
-for cl in any_classes:
-    command_now = COMMAND3.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
-    print(command_now)
-    os.system(command_now)
-    if poly:
-        command_now = COMMAND4.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
-        print(command_now)
-        os.system(command_now)
 
 
 # # format: name1,name2,lon,lat,type1,type2
@@ -149,13 +159,11 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
     for line in reader:
         if not line:
             continue
-        print(line)
-        # name = line[0] if line[0] else line[1]
-        # desc = line[4] if line[4] else line[5]+"_poly"
+        # print(line)
         name = line[0]
         desc = line[3]
         if not name and desc:
-            name = alt_name[desc] if desc in alt_name else desc.capitalize()
+            name = amend[desc][0] if desc in amend else desc.capitalize()
         if desc in amend:
             desc += " " + " ".join(amend[desc])
         # FIXXXXME add special case for multipolygons
