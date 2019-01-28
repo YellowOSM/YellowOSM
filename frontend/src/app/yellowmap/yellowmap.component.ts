@@ -127,7 +127,7 @@ export class YellowmapComponent implements OnInit {
     this.map.on('moveend', onMapChanged);
 
     function onMapChanged(evt) {
-      that.searchInput.nativeElement.blur();
+      // that.searchInput.nativeElement.blur();
       that.searchElasticSearch();
     }
   }
