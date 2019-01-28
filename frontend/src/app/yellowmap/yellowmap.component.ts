@@ -14,6 +14,7 @@ import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import {ElasticsearchService} from '../services/elasticsearch.service';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
+import {ATTRIBUTION} from 'ol/source/OSM.js';
 
 @Component({
   selector: 'app-yellowmap',
@@ -43,7 +44,10 @@ export class YellowmapComponent implements OnInit {
     this.initElasticsearch();
 
     this.source = new OlXYZ({
-      url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+      url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      attributions: [
+        ATTRIBUTION
+      ]
     });
 
     this.layer = new OlTileLayer({

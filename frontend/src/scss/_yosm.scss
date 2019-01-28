@@ -26,7 +26,7 @@ a {
 
 .yosm__container {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 20px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -103,7 +103,7 @@ a {
 
 .map {
   width: 100%;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 76px);
 }
 
 .details {
