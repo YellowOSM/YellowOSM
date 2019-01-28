@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
@@ -35,6 +35,9 @@ export class YellowmapComponent implements OnInit {
   selection = {};
   selectionDetails = '';
   geoLocationLoading = false;
+  @ViewChild('searchInput')
+  searchInput: ElementRef;
+
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
     this.esIsConnected = false;
@@ -107,6 +110,7 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.map.on('click', function (event) {
+      that.searchInput.nativeElement.blur();
       const features = that.map.getFeaturesAtPixel(event.pixel);
       if (!features) {
         that.selection = {};
@@ -190,7 +194,7 @@ export class YellowmapComponent implements OnInit {
         that.geoLocationLoading = false;
       }, function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
-      that.geoLocationLoading = false;
+        that.geoLocationLoading = false;
       }
     );
   }
