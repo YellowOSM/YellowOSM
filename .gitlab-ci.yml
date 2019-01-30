@@ -21,6 +21,7 @@ build_frontend:
     expire_in: 3 weeks
   only:
     - master
+    - production
 
 deploy_frontend:
   before_script:
@@ -74,25 +75,7 @@ deploy_backend:
     - master
 
 ##################### Production ##############################
-build_prod_frontend:
-  stage: build
-  image: node:latest
-  script:
-    - npm install -g @angular/cli
-    - npm --version
-    - ng --version
-    - echo 'hello world'
-    - ls -a
-    - cd frontend
-    - npm install
-    - ng build --prod --build-optimizer=false
-    - ls -R dist
-  artifacts:
-    paths:
-      - frontend/dist/
-    expire_in: 3 weeks
-  only:
-    - production
+
 
 deploy_prod_frontend:
   before_script:
