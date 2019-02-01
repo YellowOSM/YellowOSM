@@ -4,7 +4,8 @@ import {YellowmapComponent} from './yellowmap/yellowmap.component';
 import {AboutComponent} from './about/about.component';
 
 const routes: Routes = [
-  {path: '', component: YellowmapComponent},
+  {path: '', redirectTo: '/map/15.4395/47.0707/16', pathMatch: 'full'},
+  {path: 'map/:lon/:lat/:zoom', component: YellowmapComponent},
   {path: 'about', component: AboutComponent}
 ];
 
@@ -14,3 +15,4 @@ const routes: Routes = [
 })
 export class AppRoutingModule {
 }
+

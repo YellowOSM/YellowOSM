@@ -15,6 +15,7 @@ import {ElasticsearchService} from '../services/elasticsearch.service';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
 import {ATTRIBUTION} from 'ol/source/OSM.js';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
 @Component({
   selector: 'app-yellowmap',
@@ -49,7 +50,12 @@ export class YellowmapComponent implements OnInit {
     'Telefon'
   ];
 
-  constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
+  constructor(
+    private es: ElasticsearchService,
+    private cd: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     this.esIsConnected = false;
   }
 
@@ -68,8 +74,9 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.view = new OlView({
-      center: fromLonLat([15.4395, 47.0707]),
-      zoom: 16,
+      // center: fromLonLat([15.4395, 47.0707]),
+      center: fromLonLat([+this.route.snapshot.paramMap.get('lon'), +this.route.snapshot.paramMap.get('lat')]),
+      zoom: +this.route.snapshot.paramMap.get('zoom'),
       maxZoom: 19
     });
 
@@ -138,13 +145,25 @@ export class YellowmapComponent implements OnInit {
       that.esLayer.setStyle(that.esLayer.getStyle());
     });
 
-    this.map.on('moveend', onMapChanged);
-
-    function onMapChanged(evt) {
+    this.map.on('moveend', function (evt) {
       // that.searchInput.nativeElement.blur(); // breaks Android browsers
       that.clearSearchAndSelection();
       that.searchElasticSearch();
-    }
+      that.updateUrl(evt);
+    });
+
+    this.view.on('change:resolution', function (evt) {
+      that.updateUrl(evt);
+    });
+  }
+
+  updateUrl(evt) {
+    const center = toLonLat(this.view.getCenter());
+    const zoom = this.view.getZoom();
+    this.router.navigate(
+      ['map', center[0], center[1], zoom],
+      {replaceUrl: true}
+      );
   }
 
   parseResults(labels: any) {
@@ -152,7 +171,7 @@ export class YellowmapComponent implements OnInit {
       return labels[label] || '';
     };
 
-    const capitalizeFirstLetter = function(string) {
+    const capitalizeFirstLetter = function (string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
