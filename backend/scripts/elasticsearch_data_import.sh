@@ -9,7 +9,7 @@
 # BASE_URL='localhost:9200'
 BASE_URL='https://es.yosm.at'
 
-JSONFILE='/home/flo/osm_es_export.json'
+JSONFILE='osm_es_export.json'
 
 curl -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
 {

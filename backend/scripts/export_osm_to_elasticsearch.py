@@ -3,8 +3,8 @@ import os
 import json
 import csv
 
-EXPORT_FILE = "/home/flo/test.export_with_craft.dump"
-EXPORT_ES_FILE = "/home/flo/osm_es_export_with_craft.json"
+EXPORT_FILE = "dump.osm"
+EXPORT_ES_FILE = "osm_es_export.json"
 
 # also export polygons
 poly = True
