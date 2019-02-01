@@ -18,7 +18,8 @@ LIMIT = 100000000000
 # # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT P.name,N.lon,N.lat,P.{key} from planet_osm_nodes N, planet_osm_point P WHERE N.id = P.osm_id AND P.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,l.name,lon,lat,p.{key},l.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id LEFT JOIN planet_osm_polygon AS l ON n.id = l.osm_id WHERE p.{key} = '{value}' OR l.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
-COMMAND1 = """sudo -u postgres psql -d gis -c \"\copy (
+# COMMAND1 = """sudo -u postgres psql -d gis -c \"\copy (
+COMMAND1 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
         SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
         *
         FROM planet_osm_point AS p
@@ -28,7 +29,8 @@ COMMAND1 = """sudo -u postgres psql -d gis -c \"\copy (
         # """
 COMMAND2, COMMAND3 = None, None
 if poly:
-    COMMAND2 = """sudo -u postgres psql -d gis -c \"\copy (
+    # COMMAND2 = """sudo -u postgres psql -d gis -c \"\copy (
+    COMMAND2 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
         SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},
         *
         FROM planet_osm_polygon as p
@@ -37,20 +39,8 @@ if poly:
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
 
-    # multipolygons
-    # mulitpolygons get a negative osm_id in the polygon table!!
-    # COMMAND3 = """sudo -u postgres psql -d gis -c \"\copy (
-    #     SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key}
-    #     FROM planet_osm_polygon as p
-    #     LEFT JOIN planet_osm_rels as r ON p.osm_id*-1 = r.id
-    #     LEFT JOIN planet_osm_ways as w ON r.parts[1] = w.id
-    #     LEFT JOIN planet_osm_nodes as n ON w.nodes[1] = n.id
-    #     WHERE ( p.{key} = '{value}' AND p.osm_id < 0 )
-    #     LIMIT {limit}
-    #     ) TO STDOUT With CSV;\" | cat >> {file}"""
-    #     # """
-
-COMMAND4 = """sudo -u postgres psql -d gis -c \"\copy (
+# COMMAND4 = """sudo -u postgres psql -d gis -c \"\copy (
+COMMAND4 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
         SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
         *
         FROM planet_osm_point AS p
@@ -59,18 +49,10 @@ COMMAND4 = """sudo -u postgres psql -d gis -c \"\copy (
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
 
-
-# COMMAND4 = """sudo -u postgres psql -d gis -c \"\copy (
-#         SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key}
-#             FROM planet_osm_nodes AS n
-#             LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id
-#             WHERE (p.{key} is not null AND p.{key} != 'vacant')
-#             LIMIT {limit}
-#             ) TO STDOUT With CSV;\" | cat >> {file}"""
-#             # """
 COMMAND5, COMMAND6 = None, None
 if poly:
-    COMMAND5 = """sudo -u postgres psql -d gis -c \"\copy (
+    # COMMAND5 = """sudo -u postgres psql -d gis -c \"\copy (
+    COMMAND5 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
         SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},\
         *
         FROM planet_osm_polygon as p
@@ -78,26 +60,6 @@ if poly:
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
-    # COMMAND5 = """sudo -u postgres psql -d gis -c \"\copy (
-    #     SELECT p.name,n.lon,n.lat,p.{key}
-    #     FROM planet_osm_polygon as p
-    #     LEFT JOIN planet_osm_ways as w ON p.osm_id = w.id
-    #     LEFT JOIN planet_osm_nodes as n ON n.id = w.nodes[1]
-    #     WHERE (p.{key} is not null AND p.{key} != 'vacant')
-    #     LIMIT {limit}
-    #     ) TO STDOUT With CSV;\" | cat >> {file}"""
-    #     # """
-    #
-    # COMMAND6 = """sudo -u postgres psql -d gis -c \"\copy (
-    #     SELECT p.name,n.lon,n.lat,p.{key}
-    #     FROM planet_osm_polygon as p
-    #     LEFT JOIN planet_osm_rels as r ON p.osm_id*-1 = r.id
-    #     LEFT JOIN planet_osm_ways as w ON r.parts[1] = w.id
-    #     LEFT JOIN planet_osm_nodes as n ON w.nodes[1] = n.id
-    #     WHERE ( p.{key} is not null AND p.{key} != 'vacant' AND p.osm_id < 0 )
-    #     LIMIT {limit}
-    #     ) TO STDOUT With CSV;\" | cat >> {file}"""
-    #     # """
 
 # commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4, COMMAND5, COMMAND6]
 commands = [COMMAND1, COMMAND2, COMMAND4, COMMAND5]
