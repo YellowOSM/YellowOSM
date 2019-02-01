@@ -47,7 +47,7 @@ export class YellowmapComponent implements OnInit {
     this.initElasticsearch();
 
     this.source = new OlXYZ({
-      url: '//tile-b.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      url: '//maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
       attributions: [
         ATTRIBUTION
       ]
@@ -59,7 +59,8 @@ export class YellowmapComponent implements OnInit {
 
     this.view = new OlView({
       center: fromLonLat([15.4395, 47.0707]),
-      zoom: 16
+      zoom: 16,
+      maxZoom: 19
     });
 
     const that = this;
