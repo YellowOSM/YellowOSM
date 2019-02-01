@@ -34,10 +34,20 @@ export class YellowmapComponent implements OnInit {
   esSource: VectorSource;
   selection = {};
   selectionDetails = '';
+  selectionLabels = {};
   geoLocationLoading = false;
   @ViewChild('searchInput')
   searchInput: ElementRef;
-
+  detailKeys = [
+    'Typ',
+    'Shop',
+    'Möglichkeiten',
+    'Adresse',
+    'Öffnungszeiten',
+    'Website',
+    'E-Mail',
+    'Telefon',
+  ];
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
     this.esIsConnected = false;
@@ -71,6 +81,7 @@ export class YellowmapComponent implements OnInit {
         that.esSearchResult.forEach(result => {
           const featurething = new Feature({
             name: result['_source']['name'],
+            labels: that.parseResults(result['_source']['labels']),
             geometry: new Point(fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]))
           });
           that.esSource.addFeature(featurething);
@@ -116,9 +127,11 @@ export class YellowmapComponent implements OnInit {
       if (!features) {
         that.selection = {};
         that.selectionDetails = '';
+        that.selectionLabels = {};
       } else {
         that.selection = features[0];
         that.selectionDetails = features[0].values_['name'];
+        that.selectionLabels = features[0].values_['labels'];
       }
 
       // force redraw
@@ -128,9 +141,42 @@ export class YellowmapComponent implements OnInit {
     this.map.on('moveend', onMapChanged);
 
     function onMapChanged(evt) {
-      // that.searchInput.nativeElement.blur();
+      that.searchInput.nativeElement.blur();
+      that.clearSearchAndSelection();
       that.searchElasticSearch();
     }
+  }
+
+  parseResults(labels: any) {
+    const getLabel = function (label) {
+      return labels[label] || '';
+    };
+
+    const capitalizeFirstLetter = function(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
+    const result = {
+      'Typ': capitalizeFirstLetter(getLabel('amenity')),
+      'Möglichkeiten': getLabel('leisure') + getLabel('sport') + getLabel('tourism'),
+      'Shop': getLabel('shop'),
+      'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ', ' +
+        getLabel('addr_postcode') + ' ' + getLabel('addr_city'),
+      'Öffnungszeiten': getLabel('opening_hours'),
+      'Web': getLabel('website'),
+      'E-Mail': getLabel('email') + ' ' + getLabel('contact:email'),
+      'Telefon': getLabel('phone') + ' ' + getLabel('contact:phone'),
+    };
+
+    const filtered = Object.keys(result)
+      .filter(key => /\S/.test(result[key]))
+      .reduce((obj, key) => {
+        return {
+          ...obj,
+          [key]: result[key]
+        };
+      }, {});
+    return filtered;
   }
 
   search() {
@@ -187,7 +233,6 @@ export class YellowmapComponent implements OnInit {
   }
 
   public getLocation() {
-    console.log('loading geolocation...');
     const that = this;
     this.geoLocationLoading = true;
     navigator.geolocation.getCurrentPosition(function (pos) {

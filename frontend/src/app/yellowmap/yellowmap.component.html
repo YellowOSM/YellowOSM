@@ -1,16 +1,24 @@
 <div class="yosm__container">
   <div class="header">
     <div class="yosm__search">
-      <input type="text" placeholder="z.B. bar, apotheke, cafe..." [(ngModel)]="userQuery" class="search__input"
-             (keyup)="search()"  #searchInput>
+      <input type="text" placeholder="z.B. Bar, Apotheke, Shop..." [(ngModel)]="userQuery" class="search__input"
+             (keyup)="search()" #searchInput>
       <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
          (click)="getLocation()"></i>
     </div>
     <img class="yosm__logo" src="/assets/img/logo.svg" alt="YellowOSM - Open Locations">
   </div>
   <div id="map" class="map"></div>
-  <div class="details" [className]="selectionDetails ? 'details active' : 'details'">
+  <div [className]="selectionDetails ? 'details__wrapper active' : 'details__wrapper'">
     <h2>{{selectionDetails}}</h2>
+    <div class="details">
+      <ng-container *ngFor="let key of detailKeys">
+        <div class="detail__element" *ngIf="selectionLabels[key]">
+          <span class="detail__label">{{ key }}: </span>
+          <span class="detail__value">{{ selectionLabels[key] }}</span>
+        </div>
+      </ng-container>
+    </div>
   </div>
   <div class="footer">
     <a routerLink="/about">über YellowOSM</a>

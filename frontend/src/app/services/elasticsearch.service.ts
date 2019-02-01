@@ -40,7 +40,7 @@ export class ElasticsearchService {
           'bool': {
             'must': {
               'query_string': {
-                'query': userQuery + '*'
+                'query': userQuery.trim() + '*'
               }
             },
             'filter': {

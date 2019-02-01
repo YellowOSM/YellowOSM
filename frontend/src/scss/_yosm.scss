@@ -106,7 +106,7 @@ a {
   height: calc(100vh - 76px);
 }
 
-.details {
+.details__wrapper {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -120,7 +120,7 @@ a {
   transition: all 0.2s ease-in-out;
 
   &.active {
-    height: 100px;
+    height: 250px;
     color: theme-color(secondary);
   }
 
@@ -129,6 +129,10 @@ a {
     text-align: center;
     font-size: 24px;
   }
+}
+
+.detail__label {
+  font-weight: bold;
 }
 
 .footer {
