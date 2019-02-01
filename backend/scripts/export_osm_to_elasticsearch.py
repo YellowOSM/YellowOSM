@@ -257,7 +257,7 @@ if query_db:
 
 
 table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
-grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way | grep -v osm_id |\
+grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
 """
 
@@ -272,6 +272,7 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
         desc = line[3]
         # Stern:
         labels = [
+            "osm_id",
             "addr_city",
             "addr_street",
             "addr_housename",
@@ -297,7 +298,7 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
             "tourism",
             "craft",
         ]
-        label_dict = {label: value for label,value in zip(labels,line[5:]) if value}
+        label_dict = {label: value for label,value in zip(labels,line[4:]) if value}
 
         if not name and desc:
             name = amend[desc][0] if desc in amend else desc.capitalize()
