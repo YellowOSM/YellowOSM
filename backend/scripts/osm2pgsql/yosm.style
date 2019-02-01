@@ -85,11 +85,14 @@ node,way   addr:city           text  linear
 node,way   addr:street         text  linear
 node,way   addr:housename      text  linear
 node,way   addr:housenumber    text  linear
+node,way   addr:postcode       text  linear
 node,way   addr:interpolation  text  linear
 node,way   opening_hours       text  linear
 node,way   website             text  linear
 node,way   contact:phone       text  linear
+node,way   phone               text  linear
 node,way   contact:email       text  linear
+node,way   email               text  linear
 node,way   smoking             text  linear
 node,way   amenity             text  polygon
 node,way   area                text  polygon # hard coded support for area=1/yes => polygon is in osm2pgsql
