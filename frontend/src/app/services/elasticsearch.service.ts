@@ -29,13 +29,13 @@ export class ElasticsearchService {
     });
   }
 
-  fullTextSearch(userQuery: string, topLeft: any, bottomRight: any): any {
+  fullTextSearch(userQuery: string, topLeft: any, bottomRight: any, center: any): any {
     return this.client.search({
       index: 'yosm',
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
-        'size': 250,
+        'size': 300,
         'query': {
           'bool': {
             'should': [
@@ -70,7 +70,20 @@ export class ElasticsearchService {
               }
             }
           }
-        }
+        },
+        'sort': [
+          {
+            '_geo_distance': {
+              'location': {
+                'lat': center[1],
+                'lon': center[0]
+              },
+              'order': 'asc',
+              'unit': 'km',
+              'distance_type': 'plane'
+            }
+          }
+        ]
       }
     });
   }

@@ -232,8 +232,9 @@ export class YellowmapComponent implements OnInit {
     const extent = this.view.calculateExtent(this.map.getSize());
     const topLeft = toLonLat(getTopLeft(extent));
     const bottomRight = toLonLat(getBottomRight(extent));
+    const center = toLonLat(this.view.getCenter());
 
-    this.es.fullTextSearch(this.userQuery, topLeft, bottomRight).then((result) => {
+    this.es.fullTextSearch(this.userQuery, topLeft, bottomRight, center).then((result) => {
       this.esStatus = 'OK';
       console.log(result);
       if (result !== null && result.hits.total > 0) {
