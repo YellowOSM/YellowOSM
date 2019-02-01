@@ -35,14 +35,26 @@ export class ElasticsearchService {
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
-        'size' : 250,
+        'size': 250,
         'query': {
           'bool': {
-            'must': {
-              'query_string': {
-                'query': userQuery.trim() + '*'
+            'should': [
+              {
+                'query_string':
+                  {
+                    'query': userQuery.trim().replace(' ', '* ') + '*',
+                    'default_operator': 'AND'
+                  },
+              },
+              {
+                'query_string':
+                  {
+                    'query': userQuery.trim().replace(' ', '~ ') + '~',
+                    'default_operator': 'AND'
+                  },
               }
-            },
+            ],
+            'minimum_should_match': 1,
             'filter': {
               'geo_bounding_box': {
                 'location': {
