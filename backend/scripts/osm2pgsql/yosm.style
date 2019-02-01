@@ -91,6 +91,7 @@ node,way   opening_hours       text  linear
 node,way   website             text  linear
 node,way   contact:phone       text  linear
 node,way   phone               text  linear
+node,way   leisure             text  linear
 node,way   contact:email       text  linear
 node,way   email               text  linear
 node,way   smoking             text  linear
