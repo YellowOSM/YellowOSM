@@ -3,14 +3,14 @@ import os
 import json
 import csv
 
-EXPORT_FILE = "/home/flo/test.export.dump"
-EXPORT_ES_FILE = "/home/flo/osm_es_export.json"
+EXPORT_FILE = "/home/flo/test.export_with_craft.dump"
+EXPORT_ES_FILE = "/home/flo/osm_es_export_with_craft.json"
 
 # also export polygons
 poly = True
-poly = False
+# poly = False
 query_db = True
-query_db = False
+# query_db = False
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -256,29 +256,9 @@ if query_db:
 
 
 
-table = """
- osm_id             | bigint               |           |          |
- addr:city          | text                 |           |          |
- addr:street        | text                 |           |          |
- addr:housename     | text                 |           |          |
- addr:housenumber   | text                 |           |          |
- addr:interpolation | text                 |           |          |
- opening_hours      | text                 |           |          |
- website            | text                 |           |          |
- contact:phone      | text                 |           |          |
- contact:email      | text                 |           |          |
- smoking            | text                 |           |          |
- amenity            | text                 |           |          |
- area               | text                 |           |          |
- brand              | text                 |           |          |
- building           | text                 |           |          |
- service            | text                 |           |          |
- name               | text                 |           |          |
- shop               | text                 |           |          |
- sport              | text                 |           |          |
- tourism            | text                 |           |          |
- leisure            | text                 |           |          |
- way                | geometry(Point,3857) |           |          |
+table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
+grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way | grep -v osm_id |\
+ cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
 """
 
 # format: name1,lon,lat,type1,*
@@ -296,11 +276,15 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
             "addr_street",
             "addr_housename",
             "addr_housenumber",
+            "addr_postcode",
             "addr_interpolation",
             "opening_hours",
             "website",
             "contact_phone",
+            "phone",
+            "leisure",
             "contact_email",
+            "email",
             "smoking",
             "amenity",
             "area",
@@ -311,7 +295,7 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
             "shop",
             "sport",
             "tourism",
-            "leisure",
+            "craft",
         ]
         label_dict = {label: value for label,value in zip(labels,line[5:]) if value}
 
