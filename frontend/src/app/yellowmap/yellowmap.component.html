@@ -15,7 +15,7 @@
       <ng-container *ngFor="let key of detailKeys">
         <div class="detail__element" *ngIf="selectionLabels[key]">
           <span class="detail__label">{{ key }}: </span>
-          <span class="detail__value">{{ selectionLabels[key] }}</span>
+          <span class="detail__value" [innerHTML]="selectionLabels[key]"></span>
         </div>
       </ng-container>
     </div>

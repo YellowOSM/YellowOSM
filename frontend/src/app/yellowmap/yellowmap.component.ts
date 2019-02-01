@@ -46,7 +46,7 @@ export class YellowmapComponent implements OnInit {
     'Öffnungszeiten',
     'Website',
     'E-Mail',
-    'Telefon',
+    'Telefon'
   ];
 
   constructor(private es: ElasticsearchService, private cd: ChangeDetectorRef) {
@@ -141,7 +141,7 @@ export class YellowmapComponent implements OnInit {
     this.map.on('moveend', onMapChanged);
 
     function onMapChanged(evt) {
-      that.searchInput.nativeElement.blur();
+      // that.searchInput.nativeElement.blur(); // breaks Android browsers
       that.clearSearchAndSelection();
       that.searchElasticSearch();
     }
@@ -156,16 +156,24 @@ export class YellowmapComponent implements OnInit {
       return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
+    const website = getLabel('website');
+    const email = getLabel('email');
+    const contactEmail = getLabel('contact:email');
+    const phone = getLabel('phone');
+    const contactPhone = getLabel('contact:phone');
+
     const result = {
       'Typ': capitalizeFirstLetter(getLabel('amenity')),
       'Möglichkeiten': getLabel('leisure') + getLabel('sport') + getLabel('tourism'),
       'Shop': getLabel('shop'),
-      'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ', ' +
+      'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ' ' +
         getLabel('addr_postcode') + ' ' + getLabel('addr_city'),
       'Öffnungszeiten': getLabel('opening_hours'),
-      'Web': getLabel('website'),
-      'E-Mail': getLabel('email') + ' ' + getLabel('contact:email'),
-      'Telefon': getLabel('phone') + ' ' + getLabel('contact:phone'),
+      'Web': website ? '<a href="' + website + '" target="_blank">' + website + '</a>' : '',
+      'E-Mail': (email ? '<a href="mailto:' + email + '">' + email + '</a> ' : '') +
+        (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : ''),
+      'Telefon': (phone ? '<a href="tel:' + phone + '">' + phone + '</a> ' : '') +
+        (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : ''),
     };
 
     const filtered = Object.keys(result)
