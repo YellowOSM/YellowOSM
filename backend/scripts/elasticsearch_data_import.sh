@@ -8,10 +8,11 @@
 
 # BASE_URL='localhost:9200'
 BASE_URL='https://es.yosm.at'
-
+CURL="curl --interface ens3"
+# CURL="curl"
 JSONFILE='osm_es_export.json'
 
-curl -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
+$CURL -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
 {
   "index": {
     "blocks.read_only": false
@@ -20,14 +21,14 @@ curl -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
 '
 
 # delete yosm index
-curl -X DELETE "{$BASE_URL}/yosm?pretty"
+$CURL -X DELETE "{$BASE_URL}/yosm?pretty"
 
 # create yosm index
 # curl -X PUT "localhost:9200/yosm?pretty"
 
 # create index and set field mapping
 # see https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
-curl -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
+$CURL -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
 {
     "mappings": {
         "_doc": {
@@ -42,16 +43,16 @@ curl -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
 '
 
 # load sample data set
-curl -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}"
+$CURL -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}"
 
 # get index status
-# curl "{$BASE_URL}/_cat/indices?v"
+# $CURL "{$BASE_URL}/_cat/indices?v"
 
 # search index
-# curl "{$BASE_URL}/yosm/_search?q=*&pretty"
+# $CURL "{$BASE_URL}/yosm/_search?q=*&pretty"
 
 # search index by geo bounding box
-# curl "{$BASE_URL}/yosm/_search" -H 'Content-Type: application/json' -d'
+# $CURL "{$BASE_URL}/yosm/_search" -H 'Content-Type: application/json' -d'
 # {
 #   "query": {
 #     "geo_bounding_box": {
@@ -79,7 +80,7 @@ curl -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pre
 
 # set index to read-only
 
-curl -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
+$CURL -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
 {
   "index": {
     "blocks.read_only": true
