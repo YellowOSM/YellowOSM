@@ -2,6 +2,13 @@
 import os
 import json
 import csv
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--local',action="store_true", help="run script in local context without docker postgres")
+
+args = vars(parser.parse_args())
+SERVER = not args['local']
 
 EXPORT_FILE = "dump.osm"
 EXPORT_ES_FILE = "osm_es_export.json"
@@ -14,12 +21,17 @@ query_db = True
 LIMIT = 100000000000
 # LIMIT = 10
 
+if SERVER:
+    # `yosm_postgres` is the name of postres' docker image
+    query_prefix = "docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy ("
+else:
+    query_prefix = "sudo -u postgres psql -d gis -c \"\copy ("
+
 # # COMMAND = "sudo -u postgres psql -d gis -c \"SELECT P.name,N.lon,N.lat,P.{key} from planet_osm_nodes N, planet_osm_point P WHERE N.id = P.osm_id AND P.{key} = '{value}' LIMIT {limit};\" | cat >> {file}"
 # # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT P.name,N.lon,N.lat,P.{key} from planet_osm_nodes N, planet_osm_point P WHERE N.id = P.osm_id AND P.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,l.name,lon,lat,p.{key},l.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id LEFT JOIN planet_osm_polygon AS l ON n.id = l.osm_id WHERE p.{key} = '{value}' OR l.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
-# COMMAND1 = """sudo -u postgres psql -d gis -c \"\copy (
-COMMAND1 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
+COMMAND1 = query_prefix + """
         SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
         *
         FROM planet_osm_point AS p
@@ -27,20 +39,19 @@ COMMAND1 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
-COMMAND2, COMMAND3 = None, None
+
+COMMAND2, COMMAND4 = None, None
 if poly:
-    # COMMAND2 = """sudo -u postgres psql -d gis -c \"\copy (
-    COMMAND2 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
+    COMMAND2 = query_prefix + """
         SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},
         *
-        FROM planet_osm_polygon as p
+        FROM planet_osm_polygon AS p
         WHERE p.{key} = '{value}'
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
 
-# COMMAND4 = """sudo -u postgres psql -d gis -c \"\copy (
-COMMAND4 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
+COMMAND3 = query_prefix + """
         SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
         *
         FROM planet_osm_point AS p
@@ -49,20 +60,17 @@ COMMAND4 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
 
-COMMAND5, COMMAND6 = None, None
 if poly:
-    # COMMAND5 = """sudo -u postgres psql -d gis -c \"\copy (
-    COMMAND5 = """docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy (
+    COMMAND4 = query_prefix + """
         SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},\
         *
-        FROM planet_osm_polygon as p
+        FROM planet_osm_polygon AS p
         WHERE (p.{key} is not null AND p.{key} != 'vacant')
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
         # """
 
-# commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4, COMMAND5, COMMAND6]
-commands = [COMMAND1, COMMAND2, COMMAND4, COMMAND5]
+commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4]
 
 export_amenity = { "key": "amenity",
                     "values" :
@@ -102,35 +110,41 @@ export_shop = { "key": "shop",
                        # Anything goes...
                        ]
                  }
+export_tourism = { "key": "tourism",
+                    "values":
+                       [
+                       "hotel",
+                       # Anything goes...
+                       ]
+                 }
 
-# FIXXXXME see how those can be exported
-# export_craft = { "key": "craft",
-#                  "values":
-#                      ["bakery",
-#                     "beekeeper",
-#                     "blacksmith",
-#                     "bookbinder",
-#                     "brewery",
-#                     "carpenter",
-#                     "caterer",
-#                     "electrician",
-#                     "gardener",
-#                     "key_cutter",
-#                     "locksmith",
-#                     "oil_mill",
-#                     "painter",
-#                     "photographer",
-#                     "plumber",
-#                     "roofer",
-#                     "sawmill",
-#                     "shoemaker",
-#                     "winery",
-#                     ]
-#                 }
+export_craft = { "key": "craft",
+                 "values":
+                     ["bakery",
+                    "beekeeper",
+                    "blacksmith",
+                    "bookbinder",
+                    "brewery",
+                    "carpenter",
+                    "caterer",
+                    "electrician",
+                    "gardener",
+                    "key_cutter",
+                    "locksmith",
+                    "oil_mill",
+                    "painter",
+                    "photographer",
+                    "plumber",
+                    "roofer",
+                    "sawmill",
+                    "shoemaker",
+                    "winery",
+                    ]
+                }
 classes_to_export = [
     export_amenity,
     export_leisure,
-    # export_craft,
+    export_craft,
     ]
 any_classes = [export_shop]
 
@@ -210,14 +224,6 @@ if query_db:
     #         print(command_now)
     #         os.system(command_now)
 
-
-
-
-
-
-
-
-
 table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
 grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
@@ -243,7 +249,25 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
             "addr_interpolation",
             "opening_hours",
             "website",
+            "contact_website",
+            "contact_twitter",
+            "contact_whatsapp",
+            "contact_facebook",
+            "contact_telegram",
+            "contact_foursquare",
+            "contact_youtube",
+            "contact_linkedin",
+            "contact_xing",
+            "contact_vhf",
+            "contact_instagram",
+            "contact_diaspora",
+            "contact_skype",
+            "contact_viber",
+            "contact_mastodon",
+            "contact_xmpp",
+            "contact_fax",
             "contact_phone",
+            "contact_mobile",
             "phone",
             "leisure",
             "contact_email",
