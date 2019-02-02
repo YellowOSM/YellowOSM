@@ -16,6 +16,7 @@ import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
 import {ATTRIBUTION} from 'ol/source/OSM.js';
 import {ActivatedRoute, Params, Router} from '@angular/router';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-yellowmap',
@@ -63,7 +64,7 @@ export class YellowmapComponent implements OnInit {
     this.initElasticsearch();
 
     this.source = new OlXYZ({
-      url: '//maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+      url: environment.tileServerURL,
       attributions: [
         ATTRIBUTION
       ]
