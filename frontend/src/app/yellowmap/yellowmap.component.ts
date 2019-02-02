@@ -46,7 +46,7 @@ export class YellowmapComponent implements OnInit {
     'Möglichkeiten',
     'Adresse',
     'Öffnungszeiten',
-    'Website',
+    'Webseite',
     'E-Mail',
     'Telefon'
   ];
@@ -193,7 +193,7 @@ export class YellowmapComponent implements OnInit {
       'Adresse': (addr_city ? (addr_street ? addr_street : addr_place ) + ' '  + getLabel('addr_housenumber') + ', ' +
         getLabel('addr_postcode') + ' ' + addr_city : ''),
       'Öffnungszeiten': getLabel('opening_hours'),
-      'Web': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :
+      'Webseite': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :
         (website ? '<a href="' + website + '" target="_blank">' + website + '</a>' : '')),
       'E-Mail': (email ? '<a href="mailto:' + email + '">' + email + '</a> ' :
         (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : '')),
