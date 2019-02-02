@@ -186,7 +186,7 @@ export class YellowmapComponent implements OnInit {
       'Typ': capitalizeFirstLetter(getLabel('amenity')),
       'Möglichkeiten': getLabel('leisure') + getLabel('sport') + getLabel('tourism'),
       'Shop': getLabel('shop'),
-      'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ' ' +
+      'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ', ' +
         getLabel('addr_postcode') + ' ' + getLabel('addr_city'),
       'Öffnungszeiten': getLabel('opening_hours'),
       'Web': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :
