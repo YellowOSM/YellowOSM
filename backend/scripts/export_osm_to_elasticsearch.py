@@ -243,6 +243,7 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
             "osm_id",
             "addr_city",
             "addr_street",
+            "addr_place",
             "addr_housename",
             "addr_housenumber",
             "addr_postcode",

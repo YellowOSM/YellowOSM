@@ -181,12 +181,14 @@ export class YellowmapComponent implements OnInit {
     const contactEmail = getLabel('contact_email');
     const phone = getLabel('phone');
     const contactPhone = getLabel('contact_phone');
+    const addr_street = getLabel('addr_street');
+    const addr_place = getLabel('addr_place');
 
     const result = {
       'Typ': capitalizeFirstLetter(getLabel('amenity')),
       'Möglichkeiten': getLabel('leisure') + getLabel('sport') + getLabel('tourism'),
       'Shop': getLabel('shop'),
-      'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ', ' +
+      'Adresse': (addr_street ? addr_street : addr_place ) + ' '  + getLabel('addr_housenumber') + ', ' +
         getLabel('addr_postcode') + ' ' + getLabel('addr_city'),
       'Öffnungszeiten': getLabel('opening_hours'),
       'Web': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :

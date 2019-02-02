@@ -83,6 +83,7 @@
 # OsmType  Tag               DataType Flags
 node,way   addr:city           text  linear
 node,way   addr:street         text  linear
+node,way   addr:place          text  linear
 node,way   addr:housename      text  linear
 node,way   addr:housenumber    text  linear
 node,way   addr:postcode       text  linear
