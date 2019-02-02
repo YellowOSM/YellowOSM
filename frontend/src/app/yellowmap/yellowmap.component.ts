@@ -176,10 +176,11 @@ export class YellowmapComponent implements OnInit {
     };
 
     const website = getLabel('website');
+    const contactWebsite = getLabel('contact_website');
     const email = getLabel('email');
-    const contactEmail = getLabel('contact:email');
+    const contactEmail = getLabel('contact_email');
     const phone = getLabel('phone');
-    const contactPhone = getLabel('contact:phone');
+    const contactPhone = getLabel('contact_phone');
 
     const result = {
       'Typ': capitalizeFirstLetter(getLabel('amenity')),
@@ -188,11 +189,12 @@ export class YellowmapComponent implements OnInit {
       'Adresse': getLabel('addr_street') + ' ' + getLabel('addr_housenumber') + ' ' +
         getLabel('addr_postcode') + ' ' + getLabel('addr_city'),
       'Öffnungszeiten': getLabel('opening_hours'),
-      'Web': website ? '<a href="' + website + '" target="_blank">' + website + '</a>' : '',
-      'E-Mail': (email ? '<a href="mailto:' + email + '">' + email + '</a> ' : '') +
-        (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : ''),
-      'Telefon': (phone ? '<a href="tel:' + phone + '">' + phone + '</a> ' : '') +
-        (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : ''),
+      'Web': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :
+        (website ? '<a href="' + website + '" target="_blank">' + website + '</a>' : '')),
+      'E-Mail': (email ? '<a href="mailto:' + email + '">' + email + '</a> ' :
+        (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : '')),
+      'Telefon': (phone ? '<a href="tel:' + phone + '">' + phone + '</a> ' :
+        (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : '')),
     };
 
     const filtered = Object.keys(result)
