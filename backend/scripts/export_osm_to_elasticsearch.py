@@ -146,7 +146,7 @@ classes_to_export = [
     export_leisure,
     export_craft,
     ]
-any_classes = [export_shop]
+any_classes = [export_shop, export_tourism,]
 
 # additional info:
 # first element will be alternative name!!
@@ -179,6 +179,24 @@ amend = {
     "photo": ["Fotograf","Photograph","Fotograph","Photograf",],
     "clothes": ["Kleidung","Bekleidung","Gewand","Gwand","Hemden",],
     "ice_cream": ["Speiseeis","Eis","Eiscreme",],
+    "beekeeper": ["Imker"],
+    "blacksmith": ["Schmied"],
+    "bookbinder": ["Buchbinder"],
+    "brewery": ["Brauerei"],
+    "carpenter": ["Tischler"],
+    "caterer": ["Caterer"],
+    "electrician": ["Elektriker"],
+    "gardener": ["Gärtner"],
+    "key_cutter": ["Schlüsseldienst"],
+    "locksmith": ["Schlüsseldienst","Aufsperrdienst"],
+    "oil_mill": ["Öl-Mühle", "Ölpresse"],
+    "painter": ["Maler"],
+    "photographer": ["Fotograf","Photograph","Fotograph","Photograf",],
+    "plumber": ["Installateur", "Klempner"],
+    "roofer": ["Dachdecker"],
+    "sawmill": ["Sägewerk"],
+    "shoemaker": ["Schuster"],
+    "winery": ["Weinkellerei", "Weingut", "Kellerei"],
     # "": ["",],
 }
 
