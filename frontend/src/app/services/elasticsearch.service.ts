@@ -71,19 +71,19 @@ export class ElasticsearchService {
             }
           }
         },
-        'sort': [
-          {
-            '_geo_distance': {
-              'location': {
-                'lat': center[1],
-                'lon': center[0]
-              },
-              'order': 'asc',
-              'unit': 'km',
-              'distance_type': 'plane'
-            }
-          }
-        ]
+        // 'sort': [
+        //   {
+        //     '_geo_distance': {
+        //       'location': {
+        //         'lat': center[1],
+        //         'lon': center[0]
+        //       },
+        //       'order': 'asc',
+        //       'unit': 'km',
+        //       'distance_type': 'plane'
+        //     }
+        //   }
+        // ]
       }
     });
   }
