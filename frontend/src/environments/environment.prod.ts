@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   elasticSearchBaseUrl: 'https://es.yosm.at',
+  elasticSearchIndex: 'yosm',
   // no label standard tile:
   // tileServerURL: '//tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png',
   // bergfex (not sure if ok to use)

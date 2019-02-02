@@ -31,7 +31,7 @@ export class ElasticsearchService {
 
   fullTextSearch(userQuery: string, topLeft: any, bottomRight: any, center: any): any {
     return this.client.search({
-      index: 'yosm',
+      index: environment.elasticSearchIndex,
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
