@@ -1,7 +1,7 @@
 <div class="yosm__container">
   <div class="header">
     <div class="yosm__search">
-      <input type="text" placeholder="z.B. Bar, Apotheke, Shop..." [(ngModel)]="userQuery" class="search__input"
+      <input type="text" placeholder="z.B. Café, Apotheke, Supermarkt..." [(ngModel)]="userQuery" class="search__input"
              (keyup)="search()" #searchInput>
       <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
          (click)="getLocation()"></i>
@@ -24,4 +24,3 @@
     <a routerLink="/about">über YellowOSM</a>
   </div>
 </div>
-
