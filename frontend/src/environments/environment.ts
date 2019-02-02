@@ -10,9 +10,9 @@ export const environment = {
   // bergfex (not sure if ok to use)
   // tileServerURL: '//maps.bergfex.at/osm/512px/{z}/{x}/{y}.jpg',
   // HOT:
-  // tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-  // Stamen:
-  tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',
+  tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  // Stamen no SSL:
+  // tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',
 };
 
 /*
