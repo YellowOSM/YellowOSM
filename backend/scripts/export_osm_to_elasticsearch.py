@@ -17,7 +17,7 @@ EXPORT_ES_FILE = "osm_es_export.json"
 poly = True
 # poly = False
 query_db = True
-query_db = False
+# query_db = False
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -288,6 +288,7 @@ labels = [
     "tourism",
     "craft",
     "atm",
+    "cuisine",
 ]
 
 print("Export ES json:")
