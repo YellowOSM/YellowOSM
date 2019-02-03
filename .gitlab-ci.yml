@@ -21,7 +21,10 @@ build_frontend:
     expire_in: 2 weeks
   only:
     - master
-
+  environment:
+    name: dev
+    url: https://dev.yosm.at
+    
 build_frontend_prod:
   stage: build
   image: node:latest
@@ -41,6 +44,9 @@ build_frontend_prod:
     expire_in: 2 weeks
   only:
     - production
+  environment:
+    name: prod
+    url: https://www.yellowosm.com
 
 deploy_frontend:
   stage: deploy
