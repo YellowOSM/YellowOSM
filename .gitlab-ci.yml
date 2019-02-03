@@ -43,6 +43,8 @@ build_frontend_prod:
     - production
 
 deploy_frontend:
+  stage: deploy
+  image: node:latest
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
     - eval $(ssh-agent -s)
@@ -54,9 +56,6 @@ deploy_frontend:
     - chmod 644 ~/.ssh/known_hosts
     - ping -c 1 toddvm5.klienux.at
     - ls -lha
-
-  stage: deploy
-  image: node:latest
   script:
     - ls -R frontend/dist
     - cd frontend/
@@ -65,8 +64,14 @@ deploy_frontend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - master
+  environment:
+    name: dev
+    url: https://dev.yosm.at
+
 
 deploy_backend:
+  stage: deploy
+  image: python:3.7-stretch
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
     - eval $(ssh-agent -s)
@@ -79,9 +84,6 @@ deploy_backend:
     - ping -c 1 toddvm5.klienux.at
     - ls -lha
     - 'which rsync || ( apt-get update -y && apt-get install rsync -y )'
-
-  stage: deploy
-  image: python:3.7-stretch
   script:
     - ls -R backend
     - cd backend/
@@ -92,6 +94,9 @@ deploy_backend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - master
+  environment:
+    name: dev
+    url: https://dev.yosm.at
 
 ##################### Production ##############################
 
@@ -119,8 +124,13 @@ deploy_prod_frontend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - production
+  environment:
+    name: prod
+    url: https://www.yellowosm.com
 
 deploy_prod_backend:
+  stage: deploy
+  image: python:3.7-stretch
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
     - eval $(ssh-agent -s)
@@ -133,9 +143,6 @@ deploy_prod_backend:
     - ping -c 1 toddvm5.klienux.at
     - ls -lha
     - 'which rsync || ( apt-get update -y && apt-get install rsync -y )'
-
-  stage: deploy
-  image: python:3.7-stretch
   script:
     - ls -R backend
     - cd backend/
@@ -146,3 +153,6 @@ deploy_prod_backend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - production
+  environment:
+    name: prod
+    url: https://www.yellowosm.com
