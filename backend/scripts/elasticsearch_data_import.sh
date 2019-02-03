@@ -44,8 +44,10 @@ $CURL -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
 }
 '
 
+echo "uploading data..."
 # load sample data set
-$CURL -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}"
+time $CURL -s -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o /dev/null
+echo "done"
 
 # get index status
 # $CURL "{$BASE_URL}/_cat/indices?v"
