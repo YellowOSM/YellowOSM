@@ -3,7 +3,6 @@ import os
 import json
 import csv
 import argparse
-# from collections import defaultdict
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--local',action="store_true", help="run script in local context without docker postgres")
@@ -122,7 +121,6 @@ export_tourism = { "key": "tourism",
                        # Anything goes...
                        ]
                  }
-
 export_craft = { "key": "craft",
                  "values":
                      ["bakery",
@@ -137,6 +135,7 @@ export_craft = { "key": "craft",
                     "key_cutter",
                     "locksmith",
                     "oil_mill",
+                    "grinding_mill",
                     "painter",
                     "photographer",
                     "printer",
@@ -229,26 +228,6 @@ if query_db:
                 print(command_now)
                 os.system(command_now)
 
-    # for cl in classes_to_export:
-    #     for val in cl['values']:
-    #         command_now = COMMAND1.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
-    #         print(command_now)
-    #         os.system(command_now)
-    #         if poly:
-    #             command_now = COMMAND2.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT )
-    #             print(command_now)
-    #             os.system(command_now)
-    #
-    # # export any points or polygons that have `key` set
-    # for cl in any_classes:
-    #     command_now = COMMAND3.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
-    #     print(command_now)
-    #     os.system(command_now)
-    #     if poly:
-    #         command_now = COMMAND4.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT )
-    #         print(command_now)
-    #         os.system(command_now)
-
 table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
 grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
@@ -328,13 +307,9 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
             if typus in label_dict and label_dict[typus] in amend:
                 desc += " " + " ".join(amend[label_dict[typus]])
 
-        # FIXXXXME add special case for multipolygons
         if not line[1]:
             continue
-        # print(json.dumps({"index": {}}))
         out.write(json.dumps({"index": {}}) + "\n")
-        # lat = int(line[2])/10000000
-        # lon = int(line[1])/10000000
         lat = float(line[2])
         lon = float(line[1])
         # # print({"name": line[0], "location": [lon,lat], "description": line[3]})
