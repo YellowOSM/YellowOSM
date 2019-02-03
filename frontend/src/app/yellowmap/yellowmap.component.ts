@@ -185,10 +185,14 @@ export class YellowmapComponent implements OnInit {
     const addr_street = getLabel('addr_street');
     const addr_place = getLabel('addr_place');
     const addr_city = getLabel('addr_city');
+    var typus = capitalizeFirstLetter(getLabel('amenity'));
+    if (getLabel('tourism')){
+      typus = capitalizeFirstLetter(getLabel('tourism'));
+    };
 
     const result = {
-      'Typ': capitalizeFirstLetter(getLabel('amenity')),
-      'Möglichkeiten': getLabel('leisure') + getLabel('sport') + getLabel('tourism'),
+      'Typ': typus,
+      'Möglichkeiten': getLabel('leisure') + getLabel('sport'),
       'Shop': getLabel('shop'),
       'Adresse': (addr_city ? (addr_street ? addr_street : addr_place ) + ' '  + getLabel('addr_housenumber') + ', ' +
         getLabel('addr_postcode') + ' ' + addr_city : ''),
