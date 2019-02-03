@@ -322,8 +322,12 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
 
         if not name and desc:
             name = amend[desc][0] if desc in amend else desc.capitalize()
-        if desc in amend:
-            desc += " " + " ".join(amend[desc])
+        # if desc in amend:
+        #     desc += " " + " ".join(amend[desc])
+        for typus in ['amenity','leisure','shop', 'craft', 'tourism']:
+            if typus in label_dict and label_dict[typus] in amend:
+                desc += " " + " ".join(amend[label_dict[typus]])
+
         # FIXXXXME add special case for multipolygons
         if not line[1]:
             continue
