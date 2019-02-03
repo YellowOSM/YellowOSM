@@ -309,7 +309,9 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
         desc = line[3]
         label_dict = {label: value for label,value in zip(labels,line[4:]) if value}
 
-        if 'atm' in label_dict and label_dict['atm'] == 'no':
+        if 'atm' in label_dict and \
+            ( label_dict['atm'] == 'no' or \
+            label_dict['atm'] == 'false' ): # wrong label, but we don't want it in the index
             del label_dict['atm']
 
         if not name and desc:
