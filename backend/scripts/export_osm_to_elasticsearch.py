@@ -17,7 +17,7 @@ EXPORT_ES_FILE = "osm_es_export.json"
 poly = True
 # poly = False
 query_db = True
-# query_db = False
+query_db = False
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -108,6 +108,12 @@ export_leisure = { "key": "leisure",
                        "playground",
                        ]
                  }
+export_atm = { "key": "atm",
+                    "values":
+                       [
+                       "yes",
+                       ]
+                 }
 export_shop = { "key": "shop",
                     "values":
                        [
@@ -151,6 +157,7 @@ classes_to_export = [
     export_amenity,
     export_leisure,
     export_craft,
+    export_atm,
     ]
 any_classes = [export_shop, export_tourism,]
 
@@ -280,6 +287,7 @@ labels = [
     "sport",
     "tourism",
     "craft",
+    "atm",
 ]
 
 print("Export ES json:")
@@ -301,6 +309,9 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
         desc = line[3]
         label_dict = {label: value for label,value in zip(labels,line[4:]) if value}
 
+        if 'atm' in label_dict and label_dict['atm'] == 'no':
+            del label_dict['atm']
+
         if not name and desc:
             name = amend[desc][0] if desc in amend else desc.capitalize()
         # if desc in amend:
@@ -308,6 +319,8 @@ with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
         for typus in ['amenity','leisure','shop', 'craft', 'tourism']:
             if typus in label_dict and label_dict[typus] in amend:
                 desc += " " + " ".join(amend[label_dict[typus]])
+        if 'atm' in label_dict and label_dict['atm'] != 'no':
+            desc += " " + " ".join(amend['atm'])
 
         if not line[1]:
             continue
