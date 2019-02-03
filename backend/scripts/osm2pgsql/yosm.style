@@ -124,6 +124,7 @@ node,way   shop                text  polygon
 node,way   sport               text  polygon
 node,way   tourism             text  polygon
 node,way   craft               text  linear
+node,way   atm                 text  linear
 
 # Area tags
 # We don't make columns for these tags, but objects with them are areas.

@@ -93,6 +93,7 @@ export_amenity = { "key": "amenity",
                         "pub",
                         "restaurant",
                         "toilets",
+                        "bank",
                         ]
                  }
 export_leisure = { "key": "leisure",
@@ -167,6 +168,7 @@ amend = {
     "kiosk": ["Trafik",],
     "tobacco": ["Trafik",],
     "florist": ["Blumen",],
+    "laundry": ["Putzerei", "Wäscherei"],
     "mall": ["Einkaufszentrum",],
     "department_store": ["Kaufhaus",],
     "jewelry": ["Juwelier","Schmuck"],
