@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # see https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-point.html
 
@@ -9,7 +9,7 @@
 # BASE_URL='localhost:9200'
 BASE_URL='https://es.yosm.at'
 CURL="curl --interface ens3"
-if [ $1 = '--local' ]; then
+if [[ $1 == '--local' ]]; then
   CURL="curl"
 fi
 JSONFILE='osm_es_export.json'

@@ -3,6 +3,7 @@ import os
 import json
 import csv
 import argparse
+# from collections import defaultdict
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--local',action="store_true", help="run script in local context without docker postgres")
@@ -38,6 +39,7 @@ COMMAND1 = query_prefix + """
         WHERE p.{key} = '{value}'
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # ) TO STDOUT With CSV;\" | sed 's/$/,C1/g'| cat >> {file}"""
         # """
 
 COMMAND2, COMMAND4 = None, None
@@ -49,8 +51,10 @@ if poly:
         WHERE p.{key} = '{value}'
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # ) TO STDOUT With CSV;\" | sed 's/$/,C2/g'| cat >> {file}"""
         # """
 
+# ANY:
 COMMAND3 = query_prefix + """
         SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
         *
@@ -58,8 +62,8 @@ COMMAND3 = query_prefix + """
         WHERE (p.{key} is not null AND p.{key} != 'vacant')
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # ) TO STDOUT With CSV;\" | sed 's/$/,C3/g'| cat >> {file}"""
         # """
-
 if poly:
     COMMAND4 = query_prefix + """
         SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},\
@@ -68,6 +72,7 @@ if poly:
         WHERE (p.{key} is not null AND p.{key} != 'vacant')
         LIMIT {limit}
         ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # ) TO STDOUT With CSV;\" | sed 's/$/,C4/g'| cat >> {file}"""
         # """
 
 commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4]
@@ -208,19 +213,19 @@ if query_db:
 
 
     for cl in classes_to_export:
-        for val in cl['values']:
-            for command in commands:
-                if command and '{value}' in command:
+        for command in commands[:2]:
+            if command and '{value}' in command:
+                for val in cl['values']:
                     command_now = command.format(key=cl['key'], value=val, file=EXPORT_FILE, limit=LIMIT)
-                print(command_now)
-                os.system(command_now)
+                    print(command_now)
+                    os.system(command_now)
 
     for cl in any_classes:
-        for command in commands:
+        for command in commands[2:]:
             if command and not '{value}' in command:
                 command_now = command.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT)
-            print(command_now)
-            os.system(command_now)
+                print(command_now)
+                os.system(command_now)
 
     # for cl in classes_to_export:
     #     for val in cl['values']:
@@ -247,62 +252,70 @@ grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
 """
 
+labels = [
+    "osm_id",
+    "addr_city",
+    "addr_street",
+    "addr_place",
+    "addr_housename",
+    "addr_housenumber",
+    "addr_postcode",
+    "addr_interpolation",
+    "opening_hours",
+    "website",
+    "contact_website",
+    "contact_twitter",
+    "contact_whatsapp",
+    "contact_facebook",
+    "contact_telegram",
+    "contact_foursquare",
+    "contact_youtube",
+    "contact_linkedin",
+    "contact_xing",
+    "contact_vhf",
+    "contact_instagram",
+    "contact_diaspora",
+    "contact_skype",
+    "contact_viber",
+    "contact_mastodon",
+    "contact_xmpp",
+    "contact_fax",
+    "contact_phone",
+    "contact_mobile",
+    "phone",
+    "leisure",
+    "contact_email",
+    "email",
+    "smoking",
+    "amenity",
+    "area",
+    "brand",
+    "building",
+    "service",
+    "name",
+    "shop",
+    "sport",
+    "tourism",
+    "craft",
+]
+
+print("Export ES json:")
 # format: name1,lon,lat,type1,*
 with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
     reader = csv.reader(f, delimiter=',', quotechar='"')
+    osm_ids = {}
     for line in reader:
         if not line:
             continue
-        # print(line)
+
+        # only export osm_id once
+        if line[4] in osm_ids:
+            continue
+        else:
+            osm_ids[line[4]] = True
+
         name = line[0]
         desc = line[3]
-        # Stern:
-        labels = [
-            "osm_id",
-            "addr_city",
-            "addr_street",
-            "addr_place",
-            "addr_housename",
-            "addr_housenumber",
-            "addr_postcode",
-            "addr_interpolation",
-            "opening_hours",
-            "website",
-            "contact_website",
-            "contact_twitter",
-            "contact_whatsapp",
-            "contact_facebook",
-            "contact_telegram",
-            "contact_foursquare",
-            "contact_youtube",
-            "contact_linkedin",
-            "contact_xing",
-            "contact_vhf",
-            "contact_instagram",
-            "contact_diaspora",
-            "contact_skype",
-            "contact_viber",
-            "contact_mastodon",
-            "contact_xmpp",
-            "contact_fax",
-            "contact_phone",
-            "contact_mobile",
-            "phone",
-            "leisure",
-            "contact_email",
-            "email",
-            "smoking",
-            "amenity",
-            "area",
-            "brand",
-            "building",
-            "service",
-            "name",
-            "shop",
-            "sport",
-            "tourism",
-            "craft",
-        ]
         label_dict = {label: value for label,value in zip(labels,line[4:]) if value}
 
         if not name and desc:
