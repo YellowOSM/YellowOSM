@@ -94,6 +94,7 @@ export_amenity = { "key": "amenity",
                         "restaurant",
                         "toilets",
                         "bank",
+                        # taginfo...
                         ]
                  }
 export_leisure = { "key": "leisure",
@@ -126,6 +127,7 @@ export_tourism = { "key": "tourism",
                        [
                        "hotel",
                        # Anything goes...
+                       # waypoint... guide_post
                        ]
                  }
 export_craft = { "key": "craft",
@@ -151,8 +153,12 @@ export_craft = { "key": "craft",
                     "sawmill",
                     "shoemaker",
                     "winery",
+                    # erweitern auf alle...
                     ]
                 }
+
+# TODO office
+
 classes_to_export = [
     export_amenity,
     export_leisure,
