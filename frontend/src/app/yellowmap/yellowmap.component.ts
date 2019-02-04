@@ -63,6 +63,8 @@ export class YellowmapComponent implements OnInit {
   ngOnInit() {
     this.initElasticsearch();
 
+    console.log(this.es.searchOsmId('251711052')); // TODO mit promise...
+
     this.source = new OlXYZ({
       url: environment.tileServerURL,
       attributions: [
@@ -185,10 +187,10 @@ export class YellowmapComponent implements OnInit {
     const addr_street = getLabel('addr_street');
     const addr_place = getLabel('addr_place');
     const addr_city = getLabel('addr_city');
-    var typus = capitalizeFirstLetter(getLabel('amenity'));
-    if (getLabel('tourism')){
+    let typus = capitalizeFirstLetter(getLabel('amenity'));
+    if (getLabel('tourism')) {
       typus = capitalizeFirstLetter(getLabel('tourism'));
-    };
+    }
 
     const result = {
       'Typ': typus,

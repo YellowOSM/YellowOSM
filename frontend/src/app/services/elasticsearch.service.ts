@@ -87,4 +87,19 @@ export class ElasticsearchService {
       }
     });
   }
+
+  searchOsmId(osmId: string): any {
+    return this.client.search({
+      index: 'yosm',
+      type: '_doc',
+      filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
+      body: {
+        'query': {
+          'match': {
+            'osm_id': osmId
+          },
+        }
+      }
+    });
+  }
 }
