@@ -61,20 +61,22 @@ a {
 }
 
 .yosm__search {
-  width: 50%;
   min-width: 260px;
   max-width: 500px;
+  width: 100%;
 }
 
 .yosm__logo {
   height: 42px;
+  padding-left: 10px;
   display: block;
 }
 
 .search__input {
   font-size: 18px;
   font-weight: 100;
-  padding: 5px;
+  padding: 5px 30px 5px 5px;
+  text-overflow: ellipsis;
   border-radius: 5px;
   appearance: none;
   border: 2px solid theme-color("primary");
