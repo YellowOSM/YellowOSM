@@ -1,10 +1,10 @@
 #!/bin/sh
 
-pbffile="/tmp/austria-latest.osm.pbf"
+pbffile="/tmp/austria-current.osm.pbf"
 
 # don't re-download before 20h after last download
 if [ $pbffile = "`find $pbffile -mmin +1200`" ]; then
-  curl http://download.geofabrik.de/europe/austria-latest.osm.pbf -o $pbffile
+  curl https://download.geofabrik.de/europe/austria-`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
 fi
 docker exec $(docker ps | grep yosm_postgres | awk '{print $1}') psql -U postgres -d gis -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
 sleep 2
