@@ -94,7 +94,8 @@ export_amenity = { "key": "amenity",
                         "restaurant",
                         "toilets",
                         "bank",
-                        # taginfo...
+                        "vending_machine",
+                        # TODO get new tags from taginfo...
                         ]
                  }
 export_leisure = { "key": "leisure",
@@ -157,15 +158,12 @@ export_craft = { "key": "craft",
                     ]
                 }
 
-# TODO office
-
 classes_to_export = [
     export_amenity,
     export_leisure,
-    export_craft,
     export_atm,
     ]
-any_classes = [export_shop, export_tourism,]
+any_classes = [export_shop, export_tourism, export_craft]
 
 # additional info:
 # first element will be alternative name!!
@@ -218,6 +216,7 @@ amend = {
     "sawmill": ["Sägewerk"],
     "shoemaker": ["Schuster"],
     "winery": ["Weinkellerei", "Weingut", "Kellerei"],
+    "vending_machine": ["Automat","Verkaufsautomat"],
     # "": ["",],
 }
 
@@ -295,6 +294,10 @@ labels = [
     "craft",
     "atm",
     "cuisine",
+    "operator",
+    "office",
+    "fax",
+    "vending",
 ]
 
 print("Export ES json:")

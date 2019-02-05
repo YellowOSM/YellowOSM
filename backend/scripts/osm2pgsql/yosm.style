@@ -126,6 +126,10 @@ node,way   tourism             text  polygon
 node,way   craft               text  linear
 node,way   atm                 text  linear
 node,way   cuisine             text  linear
+node,way   operator            text  linear
+node,way   office              text  linear
+node,way   fax                 text  linear
+node,way   vending             text  linear
 
 # Area tags
 # We don't make columns for these tags, but objects with them are areas.
