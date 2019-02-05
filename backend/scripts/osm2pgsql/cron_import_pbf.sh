@@ -2,6 +2,8 @@
 
 pbffile="/tmp/austria-current.osm.pbf"
 
+# TODO tolerate missing $pbffile
+
 # don't re-download before 12h after last download
 if [ $pbffile = "`find $pbffile -mmin +720`" ]; then
   curl https://download.geofabrik.de/europe/austria-`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
