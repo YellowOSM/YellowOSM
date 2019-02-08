@@ -50,6 +50,11 @@ export class YellowmapComponent implements OnInit {
     'E-Mail',
     'Telefon'
   ];
+  previousUrlParams = {
+    zoom: +this.route.snapshot.paramMap.get('zoom'),
+    lat: +this.route.snapshot.paramMap.get('lat'),
+    lon: +this.route.snapshot.paramMap.get('lon')
+  };
 
   constructor(
     private es: ElasticsearchService,
@@ -63,8 +68,6 @@ export class YellowmapComponent implements OnInit {
   ngOnInit() {
     this.initElasticsearch();
 
-    console.log(this.es.searchOsmId('251711052')); // TODO mit promise...
-
     this.source = new OlXYZ({
       url: environment.tileServerURL,
       attributions: [
@@ -77,7 +80,6 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.view = new OlView({
-      // center: fromLonLat([15.4395, 47.0707]),
       center: fromLonLat([+this.route.snapshot.paramMap.get('lon'), +this.route.snapshot.paramMap.get('lat')]),
       zoom: +this.route.snapshot.paramMap.get('zoom'),
       maxZoom: 19
@@ -158,15 +160,49 @@ export class YellowmapComponent implements OnInit {
     this.view.on('change:resolution', function (evt) {
       that.updateUrl(evt);
     });
+    this.updateUrl(undefined);
   }
 
   updateUrl(evt) {
     const center = toLonLat(this.view.getCenter());
-    const zoom = this.view.getZoom();
-    this.router.navigate(
-      ['map', center[0], center[1], zoom],
-      {replaceUrl: true}
+    let zoom = this.view.getZoom();
+    let changeUrl = false;
+
+    const zoomDiff = Math.abs(zoom - this.previousUrlParams['zoom']);
+    if (zoomDiff > 0.1) {
+      this.previousUrlParams['zoom'] = zoom;
+      changeUrl = true;
+    } else {
+      zoom = this.previousUrlParams['zoom'];
+    }
+
+    const latDiff = Math.abs(zoom - this.previousUrlParams['lat']);
+    if (latDiff > 0.00001) {
+      this.previousUrlParams['lat'] = center[1];
+      changeUrl = true;
+    } else {
+      center[1] = this.previousUrlParams['lat'];
+    }
+
+    const lonDiff = Math.abs(zoom - this.previousUrlParams['lon']);
+    if (lonDiff > 0.00001) {
+      this.previousUrlParams['lon'] = center[0];
+      changeUrl = true;
+    } else {
+      center[0] = this.previousUrlParams['lon'];
+    }
+
+    if (changeUrl) {
+      this.router.navigate(
+        [
+          'map',
+          Number.parseFloat(zoom).toFixed(2),
+          Number.parseFloat(center[1]).toFixed(5),
+          Number.parseFloat(center[0]).toFixed(5)
+        ],
+        {replaceUrl: true}
       );
+    }
   }
 
   parseResults(labels: any) {
@@ -196,7 +232,7 @@ export class YellowmapComponent implements OnInit {
       'Typ': typus,
       'Möglichkeiten': getLabel('leisure') + getLabel('sport'),
       'Shop': getLabel('shop'),
-      'Adresse': (addr_city ? (addr_street ? addr_street : addr_place ) + ' '  + getLabel('addr_housenumber') + ', ' +
+      'Adresse': (addr_city ? (addr_street ? addr_street : addr_place) + ' ' + getLabel('addr_housenumber') + ', ' +
         getLabel('addr_postcode') + ' ' + addr_city : ''),
       'Öffnungszeiten': getLabel('opening_hours'),
       'Webseite': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :

@@ -4,9 +4,9 @@ import {YellowmapComponent} from './yellowmap/yellowmap.component';
 import {AboutComponent} from './about/about.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: '/map/15.4395/47.0707/16', pathMatch: 'full'},
-  {path: 'map/:lon/:lat/:zoom', component: YellowmapComponent},
-  {path: 'about', component: AboutComponent}
+  {path: 'map/:zoom/:lat/:lon', component: YellowmapComponent},
+  {path: 'about', component: AboutComponent},
+  {path: '', redirectTo: '/map/16/47.0707/15.4395', pathMatch: 'full'}
 ];
 
 @NgModule({
