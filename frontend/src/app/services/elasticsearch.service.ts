@@ -104,7 +104,7 @@ export class ElasticsearchService {
             ],
             'filter': [{
               'geo_distance': {
-                'distance': '100m',
+                'distance': '10m',
                 'location': {
                   'lat': center[1],
                   'lon': center[0]
