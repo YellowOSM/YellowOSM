@@ -70,25 +70,12 @@ export class ElasticsearchService {
               }
             }
           }
-        },
-        // 'sort': [
-        //   {
-        //     '_geo_distance': {
-        //       'location': {
-        //         'lat': center[1],
-        //         'lon': center[0]
-        //       },
-        //       'order': 'asc',
-        //       'unit': 'km',
-        //       'distance_type': 'plane'
-        //     }
-        //   }
-        // ]
+        }
       }
     });
   }
 
-  searchOsmId(osmId: string): any {
+  searchByOsmId(osmId: string): any {
     return this.client.search({
       index: 'yosm',
       type: '_doc',
@@ -99,6 +86,46 @@ export class ElasticsearchService {
             'osm_id': osmId
           },
         }
+      }
+    });
+  }
+
+  searchVicinityByAmenity(amenity: string, center: any): any {
+    return this.client.search({
+      index: 'yosm',
+      type: '_doc',
+      filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
+      body: {
+        'size': 4,
+        'query': {
+          'bool': {
+            'must': [
+              {'match': {'labels.amenity': amenity}}
+            ],
+            'filter': [{
+              'geo_distance': {
+                'distance': '100m',
+                'location': {
+                  'lat': center[1],
+                  'lon': center[0]
+                }
+              }
+            }]
+          }
+        },
+        'sort': [
+          {
+            '_geo_distance': {
+              'location': {
+                'lat': center[1],
+                'lon': center[0]
+              },
+              'order': 'asc',
+              'unit': 'km',
+              'distance_type': 'plane'
+            }
+          }
+        ]
       }
     });
   }

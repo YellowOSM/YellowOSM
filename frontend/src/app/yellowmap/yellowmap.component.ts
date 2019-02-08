@@ -1,4 +1,7 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+
+import {environment} from '../../environments/environment';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
@@ -11,12 +14,11 @@ import {fromLonLat, toLonLat, transformExtent} from 'ol/proj';
 import {getTopLeft, getBottomRight} from 'ol/extent';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
-import {ElasticsearchService} from '../services/elasticsearch.service';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
 import {ATTRIBUTION} from 'ol/source/OSM.js';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {environment} from '../../environments/environment';
+
+import {ElasticsearchService} from '../services/elasticsearch.service';
 
 @Component({
   selector: 'app-yellowmap',
@@ -34,9 +36,10 @@ export class YellowmapComponent implements OnInit {
   esStatus: string;
   esSearchResult = [];
   esSource: VectorSource;
-  selection = {};
+  selection = Feature;
   selectionDetails = '';
   selectionLabels = {};
+  selectionPermaLink = '';
   geoLocationLoading = false;
   @ViewChild('searchInput')
   searchInput: ElementRef;
@@ -86,16 +89,18 @@ export class YellowmapComponent implements OnInit {
     });
 
     const that = this;
-
     this.esSource = new VectorSource({
       format: new GeoJSON(),
-      loader: function (extent, resolution, projection) {
+      loader: (extent, resolution, projection) => {
         that.esSearchResult.forEach(result => {
           const featurething = new Feature({
             name: result['_source']['name'],
             labels: that.parseResults(result['_source']['labels']),
             geometry: new Point(fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]))
           });
+          if (that.selection && that.selectionLabels && (result['_source']['labels']['osm_id'] === that.selectionLabels['osm_id'])) {
+            that.selection = featurething;
+          }
           that.esSource.addFeature(featurething);
         });
       },
@@ -104,14 +109,14 @@ export class YellowmapComponent implements OnInit {
 
     this.esLayer = new VectorLayer({
       source: this.esSource,
-      style: function (feature) {
+      style: (feature) => {
         let color = 'rgba(255, 211, 3, 0.7)';
-        if (that.selection.hasOwnProperty('ol_uid') && that.selection['ol_uid'] === feature.ol_uid) {
+        if (this.selection.hasOwnProperty('ol_uid') && this.selection['ol_uid'] === feature.ol_uid) {
           color = 'rgba(200,20,20,0.8)';
         }
         return new Style({
           image: new CircleStyle({
-            radius: 7,
+            radius: 7.5,
             fill: new Fill({
               color: color
             }),
@@ -133,34 +138,33 @@ export class YellowmapComponent implements OnInit {
       view: this.view
     });
 
-    this.map.on('click', function (event) {
-      that.searchInput.nativeElement.blur();
-      const features = that.map.getFeaturesAtPixel(event.pixel);
-      if (!features) {
-        that.selection = {};
-        that.selectionDetails = '';
-        that.selectionLabels = {};
-      } else {
-        that.selection = features[0];
-        that.selectionDetails = features[0].values_['name'];
-        that.selectionLabels = features[0].values_['labels'];
+    this.map.on('click', (event) => {
+      this.searchInput.nativeElement.blur();
+      const features = this.map.getFeaturesAtPixel(event.pixel);
+      if (features) {
+        this.selection = features[0];
+        this.selectionDetails = features[0].values_['name'];
+        this.selectionLabels = features[0].values_['labels'];
+        this.selectionPermaLink = this.getPermalink();
       }
 
       // force redraw
-      that.esLayer.setStyle(that.esLayer.getStyle());
+      this.esLayer.setStyle(this.esLayer.getStyle());
     });
 
-    this.map.on('moveend', function (evt) {
-      // that.searchInput.nativeElement.blur(); // breaks Android browsers
-      that.clearSearchAndSelection();
-      that.searchElasticSearch();
-      that.updateUrl(evt);
+    this.map.on('moveend', (evt) => {
+      // this.searchInput.nativeElement.blur(); // breaks Android browsers
+      this.searchElasticSearch();
+      this.updateUrl(evt);
     });
 
-    this.view.on('change:resolution', function (evt) {
-      that.updateUrl(evt);
+    this.view.on('change:resolution', (evt) => {
+      this.updateUrl(evt);
     });
-    this.updateUrl(undefined);
+
+    this.map.once('moveend', (evt) => {
+      this.openNode();
+    });
   }
 
   updateUrl(evt) {
@@ -241,6 +245,8 @@ export class YellowmapComponent implements OnInit {
         (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : '')),
       'Telefon': (phone ? '<a href="tel:' + phone + '">' + phone + '</a> ' :
         (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : '')),
+      'amenity': getLabel('amenity'),
+      'osm_id': getLabel('osm_id')
     };
 
     const filtered = Object.keys(result)
@@ -252,10 +258,6 @@ export class YellowmapComponent implements OnInit {
         };
       }, {});
     return filtered;
-  }
-
-  search() {
-    this.searchElasticSearch();
   }
 
   private initElasticsearch() {
@@ -271,12 +273,12 @@ export class YellowmapComponent implements OnInit {
     });
   }
 
-  private searchElasticSearch() {
+  searchElasticSearch() {
+    this.clearSearch();
     if (this.userQuery.length < 2) {
-      this.clearSearchAndSelection();
       return;
     }
-
+    this.selectionDetails = '';
     const extent = this.view.calculateExtent(this.map.getSize());
     const topLeft = toLonLat(getTopLeft(extent));
     const bottomRight = toLonLat(getBottomRight(extent));
@@ -289,36 +291,87 @@ export class YellowmapComponent implements OnInit {
         this.esSearchResult = result['hits']['hits'];
         this.esLayer.getSource().clear();
         this.esLayer.getSource().refresh();
-      } else {
-        this.clearSearchAndSelection();
       }
     }, error => {
       this.esStatus = 'Fehler in der Suche';
-      this.clearSearchAndSelection();
+      this.clearSearch();
       console.error('Server is down', error);
     }).then(() => {
       this.cd.detectChanges();
     });
   }
 
-  private clearSearchAndSelection() {
+  private clearSearch() {
     this.esSearchResult = [];
-    this.selectionDetails = '';
-    this.esLayer.getSource().clear();
+    const source = this.esLayer.getSource();
+    source.forEachFeature( (feature) => {
+      if (feature === this.selection) {
+        return;
+      }
+      source.removeFeature(feature);
+    });
     this.esLayer.getSource().refresh();
   }
 
   public getLocation() {
-    const that = this;
     this.geoLocationLoading = true;
-    navigator.geolocation.getCurrentPosition(function (pos) {
+    navigator.geolocation.getCurrentPosition((pos) => {
         const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-        that.map.getView().animate({center: coords});
-        that.geoLocationLoading = false;
-      }, function error(err) {
+        this.map.getView().animate({center: coords});
+        this.geoLocationLoading = false;
+      }, (err) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);
-        that.geoLocationLoading = false;
+        this.geoLocationLoading = false;
       }
     );
+  }
+
+  private openNode() {
+    const amenity = this.route.snapshot.paramMap.get('amenity');
+    if (!amenity) {
+      return;
+    }
+
+    const center = [
+      +this.route.snapshot.paramMap.get('lon'),
+      +this.route.snapshot.paramMap.get('lat')
+    ];
+    const that = this;
+    that.es.searchVicinityByAmenity(amenity, center).then((result) => {
+      if (result !== null && result.hits.total > 0) {
+        const node = result['hits']['hits'][0];
+        const featurething = new Feature({
+          name: node['_source']['name'],
+          labels: this.parseResults(node['_source']['labels']),
+          geometry: new Point(fromLonLat([node._source.location[0], node._source.location[1]]))
+        });
+        that.addAndSelectFeature(featurething);
+      }
+    }, error => {
+      console.error('Fehler bei Auflösen von Permalink', error);
+    }).then(() => {
+      that.cd.detectChanges();
+    });
+  }
+
+  private addAndSelectFeature(featurething) {
+    this.esLayer.getSource().addFeature(featurething);
+    this.selection = featurething;
+    this.selectionDetails = featurething.values_['name'];
+    this.selectionLabels = featurething.values_['labels'];
+    this.selectionPermaLink = this.getPermalink();
+  }
+
+  private getPermalink() {
+    const amenity = this.selectionLabels['amenity'];
+    if (!amenity) {
+      return '';
+    }
+    const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
+    return window.location.origin + '/map/' +
+      Number.parseFloat(this.previousUrlParams['zoom'].toFixed(2).toString()) + '/' +
+      Number.parseFloat(coordinates[1].toFixed(5).toString()) + '/' +
+      Number.parseFloat(coordinates[0].toFixed(5).toString()) + ';amenity=' +
+      amenity;
   }
 }
