@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d6abde58bc1a56e129837a7fb4610c4530a47d68dda8a0ca25a6868d52f531c3"
+            "sha256": "bb8daba96850f25605226c489daa0c0af3e0aaeca209896f0783d0576e42ca41"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -32,10 +32,10 @@
         },
         "apispec": {
             "hashes": [
-                "sha256:8fa5be82294e8847f92433b91e687cacff293ec1a3cd8e3a025a406271920bc2",
-                "sha256:b502e0a0a49142c3169f2b783042926cb468f5aef10026a74bf8892e95c593bd"
+                "sha256:57a7b81fd19fff0663a7e5ffd196eaea79b5364151ed2b65533be36d55e0229c",
+                "sha256:b45def53903516e67e8584ee41f34bc60c3e4acace6892b69340293ea20f3caa"
             ],
-            "version": "==1.0.0rc1"
+            "version": "==1.0.0"
         },
         "apistar": {
             "hashes": [
@@ -56,15 +56,6 @@
                 "sha256:4291ca197d287d274d0b6cb5d6f8f8f82d434ed288f962539ff18cc9012f9ea3"
             ],
             "version": "==3.0.1"
-        },
-        "base58": {
-            "hashes": [
-                "sha256:1e42993c0628ed4f898c03b522b26af78fb05115732549b21a028bc4633d19ab",
-                "sha256:6aa0553e477478993588303c54659d15e3c17ae062508c854a8b752d07c716bd",
-                "sha256:9a793c599979c497800eb414c852b80866f28daaed5494703fc129592cc83e60"
-            ],
-            "index": "pypi",
-            "version": "==1.0.3"
         },
         "certifi": {
             "hashes": [
@@ -188,10 +179,10 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:313836a251e67d2ef06631f3bddfffdd7d1c5b16b4efc76244afa6218c5e17b0",
-                "sha256:c850c60dbb840860f58f161b81ae25cf84807eeae3f9a1d9a2f8c704d6bd2b80"
+                "sha256:7f9aba737a59dd3c6c6c79846f1df2fbfe036c17f038bbc2c83911b7304a90e1",
+                "sha256:b41cc52fe0491bdb8aa3e2186ca57d478d9ef69dba87fe37d309aa8a08fd30dd"
             ],
-            "version": "==3.0.0rc3"
+            "version": "==3.0.0rc4"
         },
         "parse": {
             "hashes": [
