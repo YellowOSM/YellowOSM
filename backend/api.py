@@ -3,6 +3,8 @@ import json
 
 import responder
 
+from lib import base58
+
 api = responder.API()
 
 @api.route("/api/")
@@ -46,6 +48,15 @@ async def handle_task(req, resp):
 
     resp.media = {'success': True}
 
+@api.route("/api/coords_to_base58/{zoom}/{x}/{y}")
+async def convertCoordsToBase58(req, resp, *, zoom, x, y):
+    b58 = base58.coordsToBase58(zoom,x,y)
+    resp.media = {'b58': b58}
+
+@api.route("/api/base58_to_coords/{b58}")
+async def convertCoordsToBase58(req, resp, *, b58):
+    zoom,x,y = base58.base58ToCoords(b58)
+    resp.media = {'zoom': zoom,'x': x, 'y': y}
 
 if __name__ == '__main__':
     api.run()
