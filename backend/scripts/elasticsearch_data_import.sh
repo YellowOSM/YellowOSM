@@ -8,13 +8,35 @@
 
 # BASE_URL='localhost:9200'
 BASE_URL='https://es.yosm.at'
+INDEX="yosm_dev" # default to dev index
+JSONFILE='/tmp/osm_es_export.json'
+
 CURL="curl --interface ens3"
+if [[ $1 == '--help' ]]; then
+  echo "usage: ${0} --help | [--local] | [yosm|yosm_dev] | [--file es.json]"
+  exit
+fi
 if [[ $1 == '--local' ]]; then
   CURL="curl"
+  shift
 fi
-JSONFILE='osm_es_export.json'
+if [[ $1 == 'yosm' ]]; then
+  INDEX=$1
+  shift
+fi
+if [[ $1 == 'yosm_dev' ]]; then
+  INDEX=$1
+  shift
+fi
+if [[ $1 == '--file' ]]; then
+  JSONFILE=$2
+  shift 2
+fi
 
-$CURL -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
+echo "> $CURL \"${BASE_URL}/_cat/indices?v\""
+$CURL "${BASE_URL}/_cat/indices?v"
+
+$CURL -XPUT "${BASE_URL}/${INDEX}/_settings" -H 'Content-Type: application/json' -d'
 {
   "index": {
     "blocks.read_only": false
@@ -22,15 +44,15 @@ $CURL -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
 }
 '
 
-# delete yosm index
-$CURL -X DELETE "{$BASE_URL}/yosm?pretty"
+# delete index
+$CURL -X DELETE "${BASE_URL}/${INDEX}?pretty"
 
-# create yosm index
-# curl -X PUT "localhost:9200/yosm?pretty"
+# create index
+# curl -X PUT "${BASE_URL}/${INDEX}?pretty"
 
 # create index and set field mapping
 # see https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
-$CURL -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
+$CURL -X PUT "${BASE_URL}/${INDEX}?pretty" -H 'Content-Type: application/json' -d'
 {
     "mappings": {
         "_doc": {
@@ -44,19 +66,19 @@ $CURL -X PUT "{$BASE_URL}/yosm?pretty" -H 'Content-Type: application/json' -d'
 }
 '
 
-echo "uploading data..."
+echo "uploading data to index '$INDEX'..."
 # load sample data set
-time $CURL -s -H "Content-Type: application/json" -XPOST "{$BASE_URL}/yosm/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o /dev/null
+time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o /dev/null
 echo "done"
 
 # get index status
-# $CURL "{$BASE_URL}/_cat/indices?v"
+# $CURL "${BASE_URL}/_cat/indices?v"
 
 # search index
-# $CURL "{$BASE_URL}/yosm/_search?q=*&pretty"
+# $CURL "${BASE_URL}/${INDEX}/_search?q=*&pretty"
 
 # search index by geo bounding box
-# $CURL "{$BASE_URL}/yosm/_search" -H 'Content-Type: application/json' -d'
+# $CURL "${BASE_URL}/${INDEX}/_search" -H 'Content-Type: application/json' -d'
 # {
 #   "query": {
 #     "geo_bounding_box": {
@@ -83,8 +105,7 @@ echo "done"
 
 
 # set index to read-only
-
-$CURL -XPUT "{$BASE_URL}/yosm/_settings" -H 'Content-Type: application/json' -d'
+$CURL -XPUT "${BASE_URL}/${INDEX}/_settings" -H 'Content-Type: application/json' -d'
 {
   "index": {
     "blocks.read_only": true
