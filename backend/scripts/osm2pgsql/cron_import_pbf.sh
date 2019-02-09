@@ -2,13 +2,14 @@
 
 pbffile="/tmp/austria-current.osm.pbf"
 
-# TODO tolerate missing $pbffile
-
-# don't re-download before 12h after last download
-if [ $pbffile = "`find $pbffile -mmin +720`" ]; then
+# re-download if file is older than 12h or does not exist
+if ! test -f $pbffile || [ $pbffile = "`find $pbffile -mmin +720`" ]; then
   curl https://download.geofabrik.de/europe/austria-`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
 fi
+
 docker exec $(docker ps | grep yosm_postgres | awk '{print $1}') psql -U postgres -d gis -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
+
+# wait for DB to be ready
 sleep 2
 # time osm2pgsql -U flo -C 1200 --create --database gis $pbffile --style yosm.style
 cd osm2pgsql
