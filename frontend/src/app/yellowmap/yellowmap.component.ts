@@ -51,7 +51,12 @@ export class YellowmapComponent implements OnInit {
     'Öffnungszeiten',
     'Webseite',
     'E-Mail',
-    'Telefon'
+    'XMPP',
+    'Twitter',
+    'Facebook',
+    'Telefon',
+    'Fax',
+    'Mobile',
   ];
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
@@ -219,11 +224,16 @@ export class YellowmapComponent implements OnInit {
     };
 
     const website = getLabel('website');
-    const contactWebsite = getLabel('contact_website');
+    const contactWebsite = this.prefixWebsite(getLabel('contact_website'));
     const email = getLabel('email');
     const contactEmail = getLabel('contact_email');
+    const contactXMPP = getLabel('contact_xmpp');
+    const contactTwitter = this.prefixTwitter(getLabel('contact_twitter'));
+    const contactFacebook = getLabel('contact_facebook');
     const phone = getLabel('phone');
     const contactPhone = getLabel('contact_phone');
+    const contactFax = getLabel('contact_fax');
+    const contactMobile = getLabel('contact_mobile');
     const addr_street = getLabel('addr_street');
     const addr_place = getLabel('addr_place');
     const addr_city = getLabel('addr_city');
@@ -243,9 +253,14 @@ export class YellowmapComponent implements OnInit {
         (website ? '<a href="' + website + '" target="_blank">' + website + '</a>' : '')),
       'E-Mail': (email ? '<a href="mailto:' + email + '">' + email + '</a> ' :
         (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : '')),
+      'XMPP': (contactXMPP ? '<a href="xmpp:' + contactXMPP + '">' + contactXMPP + '</a> ' : ''),
+      'Twitter': (contactTwitter ? '<a href="' + contactTwitter + '">' + contactTwitter + '</a> ' : ''),
+      'Facebook': (contactFacebook ? '<a href="' + contactFacebook + '">' + contactFacebook + '</a> ' : ''),
       'Telefon': (phone ? '<a href="tel:' + phone + '">' + phone + '</a> ' :
         (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : '')),
-      'amenity': getLabel('amenity'),
+      'Fax': (contactFax ? '<a href="tel:' + contactFax + '">' + contactFax + '</a> ' : ''),
+      'Mobile': (contactMobile ? '<a href="tel:' + contactMobile + '">' + contactMobile + '</a> ' : ''),
+        'amenity': getLabel('amenity'),
       'osm_id': getLabel('osm_id')
     };
 
@@ -373,5 +388,26 @@ export class YellowmapComponent implements OnInit {
       Number.parseFloat(coordinates[1].toFixed(5).toString()) + '/' +
       Number.parseFloat(coordinates[0].toFixed(5).toString()) + ';amenity=' +
       amenity;
+  }
+
+  private prefixTwitter(nic) {
+    if (nic == null || nic.length == 0) {
+      return null
+    }
+    if (nic.startsWith('@')) {
+      return "https://twitter.com/"+nic.substring(1);
+    }
+    else if (! nic.startsWith('http')) {
+      return "https://twitter.com/"+nic;
+    }
+  }
+  private prefixWebsite(url) {
+    if (url == null || url.length == 0) {
+      return null
+    }
+    if (! url.startsWith('http')) {
+      return "http://"+url;
+    }
+    return url;
   }
 }
