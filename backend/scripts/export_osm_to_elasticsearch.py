@@ -10,8 +10,8 @@ parser.add_argument('--local',action="store_true", help="run script in local con
 args = vars(parser.parse_args())
 SERVER = not args['local']
 
-EXPORT_FILE = "dump.osm"
-EXPORT_ES_FILE = "osm_es_export.json"
+EXPORT_FILE = "/tmp/dump.osm"
+EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 
 # also export polygons
 poly = True
