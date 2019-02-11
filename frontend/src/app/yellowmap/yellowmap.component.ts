@@ -223,7 +223,7 @@ export class YellowmapComponent implements OnInit {
       return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
-    const website = getLabel('website');
+    const website = this.prefixWebsite(getLabel('website'));
     const contactWebsite = this.prefixWebsite(getLabel('contact_website'));
     const email = getLabel('email');
     const contactEmail = getLabel('contact_email');
