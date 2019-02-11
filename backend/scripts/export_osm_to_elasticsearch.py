@@ -298,6 +298,7 @@ labels = [
     "office",
     "fax",
     "vending",
+    "old_name",
 ]
 
 print("Export ES json:")
