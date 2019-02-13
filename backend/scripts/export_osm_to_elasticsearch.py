@@ -160,9 +160,10 @@ export_craft = { "key": "craft",
 
 classes_to_export = [
     export_amenity,
+    export_leisure,
     export_atm,
     ]
-any_classes = [export_shop, export_tourism, export_craft, export_leisure, ]
+any_classes = [export_shop, export_tourism, export_craft]
 
 # additional info:
 # first element will be alternative name!!
