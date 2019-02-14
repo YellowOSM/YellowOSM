@@ -76,7 +76,31 @@ if poly:
         # ) TO STDOUT With CSV;\" | sed 's/$/,C4/g'| cat >> {file}"""
         # """
 
-commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4]
+COMMAND5 = query_prefix + """
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
+        *
+        FROM planet_osm_point AS p
+        WHERE (p.{key} is not null AND
+        ((p.opening_hours is not null OR p.fee = 'yes' OR p.access = 'public' OR
+        p.access != 'private')))
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # ) TO STDOUT With CSV;\" | sed 's/$/,C3/g'| cat >> {file}"""
+        # """
+if poly:
+    COMMAND6 = query_prefix + """
+        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},\
+        *
+        FROM planet_osm_polygon AS p
+        WHERE (p.{key} is not null AND
+        ((p.opening_hours is not null OR p.fee = 'yes' OR p.access = 'public' OR
+        p.access != 'private')))
+        LIMIT {limit}
+        ) TO STDOUT With CSV;\" | cat >> {file}"""
+        # ) TO STDOUT With CSV;\" | sed 's/$/,C4/g'| cat >> {file}"""
+        # """
+
+commands = [COMMAND1, COMMAND2, COMMAND3, COMMAND4, COMMAND5, COMMAND6]
 
 export_amenity = { "key": "amenity",
                     "values" :
@@ -165,7 +189,8 @@ classes_to_export = [
     # export_leisure,
     export_atm,
     ]
-any_classes = [export_shop, export_tourism, export_craft, export_leisure]
+any_classes = [export_shop, export_tourism, export_craft,]
+special_access_classes = [export_leisure,]
 
 # additional info:
 # first element will be alternative name!!
@@ -243,7 +268,14 @@ if query_db:
                     os.system(command_now)
 
     for cl in any_classes:
-        for command in commands[2:]:
+        for command in commands[2:4]:
+            if command and not '{value}' in command:
+                command_now = command.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT)
+                print(command_now)
+                os.system(command_now)
+
+    for cl in special_access_classes:
+        for command in commands[4:]:
             if command and not '{value}' in command:
                 command_now = command.format(key=cl['key'], file=EXPORT_FILE, limit=LIMIT)
                 print(command_now)
@@ -306,6 +338,8 @@ labels = [
     "fax",
     "vending",
     "old_name",
+    "access",
+    "fee",
 ]
 
 
