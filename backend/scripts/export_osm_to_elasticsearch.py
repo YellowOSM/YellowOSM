@@ -4,6 +4,8 @@ import json
 import csv
 import argparse
 
+csv.field_size_limit(100000000)
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--local',action="store_true", help="run script in local context without docker postgres")
 
@@ -160,10 +162,10 @@ export_craft = { "key": "craft",
 
 classes_to_export = [
     export_amenity,
-    export_leisure,
+    # export_leisure,
     export_atm,
     ]
-any_classes = [export_shop, export_tourism, export_craft]
+any_classes = [export_shop, export_tourism, export_craft, export_leisure]
 
 # additional info:
 # first element will be alternative name!!
@@ -217,6 +219,11 @@ amend = {
     "shoemaker": ["Schuster"],
     "winery": ["Weinkellerei", "Weingut", "Kellerei"],
     "vending_machine": ["Automat","Verkaufsautomat"],
+    "pitch": ["Sportplatz"],
+    "golf_course": ["Golfplatz"],
+    "horse_riding": ["Reitplatz"],
+    "water_park": ["Schwimmbad"],
+    "fitness_centre": ["Fitness Center"],
     # "": ["",],
 }
 
@@ -301,15 +308,20 @@ labels = [
     "old_name",
 ]
 
-print("Export ES json:")
-# format: name1,lon,lat,type1,*
-with open(EXPORT_FILE,'r') as f, open(EXPORT_ES_FILE,'w') as out:
-    reader = csv.reader(f, delimiter=',', quotechar='"')
-    osm_ids = {}
-    for line in reader:
-        if not line:
-            continue
 
+def read_line_from_csv():
+    # format: name1,lon,lat,type1,*
+    with open(EXPORT_FILE,'r') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for line in reader:
+            if not line:
+                continue
+            yield line
+
+osm_ids = {}
+with open(EXPORT_ES_FILE,'w') as out:
+    print("Export ES json:")
+    for line in read_line_from_csv():
         # only export osm_id once
         if line[4] in osm_ids:
             continue
