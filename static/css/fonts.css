@@ -1,0 +1,119 @@
+/* raleway-200 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Raleway ExtraLight'), local('Raleway-ExtraLight'),
+  url('../fonts/Raleway/raleway-v12-latin-200.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-200.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-300 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Raleway Light'), local('Raleway-Light'),
+  url('../fonts/Raleway/raleway-v12-latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-regular - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Raleway'), local('Raleway-Regular'),
+  url('../fonts/Raleway/raleway-v12-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-italic - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Raleway Italic'), local('Raleway-Italic'),
+  url('../fonts/Raleway/raleway-v12-latin-italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-500 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Raleway Medium'), local('Raleway-Medium'),
+  url('../fonts/Raleway/raleway-v12-latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-600 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Raleway SemiBold'), local('Raleway-SemiBold'),
+  url('../fonts/Raleway/raleway-v12-latin-600.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-700 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Raleway Bold'), local('Raleway-Bold'),
+  url('../fonts/Raleway/raleway-v12-latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-800 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Raleway ExtraBold'), local('Raleway-ExtraBold'),
+  url('../fonts/Raleway/raleway-v12-latin-800.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-800.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* raleway-900 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 900;
+  src: local('Raleway Black'), local('Raleway-Black'),
+  url('../fonts/Raleway/raleway-v12-latin-900.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('../fonts/Raleway/raleway-v12-latin-900.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 300;
+  src: url('../fonts/Roboto/Roboto-Light.eot'); // IE9 Compat Modes 
+  src: url('../fonts/Roboto/Roboto-Light.eot?#iefix') format('embedded-opentype'), // IE6-IE8 
+  url('../fonts/Roboto/Roboto-Light.woff2') format('woff2'), // Super Modern Browsers 
+  url('../fonts/Roboto/Roboto-Light.woff') format('woff'), // Pretty Modern Browsers 
+  url('../fonts/Roboto/Roboto-Light.ttf')  format('truetype'); // Safari, Android, iOS
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 400;
+  src: url('../fonts/Roboto/Roboto.eot'); // IE9 Compat Modes
+  src: url('../fonts/Roboto/Roboto.eot?#iefix') format('embedded-opentype'), // IE6-IE8
+  url('../fonts/Roboto/Roboto.woff2') format('woff2'), // Super Modern Browsers
+  url('../fonts/Roboto/Roboto.woff') format('woff'), // Pretty Modern Browsers
+  url('../fonts/Roboto/Roboto.ttf')  format('truetype'); // Safari, Android, iOS
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 900;
+  src: url('../fonts/Roboto/Roboto-Bold.eot'); // IE9 Compat Modes 
+  src: url('../fonts/Roboto/Roboto-Bold.eot?#iefix') format('embedded-opentype'), // IE6-IE8 
+  url('../fonts/Roboto/Roboto-Bold.woff2') format('woff2'), // Super Modern Browsers 
+  url('../fonts/Roboto/Roboto-Bold.woff') format('woff'), // Pretty Modern Browsers 
+  url('../fonts/Roboto/Roboto-Bold.ttf')  format('truetype'); // Safari, Android, iOS
+}
