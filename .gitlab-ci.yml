@@ -13,7 +13,7 @@ build_frontend:
     - ls -a
     - cd frontend
     - npm install
-    - ng build --build-optimizer=false
+    - ng build --build-optimizer=false --base-href /map/
     - ls -R dist
   artifacts:
     paths:
@@ -24,7 +24,7 @@ build_frontend:
   environment:
     name: dev
     url: https://dev.yosm.at
-    
+
 build_frontend_prod:
   stage: build
   image: node:latest
@@ -63,9 +63,12 @@ deploy_frontend:
     - ping -c 1 toddvm5.klienux.at
     - ls -lha
   script:
+    - ssh root@toddvm5.klienux.at 'mkdir -p /srv/html_new'
+    - scp -r static/* root@toddvm5.klienux.at:/srv/html_new/
     - ls -R frontend/dist
     - cd frontend/
-    - scp -r dist/frontend root@toddvm5.klienux.at:/srv/html_new
+    - ssh root@toddvm5.klienux.at 'mkdir -p /srv/html_new/map'
+    - scp -r dist/frontend root@toddvm5.klienux.at:/srv/html_new/map
     - ssh root@toddvm5.klienux.at 'mv /srv/html /srv/html_old; mv /srv/html_new /srv/html; rm -r /srv/html_old'
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
