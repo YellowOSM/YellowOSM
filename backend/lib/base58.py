@@ -35,27 +35,10 @@ def convertCoordsToInt(x,y,z=19):
 
     minusx = True if x < 0 else False
     minusy = True if y < 0 else False
-    x = x if x > 0 else x*-1
-    y = y if y > 0 else y*-1
+    x = abs(x)
+    y = abs(y)
     coord = minusx << (1+3+24+25) | minusy << (3+24+25) | z << (24+25) | x << (25) | y
     coord = int(coord)
-    # # resp.media = {
-    # media = {
-    #     "zoom": int(z),
-    #     "x": x,
-    #     "y": y,
-    #     "z": z,
-    #     "xbin": bin(x),
-    #     "ybin": bin(y),
-    #     "zbin": bin(z),
-    #     "xbitlength": x.bit_length(),
-    #     "ybitlength": y.bit_length(),
-    #     "zbitlength": z.bit_length(),
-    #     "coord": coord,
-    #     "coordbin": bin(coord),
-    #     # "coord_b58": coord_b58,
-    #     "length": coord.bit_length(),
-    #     }
     return coord
 
 def convertIntToCoords(i):
