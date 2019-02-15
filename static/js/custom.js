@@ -49,7 +49,9 @@
   // Testimonials Slider
   $('.bxslider').bxSlider({
     adaptiveHeight: true,
-    mode: 'fade'
+    mode: 'horizontal',
+    auto: true,
+    duration: 750
   });
 
 })(jQuery);

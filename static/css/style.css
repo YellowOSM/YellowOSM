@@ -497,6 +497,10 @@ TESTIMONIAL
   min-height: 390px;
 }
 
+.bg-testicolor .section-padding {
+  padding: 60px 15px;
+}
+
 .white {
   color: #fff !important;
 }
@@ -509,11 +513,15 @@ TESTIMONIAL
   text-shadow: 1px 1px 2px #333;
   text-align: center;
   display: inline-block;
-  width: 100%;
+  width: 80%;
   margin: 20px 0;
   padding: 0 80px;
   position: relative;
   border: 0;
+}
+
+.testimonial-item ul li {
+  text-align: center;
 }
 
 .testimonial-item ul li small {
@@ -531,25 +539,6 @@ TESTIMONIAL
   background-color: transparent !important;
   border: 0px none !important;
   box-shadow: none !important;
-}
-
-.testimonial-item ul li blockquote::before {
-  content: '“';
-  left: 20px;
-}
-
-.testimonial-item ul li blockquote::before, .testimonial-item ul li blockquote::after {
-  position: absolute;
-  font-weight: 300;
-  font-size: 3em;
-  font-family: Georgia, serif;
-  color: #ccc;
-  top: 62%;
-}
-
-.testimonial-item ul li blockquote::after {
-  content: '”';
-  right: 40px;
 }
 
 /***********************************
@@ -795,6 +784,18 @@ Responsive media queries
   }
 }
 
+@media (max-width: 767px) {
+  .navbar-default img {
+    height: 35px;
+    width: auto;
+  }
+
+  .navbar-default .navbar-brand {
+    margin-top: 0px;
+    padding: 7.5px;
+  }
+}
+
 @media (min-width: 451px) and (max-width: 767px) {
   .service-item, .blog-sec, .wrap-item, .loction-info {
     margin-bottom: 15px;
@@ -802,12 +803,8 @@ Responsive media queries
 }
 
 @media (min-width: 20px) and (max-width: 450px) {
-  .navbar-default .navbar-brand {
-    padding-left: 16px;
-    margin-top: 0px;
-  }
   .banner-info {
-    padding-top: 40px;
+    padding-top: 140px;
   }
   h1.bnr-title {
     font-size: 16px;
@@ -853,7 +850,7 @@ Responsive media queries
     font-size: 14px;
     line-height: 22px;
     margin: 10px 0;
-    padding: 0 40px;
+    padding: 0 10px;
   }
   .navbar-default .navbar-nav>li>a {
     line-height: 22px;

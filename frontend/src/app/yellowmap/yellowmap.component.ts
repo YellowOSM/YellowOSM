@@ -36,7 +36,7 @@ export class YellowmapComponent implements OnInit {
   esStatus: string;
   esSearchResult = [];
   esSource: VectorSource;
-  selection = Feature;
+  selection: Feature;
   selectionDetails = '';
   selectionLabels = {};
   selectionPermaLink = '';
@@ -116,7 +116,7 @@ export class YellowmapComponent implements OnInit {
       source: this.esSource,
       style: (feature) => {
         let color = 'rgba(255, 211, 3, 0.7)';
-        if (this.selection.hasOwnProperty('ol_uid') && this.selection['ol_uid'] === feature.ol_uid) {
+        if (this.selection && this.selection.hasOwnProperty('ol_uid') && this.selection['ol_uid'] === feature.ol_uid) {
           color = 'rgba(200,20,20,0.8)';
         }
         return new Style({
@@ -151,6 +151,11 @@ export class YellowmapComponent implements OnInit {
         this.selectionDetails = features[0].values_['name'];
         this.selectionLabels = features[0].values_['labels'];
         this.selectionPermaLink = this.getPermalink();
+      } else {
+        this.selection = null;
+        this.selectionDetails = '';
+        this.selectionLabels = {};
+        this.selectionPermaLink = '';
       }
 
       // force redraw
@@ -292,7 +297,6 @@ export class YellowmapComponent implements OnInit {
     if (this.userQuery.length < 2) {
       return;
     }
-    this.selectionDetails = '';
     const extent = this.view.calculateExtent(this.map.getSize());
     const topLeft = toLonLat(getTopLeft(extent));
     const bottomRight = toLonLat(getBottomRight(extent));
