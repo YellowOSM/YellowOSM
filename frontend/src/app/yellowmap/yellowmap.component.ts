@@ -260,7 +260,7 @@ export class YellowmapComponent implements OnInit {
         (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : '')),
       'Fax': (contactFax ? '<a href="tel:' + contactFax + '">' + contactFax + '</a> ' : ''),
       'Mobile': (contactMobile ? '<a href="tel:' + contactMobile + '">' + contactMobile + '</a> ' : ''),
-        'amenity': getLabel('amenity'),
+      'amenity': getLabel('amenity'),
       'osm_id': getLabel('osm_id')
     };
 
@@ -319,7 +319,7 @@ export class YellowmapComponent implements OnInit {
   private clearSearch() {
     this.esSearchResult = [];
     const source = this.esLayer.getSource();
-    source.forEachFeature( (feature) => {
+    source.forEachFeature((feature) => {
       if (feature === this.selection) {
         return;
       }
@@ -383,7 +383,7 @@ export class YellowmapComponent implements OnInit {
       return '';
     }
     const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
-    return window.location.origin + '/map/' +
+    return window.location.origin +
       Number.parseFloat(this.previousUrlParams['zoom'].toFixed(2).toString()) + '/' +
       Number.parseFloat(coordinates[1].toFixed(5).toString()) + '/' +
       Number.parseFloat(coordinates[0].toFixed(5).toString()) + ';amenity=' +
@@ -391,22 +391,22 @@ export class YellowmapComponent implements OnInit {
   }
 
   private prefixTwitter(nic) {
-    if (nic == null || nic.length == 0) {
-      return null
+    if (nic == null || nic.length === 0) {
+      return null;
     }
     if (nic.startsWith('@')) {
-      return "https://twitter.com/"+nic.substring(1);
-    }
-    else if (! nic.startsWith('http')) {
-      return "https://twitter.com/"+nic;
+      return 'https://twitter.com/' + nic.substring(1);
+    } else if (!nic.startsWith('http')) {
+      return 'https://twitter.com/' + nic;
     }
   }
+
   private prefixWebsite(url) {
-    if (url == null || url.length == 0) {
-      return null
+    if (url == null || url.length === 0) {
+      return null;
     }
-    if (! url.startsWith('http')) {
-      return "http://"+url;
+    if (!url.startsWith('http')) {
+      return 'http://' + url;
     }
     return url;
   }

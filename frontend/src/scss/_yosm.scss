@@ -52,7 +52,7 @@ a {
 .header {
   height: 57px;
   width: 100%;
-  padding: 8px;
+  padding: 8px 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -61,14 +61,13 @@ a {
 }
 
 .yosm__search {
-  min-width: 260px;
+  min-width: 250px;
   max-width: 500px;
   width: 100%;
 }
 
 .yosm__logo {
   height: 42px;
-  padding-left: 10px;
   display: block;
 }
 
