@@ -37,7 +37,7 @@ build_frontend_prod:
     - ls -a
     - cd frontend
     - npm install
-    - ng build --prod --build-optimizer=false
+    - ng build --build-optimizer=false --base-href /map/
     - ls -R dist
   artifacts:
     paths:
@@ -126,9 +126,11 @@ deploy_prod_frontend:
   stage: deploy
   image: node:latest
   script:
+    - ssh root@toddvm5.klienux.at 'mkdir -p /srv/html_prod_new'
+    - scp -r static/* root@toddvm5.klienux.at:/srv/html_prod_new/
     - ls -R frontend/dist
     - cd frontend/
-    - scp -r dist/frontend root@toddvm5.klienux.at:/srv/html_prod_new
+    - scp -r dist/frontend root@toddvm5.klienux.at:/srv/html_prod_new/map
     - ssh root@toddvm5.klienux.at 'mv /srv/html_prod /srv/html_prod_old; mv /srv/html_prod_new /srv/html_prod; rm -r /srv/html_prod_old'
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
