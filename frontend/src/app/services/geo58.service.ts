@@ -13,12 +13,10 @@ export class Geo58Service {
   }
 
   toZoomLatLon(geo58hash: string) {
-    console.log(environment.apiBaseUrl + '/geo58_to_coords/' + geo58hash);
-    this.httpClient
-      .get(environment.apiBaseUrl + '/geo58_to_coords/' + geo58hash)
-      .subscribe(
-        result => result['geo58'],
-        error => console.log(error));
+    return this.httpClient.get(environment.apiBaseUrl + '/geo58_to_coords/' + geo58hash);
   }
 
+  toGeo58(zoom: number, x: number, y: number) {
+    return this.httpClient.get(environment.apiBaseUrl + '/coords_to_geo58/' + zoom + '/' + x + '/' + y);
+  }
 }

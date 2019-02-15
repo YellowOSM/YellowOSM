@@ -19,6 +19,7 @@ import Feature from 'ol/Feature';
 import {ATTRIBUTION} from 'ol/source/OSM.js';
 
 import {ElasticsearchService} from '../services/elasticsearch.service';
+import {Geo58Service} from '../services/geo58.service';
 
 @Component({
   selector: 'app-yellowmap',
@@ -68,7 +69,8 @@ export class YellowmapComponent implements OnInit {
     private es: ElasticsearchService,
     private cd: ChangeDetectorRef,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private geo58: Geo58Service
   ) {
     this.esIsConnected = false;
   }
@@ -380,12 +382,26 @@ export class YellowmapComponent implements OnInit {
     this.selectionPermaLink = this.getPermalink();
   }
 
+  private getShortLink(amenity) {
+    const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
+    this.geo58.toGeo58(this.previousUrlParams['zoom'], coordinates[0], coordinates[1])
+      .subscribe(hashUrl => {
+        console.log(hashUrl);
+          this.selectionPermaLink = window.location.origin + '/' + hashUrl['g58'] + ';amenity=' + amenity;
+        },
+        error => {
+          console.error('Error: Geo58 link could net be retrieved');
+          console.error(error);
+        });
+  }
+
   private getPermalink() {
     const amenity = this.selectionLabels['amenity'];
     if (!amenity) {
       return '';
     }
     const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
+    this.getShortLink(amenity);
     return window.location.origin +
       Number.parseFloat(this.previousUrlParams['zoom'].toFixed(2).toString()) + '/' +
       Number.parseFloat(coordinates[1].toFixed(5).toString()) + '/' +

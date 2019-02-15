@@ -6,7 +6,9 @@
       <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
          (click)="getLocation()"></i>
     </div>
-    <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
+    <a href="https://www.yellowosm.com/">
+      <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
+    </a>
   </div>
   <div id="map" class="map"></div>
   <div [className]="selectionDetails ? 'details__wrapper active' : 'details__wrapper'">
