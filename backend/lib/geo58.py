@@ -55,12 +55,12 @@ def convertIntToCoords(i):
     z = int(z)
     return (x,y,z)
 
-def coordsToBase58(zoom,x,y):
+def coordsToGeo58(zoom,x,y):
     i = convertCoordsToInt(x,y,zoom)
     return int2base58(i)
 
-def base58ToCoords(b58):
-    i = base582int(b58)
+def geo58ToCoords(g58):
+    i = base582int(g58)
     x,y,z = convertIntToCoords(i)
     return (z,x,y)
 
