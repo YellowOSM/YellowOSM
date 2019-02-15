@@ -5,7 +5,7 @@ import responder
 
 from lib import geo58
 
-api = responder.API(cors=True)
+api = responder.API(cors=True,allow_origins=['*'])
 
 @api.route("/api/")
 @api.route("/api/hello")
