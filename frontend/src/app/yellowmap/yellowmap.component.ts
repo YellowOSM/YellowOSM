@@ -204,7 +204,6 @@ export class YellowmapComponent implements OnInit {
     if (changeUrl) {
       this.router.navigate(
         [
-          'map',
           Number.parseFloat(zoom).toFixed(2),
           Number.parseFloat(center[1]).toFixed(5),
           Number.parseFloat(center[0]).toFixed(5)
