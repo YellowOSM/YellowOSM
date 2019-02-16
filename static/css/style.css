@@ -136,6 +136,14 @@ HEADER
   transition: all 0.3s;
 }
 
+.navbar-default .fa{
+  vertical-align: middle;
+}
+
+.navbar-fixed-top .navbar-collapse .compact__visible{
+  display: none;
+}
+
 @media (max-width: 768px) {
 	.navbar-collapse {
 		background: rgba(75, 75, 75, 0.9);
@@ -146,6 +154,9 @@ HEADER
 	}
   .navbar-fixed-top .navbar-collapse .compact__invisible{
     display: none;
+	}
+  .navbar-fixed-top .navbar-collapse .compact__visible{
+    display: inline;
 	}
 }
 
