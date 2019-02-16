@@ -97,6 +97,7 @@ deploy_backend:
     - ls -R backend
     - cd backend/
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv Dockerfile docker-compose.yml ../ 2> /dev/null;'
+    - echo $BACKEND_ENV_DEV > .env
     - rsync -azvh --progress --delete * .* root@toddvm5.klienux.at:docker-compose/responder/
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv ../Dockerfile ../docker-compose.yml . ;'
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; docker-compose build yosm-backend; docker-compose up --detach yosm-backend;'
@@ -158,6 +159,7 @@ deploy_prod_backend:
     - ls -R backend
     - cd backend/
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; mv Dockerfile docker-compose.yml ../ 2> /dev/null;'
+    - echo $BACKEND_ENV_PROD > .env
     - rsync -azvh --progress --delete * .* root@toddvm5.klienux.at:docker-compose/responder_prod/
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; mv ../Dockerfile ../docker-compose.yml . ;'
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; docker-compose build yosm-prod-backend; docker-compose up --detach yosm-prod-backend;'
