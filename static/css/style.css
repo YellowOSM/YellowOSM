@@ -272,8 +272,6 @@ h2.bnr-sub-title {
 }
 
 .overlay-detail a i {
-  /*position: relative;*/
-  /*margin: 150px 0 25px 0 ;*/
   position: absolute;
   bottom: 25px;
   text-align: center;
