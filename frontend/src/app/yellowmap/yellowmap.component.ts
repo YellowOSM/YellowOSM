@@ -384,7 +384,7 @@ export class YellowmapComponent implements OnInit {
 
   private getShortLink(amenity) {
     const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
-    this.geo58.toGeo58(this.previousUrlParams['zoom'], coordinates[0], coordinates[1])
+    this.geo58.toGeo58(this.previousUrlParams['zoom'], coordinates[1], coordinates[0])
       .subscribe(hashUrl => {
         console.log(hashUrl);
           this.selectionPermaLink = window.location.origin + '/' + hashUrl['g58'] + ';amenity=' + amenity;
