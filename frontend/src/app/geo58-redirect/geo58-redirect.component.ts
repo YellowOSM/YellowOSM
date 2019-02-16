@@ -26,7 +26,7 @@ export class Geo58RedirectComponent implements OnInit {
             queryParams: { 'amenity': this.route.snapshot.paramMap.get('amenity') },
           };
           console.log('amenity in redirecter:' + this.route.snapshot.paramMap.get('amenity'));
-          this.router.navigate([resolvedHash['zoom'], resolvedHash['y'], resolvedHash['x'],
+          this.router.navigate([resolvedHash['zoom'], resolvedHash['x'], resolvedHash['y'],
             {amenity: this.route.snapshot.paramMap.get('amenity')}]);
         },
         error => {
