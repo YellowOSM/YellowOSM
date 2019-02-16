@@ -511,7 +511,7 @@ TESTIMONIAL
 }
 
 .bg-testicolor {
-  background-color: RGBA(73, 84, 105, 0.61);
+  background-color: RGBA(75, 75, 75, 0.61);
   min-height: 390px;
 }
 
@@ -633,7 +633,7 @@ contact
 ***********************************/
 
 #contact {
-  background-color: rgb(73, 84, 105);
+  background-color: rgb(75, 75, 75);
 }
 
 .btn-submit, .btn-submit:hover, .btn-submit:focus {
