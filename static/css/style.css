@@ -129,6 +129,10 @@ HEADER
 
 #main-header {}
 
+.navbar-default .navbar-toggle .icon-bar{
+  background-color: #eee;
+}
+
 .navbar-default {
   background-color: transparent;
   border: 0px;
