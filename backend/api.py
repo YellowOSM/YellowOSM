@@ -1,11 +1,24 @@
 import time
 import json
+import logging
+import os
 
 import responder
+from dotenv import load_dotenv
 
-from lib import geo58
+from lib.geo58 import Geo58
 
+load_dotenv()
 api = responder.API(cors=True)
+
+log = logging.getLogger(__name__)
+log.setLevel('DEBUG')
+
+
+# FIXXXXXXXXME env
+# SHORT_URL_REDIRECT_URL = "https://www.yellowosm.com/map/{zoom}/{x}/{y}"
+SHORT_URL_REDIRECT_URL = os.getenv("SHORT_URL_REDIRECT_URL")
+
 
 @api.route("/api/")
 @api.route("/api/hello")
@@ -50,13 +63,43 @@ async def handle_task(req, resp):
 
 @api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")
 async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
-    g58 = geo58.coordsToGeo58(zoom,x,y.strip('/ '))
-    resp.media = {'g58': g58}
+    # g58 = geo58.coordsToGeo58(zoom,x,y.strip('/ '))
+    try:
+        g58 = Geo58(zoom=zoom, lat=x, lon=y.strip(' /'))
+    except Geo58.Geo58Exception as ex:
+        resp.status_code = 406
+        resp.text = "Error: Not Acceptable: coordinates invalid. [{}]".format(ex)
+        return
+    resp.media = {'g58': g58.get_geo58()}
 
-@api.route("/api/geo58_to_coords/{g58}")
-async def convertCoordsToGeo58(req, resp, *, g58):
-    zoom,x,y = geo58.geo58ToCoords(g58)
+@api.route("/api/geo58_to_coords/{geo58_str}")
+async def convertGeo58ToCoords(req, resp, *, geo58_str):
+    # zoom,x,y = geo58.geo58ToCoords(g58)
+    try:
+        g58 = Geo58(g58=geo58_str)
+    except Geo58.Geo58Exception as ex:
+        log.debug("geo58_to_coords: invalid short code: {}".format(ex))
+        resp.status_code = 400
+        resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
+        return
+    zoom,x,y = g58.get_coordinates()
     resp.media = {'zoom': zoom,'x': x, 'y': y}
+
+@api.route("/api/redirect_geo58/{geo58_str}")
+async def convertGeo58ToCoords(req, resp, *, geo58_str):
+    # zoom,x,y = geo58.geo58ToCoords(g58)
+    try:
+        g58 = Geo58(g58=geo58_str)
+    except Geo58.Geo58Exception as ex:
+        log.debug("redirect_geo58: invalid short code: {}".format(ex))
+        resp.status_code = 400
+        resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
+        return
+    zoom,x,y = g58.get_coordinates()
+    resp.text = SHORT_URL_REDIRECT_URL.format(zoom=zoom,x=x,y=y)
+    # resp.status_code = 302
+    # resp.headers['Location'] = SHORT_URL_REDIRECT_URL.format(zoom=zoom,x=x,y=y)
+
 
 if __name__ == '__main__':
     api.run()

@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 responder = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
