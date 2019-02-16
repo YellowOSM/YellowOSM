@@ -134,11 +134,12 @@ HEADER
   border: 0px;
   padding: 20px 0;
   transition: all 0.3s;
+  max-height: 440px;
 }
 
 @media (max-width: 768px) {
 	.navbar-collapse {
-		background: rgba(64, 75, 97, 0.9);
+		background: rgba(75, 75, 75, 0.9);
     border-top: 0;
 	}
 }
@@ -148,7 +149,7 @@ HEADER
 
 .top-nav-collapse {
   padding: 0;
-  background: rgba(64, 75, 97, 0.9);
+  background: rgba(75, 75, 75, 0.9);
 }
 
 .logo-dec {
