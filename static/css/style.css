@@ -134,15 +134,21 @@ HEADER
   border: 0px;
   padding: 20px 0;
   transition: all 0.3s;
-  max-height: 440px;
 }
 
 @media (max-width: 768px) {
 	.navbar-collapse {
 		background: rgba(75, 75, 75, 0.9);
     border-top: 0;
+  }
+  .navbar-fixed-top .navbar-collapse {
+    max-height: 450px;
+	}
+  .navbar-fixed-top .navbar-collapse .compact__invisible{
+    display: none;
 	}
 }
+
 .navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover {
   color: #002F2F;
 }
