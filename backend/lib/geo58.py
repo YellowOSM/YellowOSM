@@ -20,14 +20,17 @@ class Geo58():
         self._lat = lat or x
         self._lon = lon or y
         self._geo58 = g58
-
+        log.debug("_init: {} {} {}".format(zoom, self._lat, self._lon))
+        log.debug("_init: {} {} {}".format(zoom, x, y))
         if not self._geo58:
             self._geo58 = self._coordsToGeo58(self._zoom, self._lat, self._lon)
+        log.debug("_init: {} {} {}".format(zoom, self._lat, self._lon))
 
         if (not self._zoom or not self._lat or not self._lon) and self._geo58:
             self._zoom, self._lat, self._lon = self._geo58ToCoords(self._geo58)
             self._validate_coords(self._zoom, self._lat, self._lon)
 
+        log.debug("_init: {} {} {}".format(zoom, self._lat, self._lon))
         log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
 
 
@@ -70,6 +73,7 @@ class Geo58():
             raise Geo58.Geo58Exception("zoom is out of range (12-19)")
 
     def _convertCoordsToInt(self, x, y, z=19):
+        log.debug("_convertCoordsToInt: {} {} {}".format(z, x, y))
         self._validate_coords(z,x,y)
 
         x = int(float(x)*100000)
@@ -105,7 +109,8 @@ class Geo58():
         y = float(y)/100000
         z = (zoom *-1 + 19)
         z = int(z)
-        return (x,y,z)
+        log.debug("_convertIntToCoords: {} {} {}".format(z, x, y))
+        return (z,x,y)
 
     def _coordsToGeo58(self, zoom,x,y):
         i = self._convertCoordsToInt(x,y,zoom)
@@ -113,7 +118,8 @@ class Geo58():
 
     def _geo58ToCoords(self, g58):
         i = self._base582int(g58)
-        x,y,z = self._convertIntToCoords(i)
+        z,x,y = self._convertIntToCoords(i)
+        log.debug("_get58ToCoords: {} {} {}".format(z, x, y))
         return (z,x,y)
 
 #     x,y,zoom = coords
