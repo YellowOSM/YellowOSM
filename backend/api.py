@@ -8,17 +8,13 @@ from dotenv import load_dotenv
 
 from lib.geo58 import Geo58
 
-load_dotenv()
-api = responder.API(cors=True)
-
 log = logging.getLogger(__name__)
 log.setLevel('DEBUG')
 
-
-# FIXXXXXXXXME env
-# SHORT_URL_REDIRECT_URL = "https://www.yellowosm.com/map/{zoom}/{x}/{y}"
+load_dotenv()
 SHORT_URL_REDIRECT_URL = os.getenv("SHORT_URL_REDIRECT_URL")
 
+api = responder.API(cors=True)
 
 @api.route("/api/")
 @api.route("/api/hello")
