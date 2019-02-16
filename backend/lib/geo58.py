@@ -30,6 +30,7 @@ class Geo58():
 
         log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
 
+
     def get_geo58(self):
         """Return base58 geo string (geo58)"""
         return self._geo58
