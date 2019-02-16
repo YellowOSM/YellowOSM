@@ -249,7 +249,7 @@ h2.bnr-sub-title {
   line-height: 24px;
   padding: 10px 30px;
   border-radius: 60px;
-  margin: 50px 10px 0 0;
+  margin: 50px 0 0 0;
   outline: none !important;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -272,11 +272,15 @@ h2.bnr-sub-title {
 }
 
 .overlay-detail a i {
-  text-align: center;
+  /*position: relative;*/
+  /*margin: 150px 0 25px 0 ;*/
   position: absolute;
   bottom: 25px;
+  text-align: center;
+  left: 0px;
+  right: 0px;
   font-size: 38px;
-  color: #fff;
+  color: #eee;
 }
 
 /***********************************
