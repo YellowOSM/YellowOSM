@@ -12,14 +12,14 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    id="svg2"
-   width="5561.333"
-   height="2911.6926"
-   viewBox="0 0 5561.333 2911.6927"
+   width="800"
+   height="418"
+   viewBox="0 0 800 418.00001"
    sodipodi:docname="twitter_card_big2.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    inkscape:export-filename="/home/flo/sync/git/yellowosm/yellowosm-yosm/static/img/twitter_card_big2.png"
-   inkscape:export-xdpi="16.49"
-   inkscape:export-ydpi="16.49">
+   inkscape:export-xdpi="17.26"
+   inkscape:export-ydpi="17.26">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -28,7 +28,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -67,9 +67,9 @@
      fit-margin-bottom="0"
      inkscape:pagecheckerboard="false"
      borderlayer="true"
-     inkscape:zoom="0.17622244"
-     inkscape:cx="842.37466"
-     inkscape:cy="482.94403"
+     inkscape:zoom="0.661875"
+     inkscape:cx="81.673336"
+     inkscape:cy="107.34298"
      inkscape:window-x="39"
      inkscape:window-y="34"
      inkscape:window-maximized="1"
@@ -77,22 +77,22 @@
   <image
      sodipodi:absref="/home/flo/sync/git/yellowosm/yellowosm-yosm/static/img/banner_base.jpg"
      xlink:href="banner_base.jpg"
-     y="0"
-     x="-0.00048828125"
-     id="image10"
+     width="803.17114"
+     height="543.79175"
      preserveAspectRatio="none"
-     height="3765.3333"
-     width="5561.3335" />
+     id="image10"
+     x="-1.9889568"
+     y="0.0057718614" />
   <rect
-     style="opacity:0.91000001;fill:#000000;fill-opacity:0.50196078;fill-rule:nonzero;stroke:none;stroke-width:0.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="opacity:0.91000001;fill:#000000;fill-opacity:0.50196078;fill-rule:nonzero;stroke:none;stroke-width:0.0722103;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="rect5175"
-     width="5637.145"
-     height="3920.5505"
-     x="-32.491238"
-     y="0" />
+     width="814.11987"
+     height="566.20831"
+     x="-6.681293"
+     y="0.0057718614" />
   <g
      id="g842"
-     transform="translate(46.028857)">
+     transform="matrix(0.1444206,0,0,0.1444206,4.6586393,0.00575766)">
     <g
        transform="translate(-4.8828125e-4,-220)"
        id="g5752">
@@ -147,20 +147,20 @@
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:126.66666412px;line-height:125%;font-family:Carlito;-inkscape-font-specification:'Carlito, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="1262.0809"
-     y="1996.3511"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.29327583px;line-height:125%;font-family:Carlito;-inkscape-font-specification:'Carlito, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.14442061px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="180.28163"
+     y="288.31998"
      id="text21"><tspan
        sodipodi:role="line"
        id="tspan19"
-       x="1262.0809"
-       y="1996.3511"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:126.66666412px;font-family:Carlito;-inkscape-font-specification:'Carlito, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1">Das freie Gewerbeverzeichnis auf Basis von OpenStreetMap</tspan></text>
+       x="180.28163"
+       y="288.31998"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.29327583px;font-family:Carlito;-inkscape-font-specification:'Carlito, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.14442061px">Das freie Gewerbeverzeichnis auf Basis von OpenStreetMap</tspan></text>
   <rect
-     style="opacity:0.91000001;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="opacity:0.91000001;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.07166531;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="rect831"
-     width="7040.5449"
-     height="1901.2443"
-     x="-683.25964"
-     y="2956.2529" />
+     width="1009.1257"
+     height="272.5065"
+     x="-90.341263"
+     y="426.93231" />
 </svg>
