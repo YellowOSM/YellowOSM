@@ -1,3 +1,13 @@
+/* Carlito */
+@font-face {
+    font-family: 'carlitoregular';
+    src: url('../fonts/carlito-regular-webfont.woff2') format('woff2'),
+         url('../fonts/carlito-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}                                
+
 /* raleway-200 - latin */
 @font-face {
   font-family: 'Raleway';
