@@ -387,7 +387,7 @@ export class YellowmapComponent implements OnInit {
     this.geo58.toGeo58(this.previousUrlParams['zoom'], coordinates[1], coordinates[0])
       .subscribe(hashUrl => {
         console.log(hashUrl);
-          this.selectionPermaLink = window.location.origin + '/' + hashUrl['g58'] + ';amenity=' + amenity;
+          this.selectionPermaLink = environment.shortLinkBaseUrl + '/' + hashUrl['g58'] + ';amenity=' + amenity;
         },
         error => {
           console.error('Error: Geo58 link could net be retrieved');
