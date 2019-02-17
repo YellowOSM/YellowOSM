@@ -18,8 +18,8 @@
    sodipodi:docname="twitter_card_big.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    inkscape:export-filename="/home/flo/sync/git/yellowosm/yellowosm-yosm/static/img/twitter_card_big.png"
-   inkscape:export-xdpi="17.26"
-   inkscape:export-ydpi="17.26">
+   inkscape:export-xdpi="16.49"
+   inkscape:export-ydpi="16.49">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -28,7 +28,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -67,8 +67,8 @@
      fit-margin-bottom="0"
      inkscape:pagecheckerboard="false"
      borderlayer="true"
-     inkscape:zoom="0.21833668"
-     inkscape:cx="2309.7527"
+     inkscape:zoom="0.74712083"
+     inkscape:cx="1839.2799"
      inkscape:cy="951.41736"
      inkscape:window-x="39"
      inkscape:window-y="34"
@@ -77,12 +77,12 @@
   <image
      sodipodi:absref="/home/flo/sync/git/yellowosm/yellowosm-yosm/static/img/banner_base.jpg"
      xlink:href="banner_base.jpg"
-     y="0"
-     x="-0.00048828125"
-     id="image10"
-     preserveAspectRatio="none"
+     width="5561.3335"
      height="3765.3333"
-     width="5561.3335" />
+     preserveAspectRatio="none"
+     id="image10"
+     x="-0.00048828125"
+     y="0" />
   <rect
      style="opacity:0.91000001;fill:#000000;fill-opacity:0.50196078;fill-rule:nonzero;stroke:none;stroke-width:0.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="rect5175"
