@@ -641,7 +641,11 @@ contact
 #contact {
   background-color: rgb(75, 75, 75);
 }
-
+#ni-credit .containter img{
+  /*vertical-align: middle;*/
+  vertical-align: middle;
+  width: 250px;
+}
 .btn-submit, .btn-submit:hover, .btn-submit:focus {
   background-color: transparent;
   border-radius: 60px;
@@ -749,7 +753,7 @@ contact
 
 #footer a {
   color: #ffd303;
-  font-weight: 400;
+  font-weight: 100;
 }
 
 /***********************************
