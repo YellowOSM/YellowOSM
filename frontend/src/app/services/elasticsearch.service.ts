@@ -77,7 +77,7 @@ export class ElasticsearchService {
 
   searchByOsmId(osmId: string): any {
     return this.client.search({
-      index: 'yosm',
+      index: environment.elasticSearchIndex,
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
@@ -92,7 +92,7 @@ export class ElasticsearchService {
 
   searchVicinityByAmenity(amenity: string, center: any): any {
     return this.client.search({
-      index: 'yosm',
+      index: environment.elasticSearchIndex,
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
