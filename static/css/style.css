@@ -228,6 +228,16 @@ HEADER
   /*font-family: 'Fira Sans', sans-serif;*/
   font-weight: 600;
   letter-spacing: 4px;
+  /* Safari and Chrome */
+  -webkit-transform:scale(1,0.9);
+  /* Firefox */
+  -moz-transform:scale(1,0.9);
+  /* IE 9 */
+  -ms-transform:scale(1,0.9);
+  /* Opera */
+  -o-transform:scale(1,0.9);
+  /* W3C */
+  transform:scale(1,0.9);
 }
 
 h1.bnr-title {
