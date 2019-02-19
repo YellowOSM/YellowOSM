@@ -17,7 +17,7 @@ export const environment = {
   // osm.de:
   tileServerURL: '//d.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   apiBaseUrl: 'https://dev.yosm.at/api',
-  shortLinkBaseUrl: 'https://dev.yosm.at'
+  shortLinkBaseUrl: 'https://dev.yosm.at/s'
 };
 
 /*
