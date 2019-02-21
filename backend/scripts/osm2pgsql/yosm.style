@@ -133,6 +133,9 @@ node,way   vending             text  linear
 node,way   old_name            text  linear
 node,way   access              text  linear
 node,way   fee                 text  linear
+node,way   healthcare          text  linear
+node,way   healthcare:speciality text  linear
+node,way   emergency           text  linear
 
 # Area tags
 # We don't make columns for these tags, but objects with them are areas.

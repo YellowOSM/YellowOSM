@@ -121,6 +121,7 @@ export_amenity = { "key": "amenity",
                         "toilets",
                         "bank",
                         "vending_machine",
+                        "doctors",
                         # TODO get new tags from taginfo...
                         ]
                  }
@@ -183,11 +184,42 @@ export_craft = { "key": "craft",
                     # erweitern auf alle...
                     ]
                 }
+export_healthcare = { "key": "healthcare",
+                        "values": [
+                            "pharmacy",
+                            "doctor",
+                            "alternative",
+                            "audiologist",
+                            "birthing_center",
+                            "blood_donation",
+                            "centre",
+                            "clinic",
+                            "dentist",
+                            "dialyst",
+                            "hospital",
+                            "midwife",
+                            "nutrition_counseling",
+                            "occupational_therapist",
+                            "optometrist",
+                            "physiotherapist",
+                            "podiatrist",
+                            "psychotherapist",
+                            "rehabilitation",
+                            "speech_therapist",
+                            "yes",
+                            ]
+               }
+export_emergency = { "key": "emergency",
+                        "values": [
+                            "defibrillator",
+                            ]
+               }
 
 classes_to_export = [
     export_amenity,
     # export_leisure,
     export_atm,
+    export_healthcare,
     ]
 any_classes = [export_shop, export_tourism, export_craft,]
 special_access_classes = [export_leisure,]
@@ -249,6 +281,10 @@ amend = {
     "horse_riding": ["Reitplatz"],
     "water_park": ["Schwimmbad"],
     "fitness_centre": ["Fitness Center"],
+    "doctors": ["Arzt", "Doktor"],
+    "doctor": ["Arzt", "Doktor"],
+    "hospital": ["Spital", "Hospital", "Krankenhaus"],
+    "dentist": ["Zahnarzt"],
     # "": ["",],
 }
 
@@ -340,6 +376,9 @@ labels = [
     "old_name",
     "access",
     "fee",
+    "healthcare",
+    "healthcare:speciality",
+    "emergency",
 ]
 
 
