@@ -42,6 +42,14 @@ export class YellowmapComponent implements OnInit {
   selectionLabels = {};
   selectionPermaLink = '';
   geoLocationLoading = false;
+  idProperties = [
+    'amenity',
+    'shop',
+    'craft',
+    'tourism',
+    'leisure',
+    'atm'
+  ];
   @ViewChild('searchInput')
   searchInput: ElementRef;
   detailKeys = [
@@ -153,6 +161,7 @@ export class YellowmapComponent implements OnInit {
         this.selectionDetails = features[0].values_['name'];
         this.selectionLabels = features[0].values_['labels'];
         this.selectionPermaLink = this.getPermalink();
+        console.log(this.selectionLabels);
       } else {
         this.selection = null;
         this.selectionDetails = '';
@@ -267,6 +276,10 @@ export class YellowmapComponent implements OnInit {
       'Fax': (contactFax ? '<a href="tel:' + contactFax + '">' + contactFax + '</a> ' : ''),
       'Mobile': (contactMobile ? '<a href="tel:' + contactMobile + '">' + contactMobile + '</a> ' : ''),
       'amenity': getLabel('amenity'),
+      'shop': getLabel('shop'),
+      'tourism': getLabel('tourism'),
+      'leisure': getLabel('leisure'),
+      'atm': getLabel('atm'),
       'osm_id': getLabel('osm_id')
     };
 
@@ -346,9 +359,23 @@ export class YellowmapComponent implements OnInit {
     );
   }
 
+  private getPropertyValueFromUrl() {
+    for (let i = 0; i < this.idProperties.length; i++) {
+      const param = this.route.snapshot.paramMap.get(this.idProperties[i]);
+      if (!param) {
+        continue;
+      }
+      return {
+        propertyType: this.idProperties[i],
+        propertyValue: param
+      };
+    }
+    return false;
+  }
+
   private openNode() {
-    const amenity = this.route.snapshot.paramMap.get('amenity');
-    if (!amenity) {
+    const urlPropertyValue = this.getPropertyValueFromUrl();
+    if (!urlPropertyValue) {
       return;
     }
 
@@ -357,19 +384,23 @@ export class YellowmapComponent implements OnInit {
       +this.route.snapshot.paramMap.get('lat')
     ];
     const that = this;
-    that.es.searchVicinityByAmenity(amenity, center).then((result) => {
-      if (result !== null && result.hits.total > 0) {
-        const node = result['hits']['hits'][0];
-        const featurething = new Feature({
-          name: node['_source']['name'],
-          labels: this.parseResults(node['_source']['labels']),
-          geometry: new Point(fromLonLat([node._source.location[0], node._source.location[1]]))
-        });
-        that.addAndSelectFeature(featurething);
-      }
-    }, error => {
-      console.error('Fehler bei Auflösen von Permalink', error);
-    }).then(() => {
+    that.es.searchVicinityByProperty(
+      urlPropertyValue.propertyType,
+      urlPropertyValue.propertyValue,
+      center)
+      .then((result) => {
+        if (result !== null && result.hits.total > 0) {
+          const node = result['hits']['hits'][0];
+          const featurething = new Feature({
+            name: node['_source']['name'],
+            labels: this.parseResults(node['_source']['labels']),
+            geometry: new Point(fromLonLat([node._source.location[0], node._source.location[1]]))
+          });
+          that.addAndSelectFeature(featurething);
+        }
+      }, error => {
+        console.error('Fehler bei Auflösen von Permalink', error);
+      }).then(() => {
       that.cd.detectChanges();
     });
   }
@@ -382,12 +413,12 @@ export class YellowmapComponent implements OnInit {
     this.selectionPermaLink = this.getPermalink();
   }
 
-  private getShortLink(amenity) {
+  private getShortLink(propertyUrlPart) {
     const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
     this.geo58.toGeo58(19, coordinates[1], coordinates[0])
       .subscribe(hashUrl => {
-        console.log(hashUrl);
-          this.selectionPermaLink = environment.shortLinkBaseUrl + '/' + hashUrl['g58'] + ';amenity=' + amenity;
+          console.log(hashUrl);
+          this.selectionPermaLink = environment.shortLinkBaseUrl + '/' + hashUrl['g58'] + ';' + propertyUrlPart;
         },
         error => {
           console.error('Error: Geo58 link could net be retrieved');
@@ -396,17 +427,27 @@ export class YellowmapComponent implements OnInit {
   }
 
   private getPermalink() {
-    const amenity = this.selectionLabels['amenity'];
-    if (!amenity) {
+    let propertyUrlPart = '';
+
+    for (let i = 0; i < this.idProperties.length; i++) {
+      const idValue = this.selectionLabels[this.idProperties[i]];
+      if (!idValue) {
+        continue;
+      }
+      propertyUrlPart = this.idProperties[i] + '=' + idValue;
+      break;
+    }
+
+    if (!propertyUrlPart) {
       return '';
     }
+
     const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
-    this.getShortLink(amenity);
-    return window.location.origin +
+    this.getShortLink(propertyUrlPart);
+    return window.location.origin + '/' +
       Number.parseFloat(this.previousUrlParams['zoom'].toFixed(2).toString()) + '/' +
       Number.parseFloat(coordinates[1].toFixed(5).toString()) + '/' +
-      Number.parseFloat(coordinates[0].toFixed(5).toString()) + ';amenity=' +
-      amenity;
+      Number.parseFloat(coordinates[0].toFixed(5).toString()) + ';' + propertyUrlPart;
   }
 
   private prefixTwitter(nic) {

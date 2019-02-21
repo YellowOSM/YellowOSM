@@ -13,8 +13,7 @@ build_frontend:
     - ls -a
     - cd frontend
     - npm install
-    - ng build --build-optimizer=false --base-href /map/
-    # - ng build --build-optimizer=false
+    - ng build --configuration test --base-href /map/
     - ls -R dist
   artifacts:
     paths:
@@ -37,7 +36,7 @@ build_frontend_prod:
     - ls -a
     - cd frontend
     - npm install
-    - ng build --prod --build-optimizer=false --base-href /map/
+    - ng build --configuration prod --base-href /map/
     - ls -R dist
   artifacts:
     paths:

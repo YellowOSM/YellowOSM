@@ -90,7 +90,8 @@ export class ElasticsearchService {
     });
   }
 
-  searchVicinityByAmenity(amenity: string, center: any): any {
+  searchVicinityByProperty(propertyType: string, propertyValue: string, center: any): any {
+    const propertyTypeString = 'labels.' + propertyType;
     return this.client.search({
       index: environment.elasticSearchIndex,
       type: '_doc',
@@ -100,7 +101,7 @@ export class ElasticsearchService {
         'query': {
           'bool': {
             'must': [
-              {'match': {'labels.amenity': amenity}}
+              {'match': {[propertyTypeString]: propertyValue}}
             ],
             'filter': [{
               'geo_distance': {
