@@ -7,7 +7,7 @@ import {Geo58RedirectComponent} from './geo58-redirect/geo58-redirect.component'
 const routes: Routes = [
   {path: ':geo58', component: Geo58RedirectComponent},
   {path: ':zoom/:lat/:lon', component: YellowmapComponent},
-  {path: '', redirectTo: '/16/47.0707/15.4395', pathMatch: 'full'},
+  {path: '', redirectTo: '/14/47.0707/15.4395', pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent}
 ];
 
