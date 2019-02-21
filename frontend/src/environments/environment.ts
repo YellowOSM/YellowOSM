@@ -17,7 +17,7 @@ export const environment = {
   // osm.de:
   tileServerURL: '//d.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   apiBaseUrl: '//localhost:5000/api',
-  shortLinkBaseUrl: 'http://localhost:5000/api'
+  shortLinkBaseUrl: 'http://localhost:5000/api/redirect_geo58'
 };
 
 /*
