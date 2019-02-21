@@ -14,7 +14,7 @@ build_frontend:
     - cd frontend
     - npm install
     # to use optimizer wait for a fix in ol (https://github.com/openlayers/openlayers/issues/8357)
-    - ng build --configuration test -build-optimizer=false --base-href /map/
+    - ng build --configuration test --build-optimizer=false --base-href /map/
     - ls -R dist
   artifacts:
     paths:
@@ -38,7 +38,7 @@ build_frontend_prod:
     - cd frontend
     - npm install
     # to use optimizer wait for a fix in ol (https://github.com/openlayers/openlayers/issues/8357)
-    - ng build --configuration prod -build-optimizer=false --base-href /map/
+    - ng build --configuration prod --build-optimizer=false --base-href /map/
     - ls -R dist
   artifacts:
     paths:
