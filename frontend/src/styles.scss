@@ -1,19 +1,7 @@
 @import '~ol/ol.css';
 
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
-
-$theme-colors: (
-  "primary":    #ffd303,
-  "secondary":  #000,
-  //"success":    $success,
-  //"info":       $info,
-  //"warning":    $warning,
-  //"danger":     $danger,
-  //"light":      $light,
-  //"dark":       $dark
-);
+$color-primary: #ffd303;
+$color-secondary: #000;
 
 $fa-font-path : "~font-awesome/fonts";
 @import "~font-awesome/scss/font-awesome";

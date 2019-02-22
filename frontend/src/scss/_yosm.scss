@@ -12,7 +12,7 @@ a:hover,
 a:active,
 a:focus,
 a:visited {
-  color: theme-color("secondary");
+  color: $color-secondary;
 }
 
 a {
@@ -36,7 +36,7 @@ a {
     position: fixed;
     width: 80px;
     height: 25px;
-    background: theme-color("primary");
+    background: $color-primary;
     top: 63px;
     right: -20px;
     text-align: center;
@@ -70,7 +70,7 @@ a {
   display: block;
   margin-right: 5px;
 
-  @include media-breakpoint-up(sm) {
+  @media (min-width: 768px) {
     margin-right: 10px;
   }
 }
@@ -82,7 +82,7 @@ a {
   text-overflow: ellipsis;
   border-radius: 5px;
   appearance: none;
-  border: 2px solid theme-color("primary");
+  border: 2px solid $color-primary;
   width: 100%;
 }
 
@@ -116,8 +116,8 @@ a {
   bottom: 0;
   right: 0;
   left: 0;
-  background-color: theme-color("primary");
-  color: theme-color("primary");
+  background-color: $color-primary;
+  color: $color-primary;
   width: 100%;
   height: 0;
   padding: 10px 8px;
@@ -127,7 +127,7 @@ a {
 
   &.active {
     height: 300px;
-    color: theme-color(secondary);
+    color: $color-secondary;
   }
 
   h2 {
