@@ -5,7 +5,7 @@
     </a>
     <div class="yosm__search">
       <input type="text" placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [(ngModel)]="userQuery"
-             class="search__input" (keyup)="searchElasticSearch()" #searchInput>
+             class="search__input" (keyup)="searchElasticSearch()" (keydown.enter)="hideKeyboard()" #searchInput>
       <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
          (click)="getLocation()"></i>
     </div>

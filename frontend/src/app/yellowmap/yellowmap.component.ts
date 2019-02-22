@@ -188,6 +188,11 @@ export class YellowmapComponent implements OnInit {
     });
   }
 
+  hideKeyboard(evt) {
+    console.log('hideKeyboard');
+    this.searchInput.nativeElement.blur();
+  }
+
   updateUrl(evt) {
     const center = toLonLat(this.view.getCenter());
     let zoom = this.view.getZoom();
