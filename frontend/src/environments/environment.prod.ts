@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  name: 'prod',
   elasticSearchBaseUrl: 'https://es.yosm.at',
   elasticSearchIndex: 'yosm',
   // no label standard tile:
