@@ -55,20 +55,24 @@ a {
   padding: 8px 5px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   background-color: #fff;
   z-index: 99;
 }
 
 .yosm__search {
-  min-width: 250px;
-  max-width: 500px;
   width: 100%;
+  margin-right: 5px;
 }
 
 .yosm__logo {
   height: 42px;
   display: block;
+  margin-right: 5px;
+
+  @include media-breakpoint-up(sm) {
+    margin-right: 10px;
+  }
 }
 
 .search__input {

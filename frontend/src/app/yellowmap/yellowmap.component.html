@@ -1,14 +1,14 @@
 <div class="yosm__container">
   <div class="header">
+    <a href="/">
+      <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
+    </a>
     <div class="yosm__search">
       <input type="text" placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [(ngModel)]="userQuery"
              class="search__input" (keyup)="searchElasticSearch()" #searchInput>
       <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
          (click)="getLocation()"></i>
     </div>
-    <a href="/">
-      <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
-    </a>
   </div>
   <div id="map" class="map"></div>
   <div [className]="selectionDetails ? 'details__wrapper active' : 'details__wrapper'">
