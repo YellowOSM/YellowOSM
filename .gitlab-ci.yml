@@ -67,7 +67,7 @@ deploy_frontend:
   script:
     - >2
       echo -e "User-agent: *
-      nDisallow: /" > static/robots.txt
+      \nDisallow: /" > static/robots.txt
     - ssh root@toddvm5.klienux.at 'mkdir -p /srv/html_new'
     - scp -r static/* root@toddvm5.klienux.at:/srv/html_new/
     - ls -R frontend/dist
