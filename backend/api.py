@@ -87,6 +87,15 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     resp.media = {'zoom': zoom, 'x': x, 'y': y}
 
 
+@api.route("/api/redirect_geo58/")
+async def convertGeo58ToCoordsEmpty(req, resp):
+    # redirect to map without coords
+    redir_url = '/'.join(SHORT_URL_REDIRECT_URL.split('/')[:-3])
+    log.debug("redirect to --> %s", redir_url)
+    resp.status_code = 301
+    resp.headers['Location'] = redir_url
+
+
 @api.route("/api/redirect_geo58/{geo58_str}")
 async def convertGeo58ToCoords(req, resp, *, geo58_str):
     geo58_str = str(geo58_str)
