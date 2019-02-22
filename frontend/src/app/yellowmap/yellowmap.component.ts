@@ -188,7 +188,7 @@ export class YellowmapComponent implements OnInit {
     });
   }
 
-  hideKeyboard(evt) {
+  hideKeyboard() {
     console.log('hideKeyboard');
     this.searchInput.nativeElement.blur();
   }
@@ -231,6 +231,12 @@ export class YellowmapComponent implements OnInit {
         ],
         {replaceUrl: true}
       );
+    }
+
+    const urlSearchTerm = this.route.snapshot.paramMap.get('q');
+    if (urlSearchTerm) {
+      this.userQuery = urlSearchTerm;
+      this.searchElasticSearch();
     }
   }
 
