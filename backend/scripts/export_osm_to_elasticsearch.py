@@ -19,7 +19,7 @@ EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 poly = True
 # poly = False
 query_db = True
-# query_db = False
+query_db = False
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -321,6 +321,174 @@ if query_db:
                 print(command_now)
                 os.system(command_now)
 
+
+
+
+
+
+
+
+
+
+############### Export ###################
+
+yosm_types = {
+    'amenity': {
+        'type': 'unknown', # fallback type
+        'restaurant': {
+            'type': 'gastro',
+            'label': 'Restaurant',
+        },
+        'cafe': {
+            'type': 'gastro',
+            'label': 'Cafe',
+        },
+        'fast_food': {
+            'type': 'gastro',
+            'label': 'Fast Food',
+        },
+        'biergarten': {
+            'type': 'gastro',
+            'label': '', # use value.capitalize()
+        },
+        'pub': {
+            'type': 'gastro',
+            'label': '',
+        },
+        'bar': {
+            'type': 'gastro',
+            'label': '',
+        },
+        'doctor': {
+            'type': 'doctor',
+            'label': 'Arzt',
+        },
+        'dentist': {
+            'type': 'doctor',
+            'label': 'Zahnarzt',
+        },
+        'physiotherapist': {
+            'type': 'doctor',
+            'label': 'Physiotherapeut',
+        },
+        'pharmacy': {
+            'type': 'pharmacy',
+            'label': 'Apotheke',
+        },
+        'atm': {
+            'type': 'atm',
+            'label': 'Bankomat',
+        },
+        'bank': {
+            'type': 'bank',
+            'label': '',
+        },
+        'vending_machine': {
+            'type': 'vending_machine',
+            'label': 'Verkaufs-Automat',
+        },
+        'fuel': {
+            'type': 'fuel',
+            'label': 'Tankstelle',
+        },
+    },
+    'healthcare': {
+        'type': 'doctor',
+        'doctor': {
+            'type': 'doctor',
+            'label': 'Arzt',
+        },
+        'dentist': {
+            'type': 'doctor',
+            'label': 'Zahnarzt',
+        },
+        'physiotherapist': {
+            'type': 'doctor',
+            'label': 'Physiotherapeut',
+        },
+        'pharmacy': {
+            'type': 'pharmacy',
+            'label': 'Apotheke',
+        },
+    },
+    'shop': {
+        'type': 'shop',
+        'hairdresser': {
+            'type': 'hairdresser',
+            'label': 'Friseur',
+        },
+        'supermarket': {
+            'type': 'shop',
+            'label': 'Supermarkt',
+        },
+        'clothes': {
+            'type': 'shop',
+            'label': 'Kleidung',
+        },
+        'bakery': {
+            'type': 'shop',
+            'label': 'Bäckerei',
+        },
+        'car': {
+            'type': 'shop',
+            'label': 'Autohaus',
+        },
+        'car_repair': {
+            'type': 'shop',
+            'label': 'Autowerkstatt',
+        },
+        'convenience': {
+            'type': 'shop',
+            'label': 'Lebensmittelgeschäft',
+        },
+    },
+    'craft': {
+        'type': 'craftsman', # for all of class craft that don't have type
+        'carpenter': '',
+        'plumber': '',
+        'electrician': '',
+        'painter': '',
+        'photographer': '',
+        'roofer': '',
+        'gardener': '',
+        'beekeper': '',
+        'shoemaker': '',
+        'tailor': '',
+        'stonemason': '',
+        'handicraft': '',
+        'builder': '',
+    },
+    'tourism': {
+        'type': 'tourism', # for all of type tourism that don't have type
+        'hotel': {
+            'type': 'hotel',
+            'label': '',
+        },
+        'guest_house': {
+            'type': 'hotel',
+            'label': '',
+        },
+        'alpine_hut': {
+            'type': 'hotel',
+            'label': '',
+        },
+        'chalet': {
+            'type': 'hotel',
+            'label': '',
+        },
+        'apartment': {
+            'type': 'hotel',
+            'label': '',
+        },
+        'viewpoint': '',
+        'picnic_site': '',
+        'attraction': '',
+        'artwork': '',
+        'museum': '',
+        'information': '',
+    },
+}
+
 table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
 grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
@@ -396,6 +564,8 @@ def read_line_from_csv():
             yield line
 
 osm_ids = {}
+yosm_type = None
+yosm_subtype = None
 with open(EXPORT_ES_FILE,'w') as out:
     print("Export ES json:")
     for line in read_line_from_csv():
@@ -424,6 +594,20 @@ with open(EXPORT_ES_FILE,'w') as out:
         if 'atm' in label_dict and label_dict['atm'] != 'no':
             desc += " " + " ".join(amend['atm'])
 
+        try:
+            for osmtype, _ in yosm_types.items():
+                if osmtype in label_dict:
+                    if osmtype in yosm_types[osmtype]: #and 'type' in yosm_types[osmtype][label_dict[osmtype]]:
+                        yosm_type = yosm_types[osmtype][label_dict[osmtype]]['type']
+                    else:
+                        yosm_type = yosm_types[osmtype]['type']
+                        if osmtype == 'restaurant':
+                            print("restaurant")
+        except KeyError as ex:
+            print(label_dict)
+            print("Key Error {}, {}, {}".format(ex, osmtype, label_dict))
+            raise
+
         if not line[1]:
             continue
         out.write(json.dumps({"index": {}}) + "\n")
@@ -431,4 +615,7 @@ with open(EXPORT_ES_FILE,'w') as out:
         lon = float(line[1])
         # # print({"name": line[0], "location": [lon,lat], "description": line[3]})
         # print(json.dumps({"name": name, "location": [lon,lat], "description": desc}))
-        out.write(json.dumps({"name": name, "location": [lon,lat], "description": desc, "labels": label_dict}) + "\n")
+        if yosm_type:
+            out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "description": desc, "labels": label_dict}) + "\n")
+        else:
+            out.write(json.dumps({"name": name, "location": [lon,lat], "description": desc, "labels": label_dict}) + "\n")
