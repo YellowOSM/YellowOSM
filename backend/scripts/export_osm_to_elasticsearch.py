@@ -12,7 +12,9 @@ parser.add_argument('--local',action="store_true", help="run script in local con
 args = vars(parser.parse_args())
 SERVER = not args['local']
 
+EXPORT_FILE = "/tmp/dump_small.osm"
 EXPORT_FILE = "/tmp/dump.osm"
+EXPORT_ES_FILE = "/tmp/osm_es_export_small.json"
 EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 
 # also export polygons
@@ -597,12 +599,32 @@ with open(EXPORT_ES_FILE,'w') as out:
         try:
             for osmtype, _ in yosm_types.items():
                 if osmtype in label_dict:
-                    if osmtype in yosm_types[osmtype]: #and 'type' in yosm_types[osmtype][label_dict[osmtype]]:
+                    # print("="*75)
+                    # print(label_dict[osmtype])
+                    if label_dict[osmtype] in yosm_types[osmtype] and \
+                        label_dict[osmtype] in yosm_types[osmtype] and \
+                        'type' in yosm_types[osmtype][label_dict[osmtype]]:
+
+                        # print("label_dict: " + label_dict[osmtype]) # hotel, pharmacy
+                        # print(yosm_types[osmtype])
+                        # print(yosm_types[osmtype][label_dict[osmtype]])
                         yosm_type = yosm_types[osmtype][label_dict[osmtype]]['type']
                     else:
                         yosm_type = yosm_types[osmtype]['type']
-                        if osmtype == 'restaurant':
-                            print("restaurant")
+                        # print(yosm_types[osmtype])
+
+                    # print("yosm_type: " + yosm_type)
+
+                    if not label_dict[osmtype] in yosm_types[osmtype] or \
+                        not 'label' in yosm_types[osmtype][label_dict[osmtype]] or \
+                        not yosm_types[osmtype][label_dict[osmtype]]['label']:
+
+                        yosm_label = " ".join(label_dict[osmtype].capitalize().split('_'))
+                        # print("yosm_label: " + yosm_label)
+                    else:
+                        yosm_label = " ".join(yosm_types[osmtype][label_dict[osmtype]]['label'].capitalize().split('_'))
+                        # print("yosm_label: " + yosm_label)
+
         except KeyError as ex:
             print(label_dict)
             print("Key Error {}, {}, {}".format(ex, osmtype, label_dict))
@@ -616,6 +638,6 @@ with open(EXPORT_ES_FILE,'w') as out:
         # # print({"name": line[0], "location": [lon,lat], "description": line[3]})
         # print(json.dumps({"name": name, "location": [lon,lat], "description": desc}))
         if yosm_type:
-            out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "description": desc, "labels": label_dict}) + "\n")
+            out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "label": yosm_label, "description": desc, "labels": label_dict}) + "\n")
         else:
             out.write(json.dumps({"name": name, "location": [lon,lat], "description": desc, "labels": label_dict}) + "\n")
