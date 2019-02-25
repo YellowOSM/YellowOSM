@@ -504,11 +504,12 @@ labels = [
     "addr_housename",
     "addr_housenumber",
     "addr_postcode",
+    "addr_unit",
     "addr_interpolation",
     "opening_hours",
     "website",
     "contact_website",
-    "contact_twitter",
+    "twitter", # contact:twitter
     "contact_whatsapp",
     "contact_facebook",
     "contact_telegram",
@@ -537,6 +538,7 @@ labels = [
     "building",
     "service",
     "name",
+    "name_de",
     "shop",
     "sport",
     "tourism",
@@ -551,10 +553,56 @@ labels = [
     "access",
     "fee",
     "healthcare",
-    "healthcare:speciality",
+    "healthcare_speciality",
+    "healthcare_speciality_de",
     "emergency",
+    "wheelchair",
+    "wifi",
+    "internet_access",
+    "diet_vegan",
+    "diet_vegetarian",
+    "takeaway",
+    "wikipedia",
+    "wikidata",
 ]
 
+cuisine_replacements = {
+    'italian': 'italienisch',
+    'chinese': 'chinesisch',
+    'asian': 'asiatisch',
+    'cake': 'Kuchen & Torten',
+    'austrian': 'österreichisch',
+    'ice_cream': 'Eis',
+    'german': 'deutsch',
+    'coffee_shop': 'Kaffeehaus',
+    'greek': 'griechisch',
+    'alpine_hut': 'Almhütte',
+    'turkish': 'türkisch',
+    'indian': 'indisch',
+    'japanese': 'japanisch'
+}
+
+healthcare_replacements = {
+    'general': 'allgemeine Medizin',
+    'gynaecology': 'Gynäkologie',
+    'internal': 'Innere Medizin',
+    'ophthalmology': 'Augenheilkunde',
+    'orthopaedics': 'Orthopädie',
+    'paediatrics': 'Kinderheilkunde',
+    'surgery': 'Chirurgie',
+    'otolaryngology': 'Hals-Nasen-Ohren-Heilkunde',
+    'urology': 'Urologie'
+}
+
+vending_replacements = {
+    'parking_tickets': 'Parkscheine',
+    'excrement_bags': 'Hundekotsackerl',
+    'public_transport_tickets': 'Öffitickets',
+    'cigarettes': 'Zigaretten',
+    'sweets': 'Süßigkeiten',
+    'newspapers': 'Zeitungen',
+    'chewing_gums': 'Kaugummi'
+}
 
 def read_line_from_csv():
     # format: name1,lon,lat,type1,*
@@ -629,6 +677,108 @@ with open(EXPORT_ES_FILE,'w') as out:
             print(label_dict)
             print("Key Error {}, {}, {}".format(ex, osmtype, label_dict))
             raise
+
+        if "name_de" in label_dict:
+            label_dict['name'] = label_dict['name_de']
+            del label_dict['name_de']
+        if "description_de" in label_dict:
+            label_dict['description_de'] = label_dict['description_de']
+            del label_dict['description_de']
+        if "smoking" in label_dict:
+            if label_dict['smoking'] in ['dedicated','yes','separated']:
+                label_dict['smoking'] = yes
+            else:
+                label_dict['smoking'] = no
+        # wheelchair leave the same
+
+        if 'wifi' in label_dict and \
+            label_dict['wifi'] in ['yes','free']:
+            label_dict['wifi'] = 'yes'
+        if 'internet_access' in label_dict and \
+            label_dict['internet_access'] in ['wlan','yes']:
+            label_dict['wifi'] = 'yes'
+            del label_dict['internet_access']
+
+        if 'diet_vegan' in label_dict:
+            if label_dict['diet_vegan'] in ['yes','only']:
+                label_dict['vegan'] = yes
+                label_dict['vegetrian'] = yes
+                del label_dict['diet_vegan']
+        if 'diet_vegetarian' in label_dict:
+            if label_dict['diet_vegetarian'] in ['yes','only']:
+                label_dict['vegetrian'] = yes
+                del label_dict['diet_vegetarian']
+
+        # takeaway leave the same
+
+        # atm leave the same
+
+        # leave phone the same
+        # just overwrite if contact_phone present
+        if 'contact_phone' in label_dict:
+            label_dict['phone'] = label_dict['contact_phone']
+            del label_dict['contact_phone']
+
+        # leave website the same
+        # just overwrite if contact_website present
+        if 'contact_website' in label_dict:
+            label_dict['website'] = label_dict['contact_website']
+            del label_dict['contact_website']
+        if 'contact_facebook' in label_dict and \
+            not 'website' in label_dict:
+            label_dict['website'] = label_dict['contact_facebook']
+            del label_dict['contact_facebook']
+
+        #  addr
+        if 'addr_street' in label_dict:
+            street = label_dict['addr_street']
+        else:
+            street = ""
+        if 'addr_place' in label_dict:
+            place = label_dict['addr_place']
+        else:
+            place = ""
+        if 'addr_housenumber' in label_dict:
+            hnumber = label_dict['addr_housenumber']
+        else:
+            hnumber = ""
+        if 'addr_unit' in label_dict:
+            unit = label_dict['addr_unit']
+        else:
+            unit = ""
+        if 'addr_postcode' in label_dict:
+            postcode = label_dict['addr_postcode']
+        else:
+            postcode = ""
+        if 'addr_city' in label_dict:
+            city = label_dict['addr_city']
+        else:
+            city = ""
+
+        # TODO delete addr: fields from final ES import
+
+        label_dict['address'] = (street or place) + ' ' + hnumber +
+            ((' ' + unit) if unit else '') + ', ' +
+            postcode + ' ' + city
+        # wikidata leave the same
+        # wikipedia leave the same
+
+        if 'cuisine' in label_dict and \
+            label_dict['cuisine'] in cuisine_replacements:
+            label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
+        if 'healthcare_speciality' in label_dict and \
+            label_dict['healthcare_speciality'] in healthcare_replacements:
+            label_dict['healthcare_speciality'] = healthcare_replacements[label_dict['healthcare']]
+        if 'healthcare_speciality_de' in label_dict:
+            label_dict['healthcare_speciality'] = label_dict['healthcare_speciality_de']
+            del label_dict['healthcare_speciality_de']
+        if 'vending' in label_dict and \
+            label_dict['vending'] in vending_replacements:
+            label_dict['vending'] = vending_replacements[label_dict['vending']]
+
+        # operator
+
+        # stars
 
         if not line[1]:
             continue
