@@ -12,9 +12,10 @@ parser.add_argument('--local',action="store_true", help="run script in local con
 args = vars(parser.parse_args())
 SERVER = not args['local']
 
-EXPORT_FILE = "/tmp/dump_small.osm"
+# EXPORT_FILE = "/tmp/dump_small.osm"
+# EXPORT_ES_FILE = "/tmp/osm_es_export_small.json"
+
 EXPORT_FILE = "/tmp/dump.osm"
-EXPORT_ES_FILE = "/tmp/osm_es_export_small.json"
 EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 
 # also export polygons
@@ -36,7 +37,7 @@ else:
 # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,l.name,lon,lat,p.{key},l.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id LEFT JOIN planet_osm_polygon AS l ON n.id = l.osm_id WHERE p.{key} = '{value}' OR l.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
 COMMAND1 = query_prefix + """
-        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'p',
         *
         FROM planet_osm_point AS p
         WHERE p.{key} = '{value}'
@@ -48,7 +49,7 @@ COMMAND1 = query_prefix + """
 COMMAND2, COMMAND4 = None, None
 if poly:
     COMMAND2 = query_prefix + """
-        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},
+        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},'w',
         *
         FROM planet_osm_polygon AS p
         WHERE p.{key} = '{value}'
@@ -59,7 +60,7 @@ if poly:
 
 # ANY:
 COMMAND3 = query_prefix + """
-        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'p',
         *
         FROM planet_osm_point AS p
         WHERE (p.{key} is not null AND p.{key} != 'vacant')
@@ -69,7 +70,7 @@ COMMAND3 = query_prefix + """
         # """
 if poly:
     COMMAND4 = query_prefix + """
-        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},\
+        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},'w',\
         *
         FROM planet_osm_polygon AS p
         WHERE (p.{key} is not null AND p.{key} != 'vacant')
@@ -79,7 +80,7 @@ if poly:
         # """
 
 COMMAND5 = query_prefix + """
-        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'p',
         *
         FROM planet_osm_point AS p
         WHERE (p.{key} is not null AND
@@ -91,7 +92,7 @@ COMMAND5 = query_prefix + """
         # """
 if poly:
     COMMAND6 = query_prefix + """
-        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},\
+        SELECT p.name,st_x(st_transform(st_centroid(p.way), 4326)),st_y(st_transform(st_centroid(p.way), 4326)),p.{key},'w',\
         *
         FROM planet_osm_polygon AS p
         WHERE (p.{key} is not null AND
@@ -497,6 +498,7 @@ grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
 """
 
 labels = [
+    "osm_data_type",
     "osm_id",
     "addr_city",
     "addr_street",
@@ -619,11 +621,13 @@ yosm_subtype = None
 with open(EXPORT_ES_FILE,'w') as out:
     print("Export ES json:")
     for line in read_line_from_csv():
+        if not line[1]:
+            continue
         # only export osm_id once
-        if line[4] in osm_ids:
+        if line[5] in osm_ids:
             continue
         else:
-            osm_ids[line[4]] = True
+            osm_ids[line[5]] = True
 
         name = line[0]
         desc = line[3]
@@ -686,9 +690,9 @@ with open(EXPORT_ES_FILE,'w') as out:
             del label_dict['description_de']
         if "smoking" in label_dict:
             if label_dict['smoking'] in ['dedicated','yes','separated']:
-                label_dict['smoking'] = yes
+                label_dict['smoking'] = 'yes'
             else:
-                label_dict['smoking'] = no
+                label_dict['smoking'] = 'no'
         # wheelchair leave the same
 
         if 'wifi' in label_dict and \
@@ -701,12 +705,12 @@ with open(EXPORT_ES_FILE,'w') as out:
 
         if 'diet_vegan' in label_dict:
             if label_dict['diet_vegan'] in ['yes','only']:
-                label_dict['vegan'] = yes
-                label_dict['vegetrian'] = yes
+                label_dict['vegan'] = 'yes'
+                label_dict['vegetrian'] = 'yes'
                 del label_dict['diet_vegan']
         if 'diet_vegetarian' in label_dict:
             if label_dict['diet_vegetarian'] in ['yes','only']:
-                label_dict['vegetrian'] = yes
+                label_dict['vegetrian'] = 'yes'
                 del label_dict['diet_vegetarian']
 
         # takeaway leave the same
@@ -757,31 +761,51 @@ with open(EXPORT_ES_FILE,'w') as out:
 
         # TODO delete addr: fields from final ES import
 
-        label_dict['address'] = (street or place) + ' ' + hnumber +
-            ((' ' + unit) if unit else '') + ', ' +
-            postcode + ' ' + city
+        # unit is optional
+        label_dict['address'] = (street or place) + \
+            ((' ' + hnumber) if hnumber else '') + \
+            ((' ' + unit) if unit else '') + \
+            ((', ' + postcode) if postcode else '') + \
+            ((' ' + city) if city else '')
+        if not label_dict['address']:
+            del label_dict['address']
+        elif not (street or place) or \
+            not hnumber or \
+            not postcode or \
+            not city:
+            label_dict['address_incomplete'] = True
+            label_dict['address'] = label_dict['address'].strip()
+
+
         # wikidata leave the same
         # wikipedia leave the same
 
         if 'cuisine' in label_dict and \
             label_dict['cuisine'] in cuisine_replacements:
             label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
-        if 'healthcare_speciality' in label_dict and \
-            label_dict['healthcare_speciality'] in healthcare_replacements:
-            label_dict['healthcare_speciality'] = healthcare_replacements[label_dict['healthcare']]
-        if 'healthcare_speciality_de' in label_dict:
-            label_dict['healthcare_speciality'] = label_dict['healthcare_speciality_de']
-            del label_dict['healthcare_speciality_de']
         if 'vending' in label_dict and \
             label_dict['vending'] in vending_replacements:
             label_dict['vending'] = vending_replacements[label_dict['vending']]
+        if 'healthcare_speciality' in label_dict and \
+            label_dict['healthcare_speciality'] in healthcare_replacements:
+            label_dict['healthcare_speciality'] = healthcare_replacements[label_dict['healthcare_speciality']]
+        if 'healthcare_speciality_de' in label_dict:
+            label_dict['healthcare_speciality'] = label_dict['healthcare_speciality_de']
+            del label_dict['healthcare_speciality_de']
+
+        if label_dict['osm_data_type'] == 'p': # point
+            label_dict['osm_data_type'] = 'point'
+        elif label_dict['osm_data_type'] == 'w':
+            if int(label_dict['osm_id']) < 0: # relation
+                label_dict['osm_data_type'] = 'relation'
+                label_dict['osm_id'] = abs(int(label_dict['osm_id']))
+            else: # way
+                label_dict['osm_data_type'] = 'way'
 
         # operator
 
         # stars
 
-        if not line[1]:
-            continue
         out.write(json.dumps({"index": {}}) + "\n")
         lat = float(line[2])
         lon = float(line[1])
