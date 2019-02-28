@@ -116,7 +116,7 @@ HEADER
 ***********************************/
 
 .header {
-  background: url('../img/bg-banner03.jpg') no-repeat fixed;
+  background: url('../img/bg-banner04.jpg') no-repeat fixed;
   background-size: cover;
   min-height: 650px;
   position: relative;
@@ -170,7 +170,7 @@ HEADER
 }
 
 .top-nav-collapse {
-  padding: 0;
+  padding: 0px;
   background: rgba(75, 75, 75, 0.9);
 }
 
@@ -192,7 +192,7 @@ HEADER
   padding: 0px;
   font-size: 24px;
   text-transform: uppercase;
-  padding: 15px 0px;
+  padding: 10px 0px;
   margin-top: 6px;
 }
 
