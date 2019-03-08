@@ -1,21 +1,20 @@
 @import '~ol/ol.css';
 
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-$theme-colors: (
-  "primary":    #ffd303,
-  "secondary":  #000,
-  //"success":    $success,
-  //"info":       $info,
-  //"warning":    $warning,
-  //"danger":     $danger,
-  //"light":      $light,
-  //"dark":       $dark
-);
+$color-primary: #ffd303;
+$color-secondary: #000;
 
-$fa-font-path : "~font-awesome/fonts";
-@import "~font-awesome/scss/font-awesome";
+//$fa-font-path : "~font-awesome/fonts";
+//@import "~font-awesome/scss/font-awesome";
 
+@import "scss/_material_theme.scss";
+@import "scss/_fonts.scss";
 @import "scss/_yosm.scss";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

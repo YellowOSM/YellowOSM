@@ -12,7 +12,7 @@ a:hover,
 a:active,
 a:focus,
 a:visited {
-  color: theme-color("secondary");
+  color: $color-secondary;
 }
 
 a {
@@ -36,7 +36,7 @@ a {
     position: fixed;
     width: 80px;
     height: 25px;
-    background: theme-color("primary");
+    background: $color-primary;
     top: 63px;
     right: -20px;
     text-align: center;
@@ -49,41 +49,32 @@ a {
   }
 }
 
-.header {
-  height: 57px;
-  width: 100%;
-  padding: 8px 5px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: #fff;
+.yosm__toolbar {
   z-index: 99;
 }
 
 .yosm__search {
   width: 100%;
-  margin-right: 5px;
-}
+  margin-left: 8px;
 
-.yosm__logo {
-  height: 42px;
-  display: block;
-  margin-right: 5px;
-
-  @include media-breakpoint-up(sm) {
-    margin-right: 10px;
+  .mat-form-field-label {
+    color: map_get($mat-grey, 500) !important;
   }
 }
 
-.search__input {
-  font-size: 18px;
-  font-weight: 100;
-  padding: 5px 30px 5px 5px;
-  text-overflow: ellipsis;
-  border-radius: 5px;
-  appearance: none;
-  border: 2px solid theme-color("primary");
-  width: 100%;
+.yosm__logo {
+  height: 30px;
+  display: block;
+}
+
+.yosm__logo-wrapper,
+.yosm__search-button-wrapper {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 30px;
 }
 
 .fa-crosshairs {
@@ -106,6 +97,12 @@ a {
   to   {transform: rotate(359deg);}
 }
 
+.yosm__map-wrapper {
+  &.inactive {
+    opacity: 0.25;
+  }
+}
+
 .map {
   width: 100%;
   height: calc(100vh - 77px);
@@ -116,8 +113,8 @@ a {
   bottom: 0;
   right: 0;
   left: 0;
-  background-color: theme-color("primary");
-  color: theme-color("primary");
+  background-color: $color-primary;
+  color: $color-primary;
   width: 100%;
   height: 0;
   padding: 10px 8px;
@@ -127,7 +124,7 @@ a {
 
   &.active {
     height: 300px;
-    color: theme-color(secondary);
+    color: $color-secondary;
   }
 
   h2 {
