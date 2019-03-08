@@ -5,7 +5,8 @@
   </a>
   <mat-form-field [floatLabel]="'never'" class="yosm__search">
     <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
-           [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin">
+           [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
+           (keydown.enter)="searchElasticSearch(); hideKeyboard()">
     <button mat-button *ngIf="searchFormControl.value" matSuffix mat-icon-button aria-label="Clear"
             (click)="searchFormControl.setValue(''); clearSearch()">
       <mat-icon>close</mat-icon>
