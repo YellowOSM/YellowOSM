@@ -17,7 +17,7 @@ IGNORED_FILES = [
 ]
 IGNORED_FILES.extend([ft.upper() for ft in IGNORED_FILES])
 
-TARGETSJSON = "/tmp/osm_crawler_200.json"
+TARGETSJSON = "/tmp/osm_crawler_255.jsona" # every line is a valid json string
 
 class YellowosmSpider(scrapy.Spider):
     name = 'yellowosm'
@@ -35,8 +35,10 @@ class YellowosmSpider(scrapy.Spider):
         """return iterable of requests (scrapy.Request(url,...))
         called only once
         default generates list from start_urls"""
+        targets = []
         with open(TARGETSJSON,'r') as myfile:
-            targets = json.loads(myfile.read())
+            for line in myfile.readlines():
+                targets.append(json.loads(line))
 
         for target in targets:
             self.logger.debug(target)
@@ -45,7 +47,16 @@ class YellowosmSpider(scrapy.Spider):
                 website = target['website']
             else:
                 website = target['contact_website']
-            website = website if website.startswith("http:") else "http://"+website
+            website = website if website.startswith("http") else "http://"+website
+
+            url = ''.join(website.split('/')[2])
+            url_path = CRAWLER_DEPOSITS + YellowosmSpider.name + "/" + url
+            os.makedirs(url_path, exist_ok=True)
+            # write known data to dir:
+            known_data_path = url_path + "/known_data"
+            with open(known_data_path, 'w') as kdfile:
+                kdfile.write(json.dumps(target))
+
             self.logger.debug(website)
             yield(scrapy.Request(website, self.parse))
 
