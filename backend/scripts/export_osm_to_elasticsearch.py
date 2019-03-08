@@ -165,6 +165,13 @@ export_tourism = { "key": "tourism",
                        # waypoint... guide_post
                        ]
                  }
+export_office = { "key": "office",
+                    "values":
+                       [
+                       # Anything goes...
+                       # waypoint... guide_post
+                       ]
+                 }
 export_craft = { "key": "craft",
                  "values":
                      ["bakery",
@@ -228,7 +235,7 @@ classes_to_export = [
     export_atm,
     export_healthcare,
     ]
-any_classes = [export_shop, export_tourism, export_craft,]
+any_classes = [export_shop, export_tourism, export_craft, export_office]
 special_access_classes = [export_leisure,]
 
 # additional info:
