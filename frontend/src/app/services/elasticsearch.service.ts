@@ -47,8 +47,8 @@ export class ElasticsearchService {
                     'fields': [
                         'labels.name^5',
                         'description^2',
-                        'labels.website^3',
-                        'labels.contact_website',
+                        // 'labels.website^3',
+                        // 'labels.contact_website',
                         // 'labels.addr_street',
                         'labels.addr_city',
                         'labels.amenity',
