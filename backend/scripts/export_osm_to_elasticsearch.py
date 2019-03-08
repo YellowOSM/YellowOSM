@@ -37,7 +37,7 @@ else:
 # COMMAND = "sudo -u postgres psql -d gis -c \"\copy (SELECT p.name,l.name,lon,lat,p.{key},l.{key} FROM planet_osm_nodes AS n LEFT JOIN planet_osm_point AS p ON n.id = p.osm_id LEFT JOIN planet_osm_polygon AS l ON n.id = l.osm_id WHERE p.{key} = '{value}' OR l.{key} = '{value}' LIMIT {limit}) TO STDOUT With CSV;\" | cat >> {file}"
 
 COMMAND1 = query_prefix + """
-        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'p',
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'n',
         *
         FROM planet_osm_point AS p
         WHERE p.{key} = '{value}'
@@ -60,7 +60,7 @@ if poly:
 
 # ANY:
 COMMAND3 = query_prefix + """
-        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'p',
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'n',
         *
         FROM planet_osm_point AS p
         WHERE (p.{key} is not null AND p.{key} != 'vacant')
@@ -80,7 +80,7 @@ if poly:
         # """
 
 COMMAND5 = query_prefix + """
-        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'p',
+        SELECT p.name,st_x(st_transform(p.way, 4326)),st_y(st_transform(p.way, 4326)),p.{key},'n',
         *
         FROM planet_osm_point AS p
         WHERE (p.{key} is not null AND
@@ -800,8 +800,8 @@ with open(EXPORT_ES_FILE,'w') as out:
             label_dict['healthcare_speciality'] = label_dict['healthcare_speciality_de']
             del label_dict['healthcare_speciality_de']
 
-        if label_dict['osm_data_type'] == 'p': # point
-            label_dict['osm_data_type'] = 'point'
+        if label_dict['osm_data_type'] == 'n': # node
+            label_dict['osm_data_type'] = 'node'
         elif label_dict['osm_data_type'] == 'w':
             if int(label_dict['osm_id']) < 0: # relation
                 label_dict['osm_data_type'] = 'relation'
