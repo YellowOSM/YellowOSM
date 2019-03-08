@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-
+import {FormControl} from '@angular/forms';
 import {environment} from '../../environments/environment';
 
 import OlMap from 'ol/Map';
@@ -20,6 +20,9 @@ import {ATTRIBUTION} from 'ol/source/OSM.js';
 
 import {ElasticsearchService} from '../services/elasticsearch.service';
 import {Geo58Service} from '../services/geo58.service';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-yellowmap',
@@ -27,12 +30,14 @@ import {Geo58Service} from '../services/geo58.service';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
+  searchFormControl = new FormControl();
+  filteredOptions: Observable<string[]>;
+  options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
   map: OlMap;
   source: OlXYZ;
   layer: OlTileLayer;
   esLayer: VectorLayer;
   view: OlView;
-  userQuery = '';
   esIsConnected = false;
   esStatus: string;
   esSearchResult = [];
@@ -83,7 +88,18 @@ export class YellowmapComponent implements OnInit {
     this.esIsConnected = false;
   }
 
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
   ngOnInit() {
+    this.filteredOptions = this.searchFormControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value))
+    );
+
     this.initElasticsearch();
 
     this.source = new OlXYZ({
@@ -189,7 +205,6 @@ export class YellowmapComponent implements OnInit {
   }
 
   hideKeyboard() {
-    console.log('hideKeyboard');
     this.searchInput.nativeElement.blur();
   }
 
@@ -235,7 +250,7 @@ export class YellowmapComponent implements OnInit {
 
     const urlSearchTerm = this.route.snapshot.paramMap.get('q');
     if (urlSearchTerm) {
-      this.userQuery = urlSearchTerm;
+      this.searchFormControl.setValue(urlSearchTerm);
       this.searchElasticSearch();
     }
   }
@@ -320,7 +335,7 @@ export class YellowmapComponent implements OnInit {
 
   searchElasticSearch() {
     this.clearSearch();
-    if (this.userQuery.length < 2) {
+    if (!this.searchFormControl.value || this.searchFormControl.value.length < 2) {
       return;
     }
     const extent = this.view.calculateExtent(this.map.getSize());
@@ -328,7 +343,7 @@ export class YellowmapComponent implements OnInit {
     const bottomRight = toLonLat(getBottomRight(extent));
     const center = toLonLat(this.view.getCenter());
 
-    this.es.fullTextSearch(this.userQuery, topLeft, bottomRight, center).then((result) => {
+    this.es.fullTextSearch(this.searchFormControl.value, topLeft, bottomRight, center).then((result) => {
       this.esStatus = 'OK';
       console.log(result);
       if (result !== null && result.hits.total > 0) {

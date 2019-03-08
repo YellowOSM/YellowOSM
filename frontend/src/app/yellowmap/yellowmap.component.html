@@ -1,15 +1,32 @@
 <div class="yosm__container">
-  <div class="header">
-    <a href="/">
-      <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
-    </a>
-    <div class="yosm__search">
-      <input type="text" placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [(ngModel)]="userQuery"
-             class="search__input" (keyup)="searchElasticSearch()" (keydown.enter)="hideKeyboard()" #searchInput>
-      <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
-         (click)="getLocation()"></i>
-    </div>
+<mat-toolbar color="secondary" class="yosm__toolbar">
+  <a href="/" class="yosm__logo-wrapper">
+    <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
+  </a>
+  <mat-form-field [floatLabel]="'never'" class="yosm__search">
+    <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
+           [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin">
+    <button mat-button *ngIf="searchFormControl.value" matSuffix mat-icon-button aria-label="Clear"
+            (click)="searchFormControl.setValue(''); clearSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <div class="yosm__search-button-wrapper">
+    <mat-icon (click)="searchElasticSearch(); hideKeyboard()">search</mat-icon>
   </div>
+
+</mat-toolbar>
+
+<div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
+
+<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" panelWidth="100%" >
+  <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="searchElasticSearch()">
+    {{option}}
+  </mat-option>
+</mat-autocomplete>
+
+<div class="yosm__map-wrapper">
   <div id="map" class="map"></div>
   <div [className]="selectionDetails ? 'details__wrapper active' : 'details__wrapper'">
     <h2>{{selectionDetails}}</h2>
@@ -33,4 +50,5 @@
       OSM-Link
     </a>
   </div>
+</div>
 </div>

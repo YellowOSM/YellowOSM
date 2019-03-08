@@ -9,9 +9,10 @@
 $color-primary: #ffd303;
 $color-secondary: #000;
 
-$fa-font-path : "~font-awesome/fonts";
-@import "~font-awesome/scss/font-awesome";
+//$fa-font-path : "~font-awesome/fonts";
+//@import "~font-awesome/scss/font-awesome";
 
+@import "scss/_material_theme.scss";
 @import "scss/_fonts.scss";
 @import "scss/_yosm.scss";
 
