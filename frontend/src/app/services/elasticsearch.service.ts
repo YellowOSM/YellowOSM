@@ -49,7 +49,7 @@ export class ElasticsearchService {
                         'description^2',
                         'labels.website^3',
                         'labels.contact_website',
-                        'labels.addr_street',
+                        // 'labels.addr_street',
                         'labels.addr_city',
                         'labels.amenity',
                         'labels.tourism',
@@ -61,32 +61,32 @@ export class ElasticsearchService {
                         'labels.emergency',
                         'labels.healthcare_speciality'
                     ]
-                  },
-              },
-              {
-                'query_string':
-                  {
-                    'query': userQuery.trim().replace(' ', '~ ') + '~',
-                    'default_operator': 'AND',
-                    'fields': [
-                        'labels.name^5',
-                        'description^2',
-                        'labels.website^3',
-                        'labels.contact_website',
-                        'labels.addr_street',
-                        'labels.addr_city',
-                        'labels.amenity',
-                        'labels.tourism',
-                        'labels.sport',
-                        'labels.craft',
-                        'labels.leisure',
-                        'labels.shop',
-                        'labels.healthcare',
-                        'labels.emergency',
-                        'labels.healthcare_speciality'
-                    ]
-                  },
+                  }
               }
+              // ,{
+              //   'query_string':
+              //     {
+              //       'query': userQuery.trim().replace(' ', '~ ') + '~',
+              //       'default_operator': 'AND',
+              //       'fields': [
+              //           'labels.name^5',
+              //           'description^2',
+              //           'labels.website^3',
+              //           'labels.contact_website',
+              //           'labels.addr_street',
+              //           'labels.addr_city',
+              //           'labels.amenity',
+              //           'labels.tourism',
+              //           'labels.sport',
+              //           'labels.craft',
+              //           'labels.leisure',
+              //           'labels.shop',
+              //           'labels.healthcare',
+              //           'labels.emergency',
+              //           'labels.healthcare_speciality'
+              //       ]
+              //     },
+              // }
             ],
             'minimum_should_match': 1,
             'filter': {
