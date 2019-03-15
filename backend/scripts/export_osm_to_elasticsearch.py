@@ -594,7 +594,8 @@ cuisine_replacements = {
     'alpine_hut': 'Almhütte',
     'turkish': 'türkisch',
     'indian': 'indisch',
-    'japanese': 'japanisch'
+    'japanese': 'japanisch',
+    'mexican': 'mexikanisch'
 }
 
 healthcare_replacements = {
