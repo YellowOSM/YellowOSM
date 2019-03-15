@@ -30,7 +30,7 @@ import {MatAutocompleteTrigger} from '@angular/material';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
-  private selectedFeature: Feature = null;
+  selectedFeature: Feature = null;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
