@@ -16,12 +16,17 @@ IGNORED_FILES = [
                     ".tiff",
 ]
 IGNORED_FILES.extend([ft.upper() for ft in IGNORED_FILES])
-
-TARGETSJSON = "/tmp/osm_crawler_255.jsona" # every line is a valid json string
+NO_FOLLOW_LINK = [
+                "tel:",
+                "mailto:",
+                "callto:",
+]
+TARGETSJSON = "/tmp/osm_crawler_at.jsona" # every line is a valid json string
 
 class YellowosmSpider(scrapy.Spider):
     name = 'yellowosm'
     start_urls = [
+        # 'https://love-it.at',
         # 'https://flo.cx',
         # 'https://www.daniellamprecht.com/',
     ]
@@ -43,10 +48,18 @@ class YellowosmSpider(scrapy.Spider):
         for target in targets:
             self.logger.debug(target)
             target = target['labels']
+            self.logger.info("will scrape: " + target['website'])
+
             if 'website' in target:
                 website = target['website']
             else:
-                website = target['contact_website']
+                self.logger.debug("no website found for OSM_ID: " + str(target['osm_id']))
+                # import pdb; pdb.set_trace()
+                continue
+
+            if '\\' in website:
+                website = website.replace('\\','/')
+
             website = website if website.startswith("http") else "http://"+website
 
             url = ''.join(website.split('/')[2])
@@ -57,7 +70,6 @@ class YellowosmSpider(scrapy.Spider):
             with open(known_data_path, 'w') as kdfile:
                 kdfile.write(json.dumps(target))
 
-            self.logger.debug(website)
             yield(scrapy.Request(website, self.parse))
 
 
@@ -122,5 +134,8 @@ class YellowosmSpider(scrapy.Spider):
         for href in response.xpath('//a/@href').getall():
             for el in IGNORED_FILES:
                 if href.endswith(el):
+                    continue
+            for el in NO_FOLLOW_LINK:
+                if href.startswith(el):
                     continue
             yield scrapy.Request(response.urljoin(href), self.parse)
