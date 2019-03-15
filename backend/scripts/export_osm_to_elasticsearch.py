@@ -129,6 +129,7 @@ export_amenity = { "key": "amenity",
                         "sports_centre",
                         "arts_centre",
                         "theatre",
+                        "marketplace",
                         # TODO get new tags from taginfo...
                         ]
                  }
@@ -299,6 +300,7 @@ amend = {
     "doctor": ["Arzt", "Doktor"],
     "hospital": ["Spital", "Hospital", "Krankenhaus"],
     "dentist": ["Zahnarzt"],
+    "marketplace": ["Marktplatz", "Bauernmarkt", "Markt"],
     # "": ["",],
 }
 
@@ -400,6 +402,10 @@ yosm_types = {
         'fuel': {
             'type': 'fuel',
             'label': 'Tankstelle',
+        },
+        'marketplace': {
+            'type': 'marketplace',
+            'label': 'Marktplatz',
         },
     },
     'healthcare': {
