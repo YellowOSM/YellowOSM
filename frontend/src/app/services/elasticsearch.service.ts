@@ -42,7 +42,7 @@ export class ElasticsearchService {
               {
                 'query_string':
                   {
-                    'query': userQuery.trim().replace(' ', '* ') + '*',
+                    'query': userQuery.trim() + '*',
                     'default_operator': 'AND',
                     'fields': [
                         'labels.name^5',
@@ -63,30 +63,6 @@ export class ElasticsearchService {
                     ]
                   }
               }
-              // ,{
-              //   'query_string':
-              //     {
-              //       'query': userQuery.trim().replace(' ', '~ ') + '~',
-              //       'default_operator': 'AND',
-              //       'fields': [
-              //           'labels.name^5',
-              //           'description^2',
-              //           'labels.website^3',
-              //           'labels.contact_website',
-              //           'labels.addr_street',
-              //           'labels.addr_city',
-              //           'labels.amenity',
-              //           'labels.tourism',
-              //           'labels.sport',
-              //           'labels.craft',
-              //           'labels.leisure',
-              //           'labels.shop',
-              //           'labels.healthcare',
-              //           'labels.emergency',
-              //           'labels.healthcare_speciality'
-              //       ]
-              //     },
-              // }
             ],
             'minimum_should_match': 1,
             'filter': {
@@ -108,53 +84,6 @@ export class ElasticsearchService {
       }
     });
   }
-  //   body: {
-  //     'size': 300,
-  //     'query': {
-  //       'bool': {
-  //         'must': {
-  //           'multi_match': {
-  //             'type': 'cross_fields',
-  //             'query':  userQuery.trim().replace(' ', '* ') + '*',
-  //             'fields': [
-  //               'labels.name^5',
-  //               'description^2',
-  //               'labels.website^3',
-  //               'labels.contact_website',
-  //               'labels.website',
-  //               'labels.addr_street',
-  //               'labels.addr_city',
-  //               'labels.amenity',
-  //               'labels.tourism',
-  //               'labels.sport',
-  //               'labels.craft',
-  //               'labels.leisure',
-  //               'labels.shop',
-  //               'labels.healthcare',
-  //               'labels.emergency',
-  //               'labels.healthcare_speciality'
-  //             ]
-  //           }
-  //         },
-  //         'filter': {
-  //           'geo_bounding_box': {
-  //             'location': {
-  //               'top_left': {
-  //                 'lat': topLeft[1],
-  //                 'lon': topLeft[0]
-  //               },
-  //               'bottom_right': {
-  //                 'lat': bottomRight[1],
-  //                 'lon': bottomRight[0]
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   });
-  // }
 
   searchByOsmId(osmId: string): any {
     return this.client.search({

@@ -1,27 +1,27 @@
 <div class="yosm__container">
-<mat-toolbar color="secondary" class="yosm__toolbar">
+<mat-toolbar color="secondary" class="yosm__toolbar mat-elevation-z3">
   <a href="/" class="yosm__logo-wrapper">
     <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
   </a>
   <mat-form-field [floatLabel]="'never'" class="yosm__search">
     <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
            [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
-           (keydown.enter)="searchElasticSearch(); hideKeyboard()">
-    <button mat-button *ngIf="searchFormControl.value" matSuffix mat-icon-button aria-label="Clear"
+           (keydown.enter)="searchElasticSearch()">
+    <button mat-icon-button *ngIf="searchFormControl.value" matSuffix aria-label="Clear"
             (click)="searchFormControl.setValue(''); clearSearch()">
       <mat-icon>close</mat-icon>
     </button>
   </mat-form-field>
 
   <div class="yosm__search-button-wrapper">
-    <mat-icon (click)="searchElasticSearch(); hideKeyboard()">search</mat-icon>
+    <mat-icon (click)="searchElasticSearch()">search</mat-icon>
   </div>
 
 </mat-toolbar>
 
 <div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
 
-<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" panelWidth="100%" >
+<mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3">
   <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="searchElasticSearch()">
     {{option}}
   </mat-option>

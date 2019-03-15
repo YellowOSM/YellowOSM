@@ -16,12 +16,12 @@ import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
-import {ATTRIBUTION} from 'ol/source/OSM.js';
 
 import {ElasticsearchService} from '../services/elasticsearch.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
+import {MatAutocompleteTrigger} from '@angular/material';
 
 
 @Component({
@@ -42,6 +42,8 @@ export class YellowmapComponent implements OnInit {
   esSearchResult = [];
   esSource: VectorSource;
   geoLocationLoading = false;
+  @ViewChild('searchInput', { read: MatAutocompleteTrigger })
+  autocomplete: MatAutocompleteTrigger;
   @ViewChild('searchInput')
   searchInput: ElementRef;
   previousUrlParams = {
@@ -66,9 +68,6 @@ export class YellowmapComponent implements OnInit {
 
     this.source = new OlXYZ({
       url: environment.tileServerURL,
-      attributions: [
-        ATTRIBUTION
-      ]
     });
 
     this.layer = new OlTileLayer({
@@ -92,9 +91,6 @@ export class YellowmapComponent implements OnInit {
             geometry: new Point(lonLat),
             labels: result['_source']['labels']
           });
-          if (that.selectedFeature && (result['_source']['labels']['osm_id'] === that.selectedFeature.labels['osm_id'])) {
-            that.selectedFeature = featurething;
-          }
           that.esSource.addFeature(featurething);
         });
       },
@@ -129,6 +125,7 @@ export class YellowmapComponent implements OnInit {
         this.layer,
         this.esLayer
       ],
+      controls: [],
       view: this.view
     });
 
@@ -162,6 +159,10 @@ export class YellowmapComponent implements OnInit {
 
   public hideKeyboard() {
     this.searchInput.nativeElement.blur();
+  }
+
+  public closeAutocomplete() {
+    this.autocomplete.closePanel();
   }
 
   public updateUrl(evt) {
@@ -213,6 +214,10 @@ export class YellowmapComponent implements OnInit {
 
   public searchElasticSearch() {
     this.clearSearch();
+    this.selectedFeature = null;
+    this.hideKeyboard();
+    this.closeAutocomplete();
+
     if (!this.searchFormControl.value || this.searchFormControl.value.length < 2) {
       return;
     }
@@ -238,14 +243,6 @@ export class YellowmapComponent implements OnInit {
 
   private clearSearch() {
     this.esSearchResult = [];
-    const source = this.esLayer.getSource();
-    source.forEachFeature((feature) => {
-      if (feature === this.selectedFeature) {
-        return;
-      }
-      source.removeFeature(feature);
-    });
-    this.esLayer.getSource().refresh();
   }
 
   public getLocation() {
