@@ -13,9 +13,9 @@ export const environment = {
   // HOT:
   // tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
   // Stamen no SSL:
-  tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',
+  // tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',
   // osm.de:
-  // tileServerURL: '//d.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
+  tileServerURL: '//d.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   apiBaseUrl: '//localhost:5000/api',
   shortLinkBaseUrl: 'http://localhost:5000/api/redirect_geo58'
 };
