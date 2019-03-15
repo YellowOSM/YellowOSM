@@ -204,7 +204,8 @@ export class YellowmapComponent implements OnInit {
   }
 
   public hideKeyboard() {
-    this.searchInput.nativeElement.blur();
+    // this.searchInput.nativeElement.blur();
+    console.log('TODO: blurring breaks Android search');
   }
 
   public closeAutocomplete() {
