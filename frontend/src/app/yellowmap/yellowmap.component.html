@@ -29,22 +29,10 @@
 
 <div class="yosm__map-wrapper">
   <div id="map" class="map"></div>
-  <div [className]="selectionDetails ? 'details__wrapper active' : 'details__wrapper'">
-    <h2>{{selectionDetails}}</h2>
-    <div class="details">
-      <ng-container *ngFor="let key of detailKeys">
-        <div class="detail__element" *ngIf="selectionLabels[key]">
-          <span class="detail__label">{{ key }}: </span>
-          <span class="detail__value" [innerHTML]="selectionLabels[key]"></span>
-        </div>
-      </ng-container>
-      <div class="details__permalink" *ngIf="selectionPermaLink">
-        Permalink: <a [href]="selectionPermaLink" target="_blank">{{selectionPermaLink}}</a>
-      </div>
-    </div>
+  <div [className]="selectedFeature ? 'details__wrapper active' : 'details__wrapper'">
+    <app-location-detail [feature]="selectedFeature"></app-location-detail>
   </div>
   <div class="footer">
-    <a href="/">über YellowOSM</a>
     <a class="footer__osm-link"
        href="https://osm.org/#map={{previousUrlParams['zoom']}}/{{previousUrlParams['lat']}}/{{previousUrlParams['lon']}}"
        target="_blank">

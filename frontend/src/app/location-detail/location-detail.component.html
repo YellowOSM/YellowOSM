@@ -1,0 +1,17 @@
+<div class="location-detail" *ngIf="feature">
+  <h2>{{ labels['name'] }}</h2>
+  <div class="details">
+    <ng-container *ngFor="let label of labels | keyvalue">
+      <div class="detail__element">
+        <span class="detail__label">{{ label.key }}: </span>
+        <span class="detail__value" [innerHTML]="label.value"></span>
+      </div>
+    </ng-container>
+    <div class="details__permalink" *ngIf="permalink">
+      Permalink:
+      <a [href]="permalink" target="_blank">
+      {{permalink}}
+    </a>
+    </div>
+  </div>
+</div>
