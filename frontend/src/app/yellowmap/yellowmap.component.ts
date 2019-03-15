@@ -7,6 +7,7 @@ import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
+import Geolocation from 'ol/Geolocation.js';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
@@ -36,13 +37,13 @@ export class YellowmapComponent implements OnInit {
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
   map: OlMap;
   source: OlXYZ;
-  layer: OlTileLayer;
   esLayer: VectorLayer;
   view: OlView;
   esSearchResult = [];
   esSource: VectorSource;
+  geoLocation: Geolocation;
   geoLocationLoading = false;
-  @ViewChild('searchInput', { read: MatAutocompleteTrigger })
+  @ViewChild('searchInput', {read: MatAutocompleteTrigger})
   autocomplete: MatAutocompleteTrigger;
   @ViewChild('searchInput')
   searchInput: ElementRef;
@@ -70,7 +71,7 @@ export class YellowmapComponent implements OnInit {
       url: environment.tileServerURL,
     });
 
-    this.layer = new OlTileLayer({
+    const layer = new OlTileLayer({
       source: this.source
     });
 
@@ -119,11 +120,56 @@ export class YellowmapComponent implements OnInit {
       strategy: bboxStrategy
     });
 
+    this.geoLocation = new Geolocation({
+      trackingOptions: {
+        enableHighAccuracy: true
+      },
+      projection: this.view.getProjection()
+    });
+
+    // handle geolocation error.
+    this.geoLocation.on('error', (error) => {
+      console.log('YOSM GEO ERROR');
+      console.log(error);
+    });
+
+    const accuracyFeature = new Feature();
+    this.geoLocation.on('change:accuracyGeometry', () => {
+      accuracyFeature.setGeometry(this.geoLocation.getAccuracyGeometry());
+    });
+
+    const positionFeature = new Feature();
+    positionFeature.setStyle(new Style({
+      image: new CircleStyle({
+        radius: 6,
+        fill: new Fill({
+          color: '#3399CC'
+        }),
+        stroke: new Stroke({
+          color: '#fff',
+          width: 2
+        })
+      })
+    }));
+
+    this.geoLocation.on('change:position', () => {
+      const coordinates = this.geoLocation.getPosition();
+      positionFeature.setGeometry(coordinates ?
+        new Point(coordinates) : null);
+    });
+
+    const geoLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [accuracyFeature, positionFeature]
+      })
+    });
+
     this.map = new OlMap({
       target: 'map',
       layers: [
-        this.layer,
-        this.esLayer
+        layer,
+        this.esLayer,
+        geoLayer
       ],
       controls: [],
       view: this.view
@@ -246,6 +292,7 @@ export class YellowmapComponent implements OnInit {
   }
 
   public getLocation() {
+    this.geoLocation.setTracking(true);
     this.geoLocationLoading = true;
     navigator.geolocation.getCurrentPosition((pos) => {
         const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
