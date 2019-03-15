@@ -15,6 +15,7 @@ $color-secondary: #000;
 @import "scss/_material_theme.scss";
 @import "scss/_fonts.scss";
 @import "scss/_yosm.scss";
+@import "scss/_map.scss";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

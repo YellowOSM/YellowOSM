@@ -1,43 +1,44 @@
 <div class="yosm__container">
-<mat-toolbar color="secondary" class="yosm__toolbar mat-elevation-z3">
-  <a href="/" class="yosm__logo-wrapper">
-    <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
-  </a>
-  <mat-form-field [floatLabel]="'never'" class="yosm__search">
-    <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
-           [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
-           (keydown.enter)="searchElasticSearch()">
-    <button mat-icon-button *ngIf="searchFormControl.value" matSuffix aria-label="Clear"
-            (click)="searchFormControl.setValue(''); clearSearch()">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
-
-  <div class="yosm__search-button-wrapper">
-    <mat-icon (click)="searchElasticSearch()">search</mat-icon>
-  </div>
-
-</mat-toolbar>
-
-<div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
-
-<mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3">
-  <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="searchElasticSearch()">
-    {{option}}
-  </mat-option>
-</mat-autocomplete>
-
-<div class="yosm__map-wrapper">
-  <div id="map" class="map"></div>
-  <div [className]="selectedFeature ? 'details__wrapper active' : 'details__wrapper'">
-    <app-location-detail [feature]="selectedFeature"></app-location-detail>
-  </div>
-  <div class="footer">
-    <a class="footer__osm-link"
-       href="https://osm.org/#map={{previousUrlParams['zoom']}}/{{previousUrlParams['lat']}}/{{previousUrlParams['lon']}}"
-       target="_blank">
-      OSM-Link
+  <mat-toolbar color="secondary" class="search__toolbar mat-elevation-z3">
+    <a href="/" class="search__logo-wrapper">
+      <img class="search__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
     </a>
+    <mat-form-field [floatLabel]="'never'" class="search__input">
+      <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
+             [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
+             (keydown.enter)="searchElasticSearch()">
+    </mat-form-field>
+
+    <div class="search__button">
+      <mat-icon *ngIf="!searchFormControl.value">search</mat-icon>
+      <mat-icon *ngIf="searchFormControl.value" (click)="searchFormControl.setValue(''); clearSearch()">close</mat-icon>
+    </div>
+
+  </mat-toolbar>
+
+  <div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
+
+  <mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3">
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="searchElasticSearch()">
+      {{option}}
+    </mat-option>
+  </mat-autocomplete>
+
+  <div class="map__wrapper">
+    <div id="map" class="map"></div>
+    <div class="map__beta-sleeve mat-elevation-z2">BETA</div>
+    <div class="map__link map__osm-link">
+      <a
+        href="https://osm.org/#map={{previousUrlParams['zoom']}}/{{previousUrlParams['lat']}}/{{previousUrlParams['lon']}}"
+        target="_blank">
+        in OSM ansehen
+      </a>
+    </div>
+    <div class="map__link map__contrib-link">
+      © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors
+    </div>
   </div>
 </div>
-</div>
+
+<app-location-detail [feature]="selectedFeature" [className]="selectedFeature ? 'active' : ''"></app-location-detail>
+
