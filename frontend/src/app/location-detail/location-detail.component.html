@@ -9,7 +9,11 @@
   </div>
 
   <ul class="location-detail__main">
-    <li *ngIf="locationSubType">{{ locationSubType }}</li>
+    <li>
+      <span *ngIf="locationSubType">{{ locationSubType }} ⋅ </span>
+      <span class="location-open" *ngIf="open_now">jetzt geöffnet</span>
+      <span class="location-closed" *ngIf="!open_now">jetzt geschlossen</span>
+    </li>
     <li *ngIf="labels['address']">{{ labels['address'] }}</li>
   </ul>
   <div class="location-buttons">
@@ -37,6 +41,9 @@
         <div>Website</div>
       </a>
     </div>
+  </div>
+  <div class="details__hours">
+    {{ opening_hours }}
   </div>
   <div class="details">
     <div class="details__permalink" *ngIf="permalink">

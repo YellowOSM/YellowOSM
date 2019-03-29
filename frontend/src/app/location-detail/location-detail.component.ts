@@ -1,5 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Geo58Service} from '../services/geo58.service';
+import * as opening_hours from 'opening_hours';
 import {environment} from '../../environments/environment';
 import Feature from 'ol/Feature';
 import {toLonLat} from 'ol/proj';
@@ -25,6 +26,8 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   locationType = '';
   locationSubType = '';
   labels: object = {};
+  opening_hours = '';
+  open_now = false;
 
   constructor(
     private geo58service: Geo58Service
@@ -48,6 +51,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     this.labels = this.feature.values_.labels;
     const lonLat = toLonLat(this.feature.getGeometry().getCoordinates());
     this.permalink = this.getPermalink(lonLat);
+    this.parseOpeningHours();
   }
 
   private getPermalink(lonLat: object) {
@@ -76,12 +80,21 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   private getShortLink(propertyUrlPart, lonLat) {
     this.geo58service.toGeo58(19, lonLat[1], lonLat[0])
       .subscribe(hashUrl => {
-          console.log(hashUrl);
           this.permalink = environment.shortLinkBaseUrl + '/' + hashUrl['g58'] + ';' + propertyUrlPart;
         },
         error => {
           console.error('Error: Geo58 link could net be retrieved');
           console.error(error);
         });
+  }
+
+  private parseOpeningHours() {
+    if (!this.feature.values_.labels['opening_hours']) {
+      return '';
+    }
+
+    const oh = new opening_hours(this.feature.values_.labels['opening_hours']);
+    this.opening_hours = this.feature.values_.labels['opening_hours'];
+    this.open_now = oh.getState();
   }
 }

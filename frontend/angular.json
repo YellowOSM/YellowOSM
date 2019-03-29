@@ -29,7 +29,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/opening_hours/opening_hours.js"
+            ]
           },
           "configurations": {
             "test": {
