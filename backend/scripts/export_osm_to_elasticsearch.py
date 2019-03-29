@@ -588,7 +588,7 @@ labels = [
 ]
 
 cuisine_replacements = {
-    'vegetrian': 'vegetarisch',
+    'vegetarian': 'vegetarisch',
     'italian': 'italienisch',
     'chinese': 'chinesisch',
     'french': 'französisch',
@@ -742,11 +742,11 @@ with open(EXPORT_ES_FILE,'w') as out:
         if 'diet_vegan' in label_dict:
             if label_dict['diet_vegan'] in ['yes','only']:
                 label_dict['vegan'] = 'yes'
-                label_dict['vegetrian'] = 'yes'
+                label_dict['vegetarian'] = 'yes'
                 del label_dict['diet_vegan']
         if 'diet_vegetarian' in label_dict:
             if label_dict['diet_vegetarian'] in ['yes','only']:
-                label_dict['vegetrian'] = 'yes'
+                label_dict['vegetarian'] = 'yes'
                 del label_dict['diet_vegetarian']
 
         # takeaway leave the same
