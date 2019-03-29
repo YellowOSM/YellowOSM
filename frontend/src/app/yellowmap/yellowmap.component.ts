@@ -31,6 +31,7 @@ import {MatAutocompleteTrigger} from '@angular/material';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
+  DEBUG = false;
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
@@ -93,10 +94,16 @@ export class YellowmapComponent implements OnInit {
           const lonLat = fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]);
           const featurething = new Feature({
             name: result['_source']['name'],
+            locationType: result['_source']['type'],
+            locationSubType: result['_source']['subtype'],
             geometry: new Point(lonLat),
             labels: result['_source']['labels']
           });
           that.esSource.addFeature(featurething);
+          if (this.DEBUG && !this.selectedFeature) {
+            this.selectedFeature = featurething;
+            console.log(featurething);
+          }
         });
       },
       strategy: bboxStrategy
@@ -184,6 +191,7 @@ export class YellowmapComponent implements OnInit {
       const features = this.map.getFeaturesAtPixel(event.pixel);
       if (features) {
         this.selectedFeature = features[0];
+        console.log(features[0]);
       } else {
         this.selectedFeature = null;
       }
@@ -204,6 +212,12 @@ export class YellowmapComponent implements OnInit {
     this.map.once('moveend', (evt) => {
       this.openNode();
     });
+
+    // DEBUG
+    if (this.DEBUG) {
+      this.searchFormControl.setValue('moser');
+      this.searchElasticSearch();
+    }
   }
 
   public updateUrl(evt) {
@@ -369,16 +383,6 @@ export class YellowmapComponent implements OnInit {
     const filterValue = value.toLowerCase();
 
     return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
-  }
-
-  public onResize(event) {
-    const height = event.target.window.innerHeight - this.toolbarElement.nativeElement.offsetHeight;
-    console.log('resizing to ' + height + 'px');
-    // this.mapElement.nativeElement.style.height = height.toString() + 'px';
-  }
-
-  private initMapHeight() {
-    window.dispatchEvent(new Event('resize'));
   }
 
   public removeSearchText() {

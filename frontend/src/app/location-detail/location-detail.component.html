@@ -1,17 +1,49 @@
 <div class="location-detail" *ngIf="feature">
-  <h2>{{ labels['name'] }}</h2>
+  <h1>{{ labels['name'] }}</h1>
+  <div class="location-properties">
+    <div *ngIf="labels['wifi']"><mat-icon>wifi</mat-icon></div>
+    <div *ngIf="labels['smoking'] == 'yes'"><mat-icon>smoking_rooms</mat-icon></div>
+    <div *ngIf="labels['smoking'] == 'no'"><mat-icon>smoke_free</mat-icon></div>
+    <div *ngIf="labels['vegetarian'] == 'yes'"><img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location-icon"></div>
+    <div *ngIf="labels['wheelchair'] == 'yes'"><img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location-icon"></div>
+  </div>
+
+  <ul class="location-detail__main">
+    <li *ngIf="locationSubType">{{ locationSubType }}</li>
+    <li *ngIf="labels['address']">{{ labels['address'] }}</li>
+  </ul>
+  <div class="location-buttons">
+    <div *ngIf="labels['phone']">
+      <a [href]="'tel:' + labels['phone']" class="location-button">
+        <button mat-fab>
+          <mat-icon>phone</mat-icon>
+        </button>
+        <div>Anrufen</div>
+      </a>
+    </div>
+    <div *ngIf="labels['contact_email']">
+      <a [href]="'mailto:' + labels['contact_email']" class="location-button">
+        <button mat-fab>
+          <mat-icon>email</mat-icon>
+        </button>
+        <div>E-Mail</div>
+      </a>
+    </div>
+    <div *ngIf="labels['website']">
+      <a [href]="labels['website']" class="location-button">
+        <button mat-fab>
+          <mat-icon>public</mat-icon>
+        </button>
+        <div>Website</div>
+      </a>
+    </div>
+  </div>
   <div class="details">
-    <ng-container *ngFor="let label of labels | keyvalue">
-      <div class="detail__element">
-        <span class="detail__label">{{ label.key }}: </span>
-        <span class="detail__value" [innerHTML]="label.value"></span>
-      </div>
-    </ng-container>
     <div class="details__permalink" *ngIf="permalink">
       Permalink:
       <a [href]="permalink" target="_blank">
-      {{permalink}}
-    </a>
+        {{permalink}}
+      </a>
     </div>
   </div>
 </div>

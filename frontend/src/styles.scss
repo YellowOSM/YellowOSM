@@ -8,14 +8,18 @@
 
 $color-primary: #ffd303;
 $color-secondary: #000;
-
-//$fa-font-path : "~font-awesome/fonts";
-//@import "~font-awesome/scss/font-awesome";
+$color-gray: #888;
 
 @import "scss/_material_theme.scss";
 @import "scss/_fonts.scss";
 @import "scss/_yosm.scss";
 @import "scss/_map.scss";
+@import "scss/_location-detail.scss";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+}

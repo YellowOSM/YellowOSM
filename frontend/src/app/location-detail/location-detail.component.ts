@@ -22,6 +22,8 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   @Input() feature: Feature = null;
 
   permalink = '';
+  locationType = '';
+  locationSubType = '';
   labels: object = {};
 
   constructor(
@@ -30,24 +32,25 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.parseFeature();
+    this.parseFeatures();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.parseFeature();
+    this.parseFeatures();
   }
 
-  private parseFeature() {
+  private parseFeatures() {
     if (!this.feature) {
       return;
     }
+    this.locationType = this.feature.values_.locationType;
+    this.locationSubType = this.feature.values_.locationSubType;
     this.labels = this.feature.values_.labels;
     const lonLat = toLonLat(this.feature.getGeometry().getCoordinates());
     this.permalink = this.getPermalink(lonLat);
   }
 
   private getPermalink(lonLat: object) {
-    return '';
     let propertyUrlPart = '';
 
     for (let i = 0; i < LocationDetailComponent.PERMALINK_ID_PROPERTIES.length; i++) {
