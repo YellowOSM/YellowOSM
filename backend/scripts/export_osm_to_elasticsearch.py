@@ -707,11 +707,11 @@ with open(EXPORT_ES_FILE,'w') as out:
                         not 'label' in yosm_types[osmtype][label_dict[osmtype]] or \
                         not yosm_types[osmtype][label_dict[osmtype]]['label']:
 
-                        yosm_label = " ".join(label_dict[osmtype].capitalize().split('_'))
-                        # print("yosm_label: " + yosm_label)
+                        yosm_subtype = " ".join(label_dict[osmtype].capitalize().split('_'))
+                        # print("yosm_subtype: " + yosm_subtype)
                     else:
-                        yosm_label = " ".join(yosm_types[osmtype][label_dict[osmtype]]['label'].capitalize().split('_'))
-                        # print("yosm_label: " + yosm_label)
+                        yosm_subtype = " ".join(yosm_types[osmtype][label_dict[osmtype]]['label'].capitalize().split('_'))
+                        # print("yosm_subtype: " + yosm_subtype)
 
         except KeyError as ex:
             print(label_dict)
@@ -851,6 +851,6 @@ with open(EXPORT_ES_FILE,'w') as out:
         # # print({"name": line[0], "location": [lon,lat], "description": line[3]})
         # print(json.dumps({"name": name, "location": [lon,lat], "description": desc}))
         if yosm_type:
-            out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "label": yosm_label, "description": desc, "labels": label_dict}) + "\n")
+            out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "subtype": yosm_subtype, "description": desc, "labels": label_dict}) + "\n")
         else:
             out.write(json.dumps({"name": name, "location": [lon,lat], "description": desc, "labels": label_dict}) + "\n")
