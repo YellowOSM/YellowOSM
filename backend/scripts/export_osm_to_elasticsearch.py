@@ -825,7 +825,7 @@ with open(EXPORT_ES_FILE,'w') as out:
         if 'vending' in label_dict and \
             label_dict['vending'] in vending_replacements:
             label_dict['vending'] = vending_replacements[label_dict['vending']]
-        if 'healthcare_speciality' in label_dict and \
+        if 'healthcare_speciality' in label_dict:
             label_dict['healthcare_speciality'] = split_and_translate(label_dict['healthcare_speciality'], healthcare_replacements)
 
         if 'healthcare_speciality_de' in label_dict:
