@@ -14,7 +14,7 @@ class Geo58():
         """Values out of range"""
         pass
 
-    def __init__(self, zoom=19, lat=None, lon=None, x=None, y=None, g58=None):
+    def __init__(self, zoom=20, lat=None, lon=None, x=None, y=None, g58=None):
         """Initialize a Geo58 instance"""
         self._zoom = zoom
         self._lat = lat or x
@@ -30,7 +30,7 @@ class Geo58():
             self._zoom, self._lat, self._lon = self._geo58ToCoords(self._geo58)
             self._validate_coords(self._zoom, self._lat, self._lon)
 
-        log.debug("_init: {} {} {}".format(zoom, self._lat, self._lon))
+        log.debug("_init: {} {} {}".format(self._zoom, self._lat, self._lon))
         log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
 
 
@@ -53,7 +53,6 @@ class Geo58():
 
     def _base582int(self, b58_str):
         """Convert a base58 encoded string into an integer"""
-        # alph = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
         i = 0
         for c in b58_str:
             i *= 58
@@ -69,10 +68,10 @@ class Geo58():
             raise Geo58.Geo58Exception("lat (x) is out of range")
         if y < -18000000 or y > 18000000:
             raise Geo58.Geo58Exception("lon (y) is out of range")
-        if zoom < 12 or zoom > 19:
-            raise Geo58.Geo58Exception("zoom is out of range (12-19)")
+        if zoom < 5 or zoom > 20: # 4bit - 20 is no-zoom given
+            raise Geo58.Geo58Exception("zoom is out of range (5-20)")
 
-    def _convertCoordsToInt(self, x, y, z=19):
+    def _convertCoordsToInt(self, x, y, z=20):
         log.debug("_convertCoordsToInt: {} {} {}".format(z, x, y))
         self._validate_coords(z,x,y)
 
@@ -84,30 +83,30 @@ class Geo58():
         # y = -17999999
         # z = 12
 
-        z = (z - 19) * -1 # zoom 19 = b0x0
+        z = (z - 20) * -1 # zoom 20 = b0x0
 
         minusx = True if x < 0 else False
         minusy = True if y < 0 else False
         x = abs(x)
         y = abs(y)
-        # coord = minusx << (1+3+24+25) | minusy << (3+24+25) | z << (24+25) | x << (25) | y
-        coord = minusx << 53 | minusy << 52 | z << 49 | x << 25 | y
+
+        coord = z << 51 | minusx << 50 | minusy << 49 | x << 25 | y
         coord = int(coord)
         return coord
 
     def _convertIntToCoords(self, i):
+        zoom = (i & (15 << 2+24+25)) >> (51)
+        minusx = True if i & (1 << (50)) else False
+        minusy = True if i & (1 << (49)) else False
         # minusx = True if i & (1 << (1+3+24+25)) else False
-        minusx = True if i & (1 << (53)) else False
         # minusy = True if i & (1 << (3+24+25)) else False
-        minusy = True if i & (1 << (52)) else False
-        zoom = (i & (7 << 24+25)) >> (49)
         x = (i & 562949919866880) >> (25) # 2**24-1 << 25
         y = i & 33554431 # 2**25-1
         x = x*-1 if minusx else x
         y = y*-1 if minusy else y
         x = float(x)/100000
         y = float(y)/100000
-        z = (zoom *-1 + 19)
+        z = (zoom *-1 + 20)
         z = int(z)
         log.debug("_convertIntToCoords: {} {} {}".format(z, x, y))
         return (z,x,y)

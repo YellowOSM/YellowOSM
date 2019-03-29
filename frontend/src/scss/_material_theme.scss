@@ -1,0 +1,59 @@
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// via http://mcg.mbitson.com/#!?mcgpalette0=%23ffd303
+$mat-yosm-yellow: (
+  50: #fffae1,
+  100: #fff2b3,
+  200: #ffe981,
+  300: #ffe04f,
+  400: #ffda29,
+  500: #ffd303,
+  600: #ffce03,
+  700: #ffc802,
+  800: #ffc202,
+  900: #ffb701,
+  A100: #ffffff,
+  A200: #fffbf2,
+  A400: #ffebbf,
+  A700: #ffe3a6,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $dark-primary-text,
+    400: $dark-primary-text,
+    500: $dark-primary-text,
+    600: $dark-primary-text,
+    700: $dark-primary-text,
+    800: $dark-primary-text,
+    900: $dark-primary-text,
+    A100: $dark-primary-text,
+    A200: $dark-primary-text,
+    A400: $dark-primary-text,
+    A700: $dark-primary-text,
+  )
+);
+
+$yosm-typography: mat-typography-config(
+  $input: mat-typography-level(16px, 1.125, 400)
+);
+
+@include angular-material-typography($yosm-typography);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$yosm-app-theme: mat-light-theme(mat-palette($mat-grey), mat-palette($mat-yosm-yellow), mat-palette($mat-red));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($yosm-app-theme);
+
+.mat-autocomplete-panel {
+  max-height: 100% !important;
+}

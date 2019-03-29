@@ -7,4 +7,5 @@ sudo -u postgres createdb gis
 sudo -u postgres psql -d gis -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
 sudo -u postgres psql -c "grant all privileges on database gis to flo;"
 sleep 5
-time osm2pgsql -U flo -C 1200 --create --database gis $pbffile --style yosm.style
+# time nice -10 osm2pgsql -U flo -C 1000 --create --database gis $pbffile --style yosm.style
+time nice -10 osm2pgsql -U flo -C 1200 --slim --create --database gis $pbffile --style yosm.style

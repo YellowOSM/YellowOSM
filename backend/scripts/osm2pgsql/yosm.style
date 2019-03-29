@@ -87,6 +87,7 @@ node,way   addr:place          text  linear
 node,way   addr:housename      text  linear
 node,way   addr:housenumber    text  linear
 node,way   addr:postcode       text  linear
+node,way   addr:unit           text  linear
 node,way   addr:interpolation  text  linear
 node,way   opening_hours       text  linear
 node,way   website             text  linear
@@ -120,6 +121,7 @@ node,way   brand               text  linear
 node,way   building            text  polygon
 node,way   service             text  linear
 node,way   name                text  linear
+node,way   name:de             text  linear
 node,way   shop                text  polygon
 node,way   sport               text  polygon
 node,way   tourism             text  polygon
@@ -135,7 +137,16 @@ node,way   access              text  linear
 node,way   fee                 text  linear
 node,way   healthcare          text  linear
 node,way   healthcare:speciality text  linear
+node,way   healthcare:speciality:de text  linear
 node,way   emergency           text  linear
+node,way   wheelchair          text  linear
+node,way   wifi                text  linear
+node,way   internet_access     text  linear
+node,way   diet:vegan          text  linear
+node,way   diet:vegetarian     text  linear
+node,way   takeaway            text  linear
+node,way   wikipedia           text  linear
+node,way   wikidata            text  linear
 
 # Area tags
 # We don't make columns for these tags, but objects with them are areas.

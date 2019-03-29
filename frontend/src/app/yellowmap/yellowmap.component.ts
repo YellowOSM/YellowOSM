@@ -1,12 +1,13 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-
+import {FormControl} from '@angular/forms';
 import {environment} from '../../environments/environment';
 
 import OlMap from 'ol/Map';
 import OlXYZ from 'ol/source/XYZ';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
+import Geolocation from 'ol/Geolocation.js';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
@@ -16,10 +17,13 @@ import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
-import {ATTRIBUTION} from 'ol/source/OSM.js';
 
 import {ElasticsearchService} from '../services/elasticsearch.service';
-import {Geo58Service} from '../services/geo58.service';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+import {LocationDetailComponent} from '../location-detail/location-detail.component';
+import {MatAutocompleteTrigger} from '@angular/material';
+
 
 @Component({
   selector: 'app-yellowmap',
@@ -27,46 +31,27 @@ import {Geo58Service} from '../services/geo58.service';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
+  DEBUG = false;
+  selectedFeature: Feature = null;
+  searchFormControl = new FormControl();
+  filteredOptions: Observable<string[]>;
+  options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
   map: OlMap;
   source: OlXYZ;
-  layer: OlTileLayer;
   esLayer: VectorLayer;
   view: OlView;
-  userQuery = '';
-  esIsConnected = false;
-  esStatus: string;
   esSearchResult = [];
   esSource: VectorSource;
-  selection: Feature;
-  selectionDetails = '';
-  selectionLabels = {};
-  selectionPermaLink = '';
+  geoLocation: Geolocation;
   geoLocationLoading = false;
-  idProperties = [
-    'amenity',
-    'shop',
-    'craft',
-    'tourism',
-    'leisure',
-    'atm'
-  ];
+  @ViewChild('searchInput', {read: MatAutocompleteTrigger})
+  autocomplete: MatAutocompleteTrigger;
   @ViewChild('searchInput')
   searchInput: ElementRef;
-  detailKeys = [
-    'Typ',
-    'Shop',
-    'Möglichkeiten',
-    'Adresse',
-    'Öffnungszeiten',
-    'Webseite',
-    'E-Mail',
-    'XMPP',
-    'Twitter',
-    'Facebook',
-    'Telefon',
-    'Fax',
-    'Mobile',
-  ];
+  @ViewChild('mapElement')
+  mapElement: ElementRef;
+  @ViewChild('toolbarElement', {read: ElementRef})
+  toolbarElement: ElementRef;
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
     lat: +this.route.snapshot.paramMap.get('lat'),
@@ -78,22 +63,20 @@ export class YellowmapComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-    private geo58: Geo58Service
   ) {
-    this.esIsConnected = false;
   }
 
   ngOnInit() {
-    this.initElasticsearch();
+    this.filteredOptions = this.searchFormControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterAutocomplete(value))
+    );
 
     this.source = new OlXYZ({
       url: environment.tileServerURL,
-      attributions: [
-        ATTRIBUTION
-      ]
     });
 
-    this.layer = new OlTileLayer({
+    const layer = new OlTileLayer({
       source: this.source
     });
 
@@ -108,15 +91,19 @@ export class YellowmapComponent implements OnInit {
       format: new GeoJSON(),
       loader: (extent, resolution, projection) => {
         that.esSearchResult.forEach(result => {
+          const lonLat = fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]);
           const featurething = new Feature({
             name: result['_source']['name'],
-            labels: that.parseResults(result['_source']['labels']),
-            geometry: new Point(fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]))
+            locationType: result['_source']['type'],
+            locationSubType: result['_source']['subtype'],
+            geometry: new Point(lonLat),
+            labels: result['_source']['labels']
           });
-          if (that.selection && that.selectionLabels && (result['_source']['labels']['osm_id'] === that.selectionLabels['osm_id'])) {
-            that.selection = featurething;
-          }
           that.esSource.addFeature(featurething);
+          if (this.DEBUG && !this.selectedFeature) {
+            this.selectedFeature = featurething;
+            console.log(featurething);
+          }
         });
       },
       strategy: bboxStrategy
@@ -126,7 +113,7 @@ export class YellowmapComponent implements OnInit {
       source: this.esSource,
       style: (feature) => {
         let color = 'rgba(255, 211, 3, 0.7)';
-        if (this.selection && this.selection.hasOwnProperty('ol_uid') && this.selection['ol_uid'] === feature.ol_uid) {
+        if (this.selectedFeature && this.selectedFeature.hasOwnProperty('ol_uid') && this.selectedFeature['ol_uid'] === feature.ol_uid) {
           color = 'rgba(200,20,20,0.8)';
         }
         return new Style({
@@ -144,12 +131,58 @@ export class YellowmapComponent implements OnInit {
       strategy: bboxStrategy
     });
 
+    this.geoLocation = new Geolocation({
+      trackingOptions: {
+        enableHighAccuracy: true
+      },
+      projection: this.view.getProjection()
+    });
+
+    // handle geolocation error.
+    this.geoLocation.on('error', (error) => {
+      console.log('YOSM GEO ERROR');
+      console.log(error);
+    });
+
+    const accuracyFeature = new Feature();
+    this.geoLocation.on('change:accuracyGeometry', () => {
+      accuracyFeature.setGeometry(this.geoLocation.getAccuracyGeometry());
+    });
+
+    const positionFeature = new Feature();
+    positionFeature.setStyle(new Style({
+      image: new CircleStyle({
+        radius: 6,
+        fill: new Fill({
+          color: '#3399CC'
+        }),
+        stroke: new Stroke({
+          color: '#fff',
+          width: 2
+        })
+      })
+    }));
+
+    this.geoLocation.on('change:position', () => {
+      const coordinates = this.geoLocation.getPosition();
+      positionFeature.setGeometry(coordinates ?
+        new Point(coordinates) : null);
+    });
+
+    const geoLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [accuracyFeature, positionFeature]
+      })
+    });
+
     this.map = new OlMap({
       target: 'map',
       layers: [
-        this.layer,
-        this.esLayer
+        layer,
+        this.esLayer,
+        geoLayer
       ],
+      controls: [],
       view: this.view
     });
 
@@ -157,16 +190,9 @@ export class YellowmapComponent implements OnInit {
       this.searchInput.nativeElement.blur();
       const features = this.map.getFeaturesAtPixel(event.pixel);
       if (features) {
-        this.selection = features[0];
-        this.selectionDetails = features[0].values_['name'];
-        this.selectionLabels = features[0].values_['labels'];
-        this.selectionPermaLink = this.getPermalink();
-        console.log(this.selectionLabels);
+        this.selectedFeature = features[0];
       } else {
-        this.selection = null;
-        this.selectionDetails = '';
-        this.selectionLabels = {};
-        this.selectionPermaLink = '';
+        this.selectedFeature = null;
       }
 
       // force redraw
@@ -174,8 +200,7 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.map.on('moveend', (evt) => {
-      // this.searchInput.nativeElement.blur(); // breaks Android browsers
-      this.searchElasticSearch();
+      this.searchElasticSearch(false);
       this.updateUrl(evt);
     });
 
@@ -186,14 +211,15 @@ export class YellowmapComponent implements OnInit {
     this.map.once('moveend', (evt) => {
       this.openNode();
     });
+
+    // DEBUG
+    if (this.DEBUG) {
+      this.searchFormControl.setValue('moser');
+      this.searchElasticSearch();
+    }
   }
 
-  hideKeyboard() {
-    console.log('hideKeyboard');
-    this.searchInput.nativeElement.blur();
-  }
-
-  updateUrl(evt) {
+  public updateUrl(evt) {
     const center = toLonLat(this.view.getCenter());
     let zoom = this.view.getZoom();
     let changeUrl = false;
@@ -235,92 +261,28 @@ export class YellowmapComponent implements OnInit {
 
     const urlSearchTerm = this.route.snapshot.paramMap.get('q');
     if (urlSearchTerm) {
-      this.userQuery = urlSearchTerm;
+      this.searchFormControl.setValue(urlSearchTerm);
       this.searchElasticSearch();
     }
   }
 
-  parseResults(labels: any) {
-    const getLabel = function (label) {
-      return labels[label] || '';
-    };
+  public hideKeyboard() {
+    this.searchInput.nativeElement.blur();
+  }
 
-    const capitalizeFirstLetter = function (string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    };
+  public closeAutocomplete() {
+    this.autocomplete.closePanel();
+  }
 
-    const website = this.prefixWebsite(getLabel('website'));
-    const contactWebsite = this.prefixWebsite(getLabel('contact_website'));
-    const email = getLabel('email');
-    const contactEmail = getLabel('contact_email');
-    const contactXMPP = getLabel('contact_xmpp');
-    const contactTwitter = this.prefixTwitter(getLabel('contact_twitter'));
-    const contactFacebook = getLabel('contact_facebook');
-    const phone = getLabel('phone');
-    const contactPhone = getLabel('contact_phone');
-    const contactFax = getLabel('contact_fax');
-    const contactMobile = getLabel('contact_mobile');
-    const addr_street = getLabel('addr_street');
-    const addr_place = getLabel('addr_place');
-    const addr_city = getLabel('addr_city');
-    let typus = capitalizeFirstLetter(getLabel('amenity'));
-    if (getLabel('tourism')) {
-      typus = capitalizeFirstLetter(getLabel('tourism'));
+  public searchElasticSearch(closeAutocomplete = true) {
+    this.clearSearch();
+    this.selectedFeature = null;
+    if (closeAutocomplete) {
+      this.closeAutocomplete();
+      this.hideKeyboard();
     }
 
-    const result = {
-      'Typ': typus,
-      'Möglichkeiten': getLabel('leisure') + getLabel('sport'),
-      'Shop': getLabel('shop'),
-      'Adresse': (addr_city ? (addr_street ? addr_street : addr_place) + ' ' + getLabel('addr_housenumber') + ', ' +
-        getLabel('addr_postcode') + ' ' + addr_city : ''),
-      'Öffnungszeiten': getLabel('opening_hours'),
-      'Webseite': (contactWebsite ? '<a href="' + contactWebsite + '" target="_blank">' + contactWebsite + '</a>' :
-        (website ? '<a href="' + website + '" target="_blank">' + website + '</a>' : '')),
-      'E-Mail': (email ? '<a href="mailto:' + email + '">' + email + '</a> ' :
-        (contactEmail ? '<a href="mailto:' + contactEmail + '">' + contactEmail + '</a> ' : '')),
-      'XMPP': (contactXMPP ? '<a href="xmpp:' + contactXMPP + '">' + contactXMPP + '</a> ' : ''),
-      'Twitter': (contactTwitter ? '<a href="' + contactTwitter + '">' + contactTwitter + '</a> ' : ''),
-      'Facebook': (contactFacebook ? '<a href="' + contactFacebook + '">' + contactFacebook + '</a> ' : ''),
-      'Telefon': (phone ? '<a href="tel:' + phone + '">' + phone + '</a> ' :
-        (contactPhone ? '<a href="tel:' + contactPhone + '">' + contactPhone + '</a> ' : '')),
-      'Fax': (contactFax ? '<a href="tel:' + contactFax + '">' + contactFax + '</a> ' : ''),
-      'Mobile': (contactMobile ? '<a href="tel:' + contactMobile + '">' + contactMobile + '</a> ' : ''),
-      'amenity': getLabel('amenity'),
-      'shop': getLabel('shop'),
-      'tourism': getLabel('tourism'),
-      'leisure': getLabel('leisure'),
-      'atm': getLabel('atm'),
-      'osm_id': getLabel('osm_id')
-    };
-
-    const filtered = Object.keys(result)
-      .filter(key => /\S/.test(result[key]))
-      .reduce((obj, key) => {
-        return {
-          ...obj,
-          [key]: result[key]
-        };
-      }, {});
-    return filtered;
-  }
-
-  private initElasticsearch() {
-    this.es.isAvailable().then(() => {
-      this.esStatus = 'OK';
-      this.esIsConnected = true;
-    }, error => {
-      this.esStatus = 'Fehler beim Verbinden';
-      this.esIsConnected = false;
-      console.error('Server is down', error);
-    }).then(() => {
-      this.cd.detectChanges();
-    });
-  }
-
-  searchElasticSearch() {
-    this.clearSearch();
-    if (this.userQuery.length < 2) {
+    if (!this.searchFormControl.value || this.searchFormControl.value.length < 2) {
       return;
     }
     const extent = this.view.calculateExtent(this.map.getSize());
@@ -328,8 +290,7 @@ export class YellowmapComponent implements OnInit {
     const bottomRight = toLonLat(getBottomRight(extent));
     const center = toLonLat(this.view.getCenter());
 
-    this.es.fullTextSearch(this.userQuery, topLeft, bottomRight, center).then((result) => {
-      this.esStatus = 'OK';
+    this.es.fullTextSearch(this.searchFormControl.value, topLeft, bottomRight, center).then((result) => {
       console.log(result);
       if (result !== null && result.hits.total > 0) {
         this.esSearchResult = result['hits']['hits'];
@@ -337,7 +298,6 @@ export class YellowmapComponent implements OnInit {
         this.esLayer.getSource().refresh();
       }
     }, error => {
-      this.esStatus = 'Fehler in der Suche';
       this.clearSearch();
       console.error('Server is down', error);
     }).then(() => {
@@ -347,17 +307,10 @@ export class YellowmapComponent implements OnInit {
 
   private clearSearch() {
     this.esSearchResult = [];
-    const source = this.esLayer.getSource();
-    source.forEachFeature((feature) => {
-      if (feature === this.selection) {
-        return;
-      }
-      source.removeFeature(feature);
-    });
-    this.esLayer.getSource().refresh();
   }
 
   public getLocation() {
+    this.geoLocation.setTracking(true);
     this.geoLocationLoading = true;
     navigator.geolocation.getCurrentPosition((pos) => {
         const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
@@ -366,18 +319,22 @@ export class YellowmapComponent implements OnInit {
       }, (err) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);
         this.geoLocationLoading = false;
+      },
+      {
+        maximumAge: Infinity,
+        timeout: 5000
       }
     );
   }
 
   private getPropertyValueFromUrl() {
-    for (let i = 0; i < this.idProperties.length; i++) {
-      const param = this.route.snapshot.paramMap.get(this.idProperties[i]);
+    for (let i = 0; i < LocationDetailComponent.PERMALINK_ID_PROPERTIES.length; i++) {
+      const param = this.route.snapshot.paramMap.get(LocationDetailComponent.PERMALINK_ID_PROPERTIES[i]);
       if (!param) {
         continue;
       }
       return {
-        propertyType: this.idProperties[i],
+        propertyType: LocationDetailComponent.PERMALINK_ID_PROPERTIES[i],
         propertyValue: param
       };
     }
@@ -404,7 +361,7 @@ export class YellowmapComponent implements OnInit {
           const node = result['hits']['hits'][0];
           const featurething = new Feature({
             name: node['_source']['name'],
-            labels: this.parseResults(node['_source']['labels']),
+            labels: node['_source']['labels'],
             geometry: new Point(fromLonLat([node._source.location[0], node._source.location[1]]))
           });
           that.addAndSelectFeature(featurething);
@@ -418,67 +375,20 @@ export class YellowmapComponent implements OnInit {
 
   private addAndSelectFeature(featurething) {
     this.esLayer.getSource().addFeature(featurething);
-    this.selection = featurething;
-    this.selectionDetails = featurething.values_['name'];
-    this.selectionLabels = featurething.values_['labels'];
-    this.selectionPermaLink = this.getPermalink();
+    this.selectedFeature = featurething;
   }
 
-  private getShortLink(propertyUrlPart) {
-    const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
-    this.geo58.toGeo58(19, coordinates[1], coordinates[0])
-      .subscribe(hashUrl => {
-          console.log(hashUrl);
-          this.selectionPermaLink = environment.shortLinkBaseUrl + '/' + hashUrl['g58'] + ';' + propertyUrlPart;
-        },
-        error => {
-          console.error('Error: Geo58 link could net be retrieved');
-          console.error(error);
-        });
+  private _filterAutocomplete(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 
-  private getPermalink() {
-    let propertyUrlPart = '';
-
-    for (let i = 0; i < this.idProperties.length; i++) {
-      const idValue = this.selectionLabels[this.idProperties[i]];
-      if (!idValue) {
-        continue;
-      }
-      propertyUrlPart = this.idProperties[i] + '=' + idValue;
-      break;
-    }
-
-    if (!propertyUrlPart) {
-      return '';
-    }
-
-    const coordinates = toLonLat(this.selection.getGeometry().getCoordinates());
-    this.getShortLink(propertyUrlPart);
-    return window.location.origin + '/' +
-      Number.parseFloat(this.previousUrlParams['zoom'].toFixed(2).toString()) + '/' +
-      Number.parseFloat(coordinates[1].toFixed(5).toString()) + '/' +
-      Number.parseFloat(coordinates[0].toFixed(5).toString()) + ';' + propertyUrlPart;
-  }
-
-  private prefixTwitter(nic) {
-    if (nic == null || nic.length === 0) {
-      return null;
-    }
-    if (nic.startsWith('@')) {
-      return 'https://twitter.com/' + nic.substring(1);
-    } else if (!nic.startsWith('http')) {
-      return 'https://twitter.com/' + nic;
-    }
-  }
-
-  private prefixWebsite(url) {
-    if (url == null || url.length === 0) {
-      return null;
-    }
-    if (!url.startsWith('http')) {
-      return 'http://' + url;
-    }
-    return url;
+  public removeSearchText() {
+    this.searchFormControl.setValue('');
+    this.clearSearch();
+    this.searchInput.nativeElement.focus();
+    // TODO: this doesn't work...
+    this.autocomplete.openPanel();
   }
 }

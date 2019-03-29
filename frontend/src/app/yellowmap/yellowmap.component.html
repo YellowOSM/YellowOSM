@@ -1,36 +1,47 @@
 <div class="yosm__container">
-  <div class="header">
-    <a href="/">
-      <img class="yosm__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
+  <mat-toolbar color="secondary" class="search__toolbar mat-elevation-z3" #toolbarElement>
+    <a href="/" class="search__logo-wrapper">
+      <img class="search__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
     </a>
-    <div class="yosm__search">
-      <input type="text" placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [(ngModel)]="userQuery"
-             class="search__input" (keyup)="searchElasticSearch()" (keydown.enter)="hideKeyboard()" #searchInput>
-      <i [className]="geoLocationLoading ? 'fa fa-crosshairs loading' : 'fa fa-crosshairs'" aria-hidden="true"
-         (click)="getLocation()"></i>
+    <mat-form-field [floatLabel]="'never'" class="search__input">
+      <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
+             [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
+             (keydown.enter)="searchElasticSearch()">
+    </mat-form-field>
+
+    <div class="search__button">
+      <mat-icon *ngIf="!searchFormControl.value">search</mat-icon>
+      <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()">close</mat-icon>
     </div>
-  </div>
-  <div id="map" class="map"></div>
-  <div [className]="selectionDetails ? 'details__wrapper active' : 'details__wrapper'">
-    <h2>{{selectionDetails}}</h2>
-    <div class="details">
-      <ng-container *ngFor="let key of detailKeys">
-        <div class="detail__element" *ngIf="selectionLabels[key]">
-          <span class="detail__label">{{ key }}: </span>
-          <span class="detail__value" [innerHTML]="selectionLabels[key]"></span>
-        </div>
-      </ng-container>
-      <div class="details__permalink" *ngIf="selectionPermaLink">
-        Permalink: <a [href]="selectionPermaLink" target="_blank">{{selectionPermaLink}}</a>
-      </div>
+
+  </mat-toolbar>
+
+  <div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
+
+  <mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3">
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="searchElasticSearch()">
+      {{option}}
+    </mat-option>
+  </mat-autocomplete>
+
+  <div class="map__wrapper">
+    <div id="map" class="map" #mapElement></div>
+    <div class="map__beta-sleeve mat-elevation-z2">BETA</div>
+    <button mat-fab (click)="getLocation()" class="map__location-button">
+      <mat-icon aria-label="Position finden">gps_fixed</mat-icon>
+    </button>
+    <div class="map__link map__osm-link">
+      <a
+        href="https://osm.org/#map={{previousUrlParams['zoom']}}/{{previousUrlParams['lat']}}/{{previousUrlParams['lon']}}"
+        target="_blank">
+        in OSM ansehen
+      </a>
     </div>
-  </div>
-  <div class="footer">
-    <a href="/">über YellowOSM</a>
-    <a class="footer__osm-link"
-       href="https://osm.org/#map={{previousUrlParams['zoom']}}/{{previousUrlParams['lat']}}/{{previousUrlParams['lon']}}"
-       target="_blank">
-      OSM-Link
-    </a>
+    <div class="map__link map__contrib-link">
+      © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors
+    </div>
   </div>
 </div>
+
+<app-location-detail [feature]="selectedFeature" [className]="selectedFeature ? 'active' : ''"></app-location-detail>
+

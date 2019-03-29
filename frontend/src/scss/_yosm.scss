@@ -1,18 +1,9 @@
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Open Sans Regular'), local('OpenSans-Regular'),
-  url('/assets/fonts/open-sans-v15-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-  url('/assets/fonts/open-sans-v15-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-}
-
 a,
 a:hover,
 a:active,
 a:focus,
 a:visited {
-  color: theme-color("secondary");
+  color: $color-secondary;
 }
 
 a {
@@ -25,65 +16,45 @@ a {
 
 .yosm__container {
   width: 100%;
-  height: calc(100vh - 20px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-
-  &:after {
-    content: "beta";
-    position: fixed;
-    width: 80px;
-    height: 25px;
-    background: theme-color("primary");
-    top: 63px;
-    right: -20px;
-    text-align: center;
-    font-size: 13px;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: #fff;
-    line-height: 27px;
-    transform: rotate(45deg);
-  }
 }
 
-.header {
-  height: 57px;
-  width: 100%;
-  padding: 8px 5px;
+.search__toolbar {
+  z-index: 1000;
+  position: absolute;
+}
+
+.search__logo-wrapper {
+  width: 30px;
+  height: 30px;
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
-  background-color: #fff;
-  z-index: 99;
+  flex: 0 0 30px;
 }
 
-.yosm__search {
-  width: 100%;
-  margin-right: 5px;
-}
-
-.yosm__logo {
-  height: 42px;
+.search__logo {
+  height: 30px;
   display: block;
-  margin-right: 5px;
-
-  @include media-breakpoint-up(sm) {
-    margin-right: 10px;
-  }
 }
 
 .search__input {
-  font-size: 18px;
-  font-weight: 100;
-  padding: 5px 30px 5px 5px;
-  text-overflow: ellipsis;
-  border-radius: 5px;
-  appearance: none;
-  border: 2px solid theme-color("primary");
   width: 100%;
+  margin-left: 8px;
+  margin-top: 4px;
+
+  .mat-form-field-label {
+    color: map_get($mat-grey, 500) !important;
+  }
+}
+
+.search__button {
+  margin-left: -30px;
+  margin-top: 6px;
+  z-index: 1000;
 }
 
 .fa-crosshairs {
@@ -97,70 +68,21 @@ a {
   }
 
   &.loading {
-      animation: rotation 2s infinite linear;
+    animation: rotation 2s infinite linear;
   }
 }
 
 @keyframes rotation {
-  from {transform: rotate(0deg);}
-  to   {transform: rotate(359deg);}
-}
-
-.map {
-  width: 100%;
-  height: calc(100vh - 77px);
-}
-
-.details__wrapper {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background-color: theme-color("primary");
-  color: theme-color("primary");
-  width: 100%;
-  height: 0;
-  padding: 10px 8px;
-  overflow: hidden;
-  transition: all 0.2s ease-in-out;
-  font-size: 14px;
-
-  &.active {
-    height: 300px;
-    color: theme-color(secondary);
+  from {
+    transform: rotate(0deg);
   }
-
-  h2 {
-    font-size: 18px;
-    margin: 0 0 2px 0;
-    font-weight: bold;
-    text-decoration: underline;
+  to {
+    transform: rotate(359deg);
   }
 }
 
-.detail__label {
-  font-weight: bold;
-}
-
-.details__permalink {
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.footer__osm-link {
+.yosm__autocomplete-wrapper {
   position: absolute;
-  right: 5px;
+  top: 50px;
+  z-index: 1000;
 }

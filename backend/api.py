@@ -13,6 +13,7 @@ log.setLevel('DEBUG')
 
 load_dotenv()
 SHORT_URL_REDIRECT_URL = os.getenv("SHORT_URL_REDIRECT_URL")
+DEFAULT_ZOOM_LEVEL = os.getenv("DEFAULT_ZOOM_LEVEL", default=19)
 
 api = responder.API(
     cors=True,
@@ -67,19 +68,18 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
     try:
         g58 = Geo58(zoom=zoom, lat=x, lon=y.strip(' /'))
     except Geo58.Geo58Exception as ex:
-        log.debug("geo58_to_coords: invalid short code: %s", ex)
+        log.debug("Error: coords_to_geo58: Not Acceptable: coordinates invalid. [%s]", ex)
         resp.status_code = 406
         resp.text = "Error: Not Acceptable: coordinates invalid. [{}]".format(ex)
         return
-    resp.media = {'g58': g58.get_geo58()}
-
+    resp.media = {'geo58': g58.get_geo58()}
 
 @api.route("/api/geo58_to_coords/{geo58_str}")
 async def convertGeo58ToCoords(req, resp, *, geo58_str):
     try:
         g58 = Geo58(g58=geo58_str)
     except Geo58.Geo58Exception as ex:
-        log.debug("geo58_to_coords: invalid short code: %s", ex)
+        log.debug("Error: geo58_to_coords: invalid short code: %s", ex)
         resp.status_code = 400
         resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
         return
@@ -89,7 +89,7 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
 
 @api.route("/api/redirect_geo58/")
 async def convertGeo58ToCoordsEmpty(req, resp):
-    # redirect to map without coords
+    """redirect to map without coords"""
     redir_url = '/'.join(SHORT_URL_REDIRECT_URL.split('/')[:-3])
     log.debug("redirect to --> %s", redir_url)
     resp.status_code = 301
@@ -100,7 +100,7 @@ async def convertGeo58ToCoordsEmpty(req, resp):
 async def convertGeo58ToCoords(req, resp, *, geo58_str):
     geo58_str = str(geo58_str)
     index = geo58_str.find(';', 0, 12)
-    appendix = None if index == -1 else geo58_str[index:]
+    appendix = "" if index == -1 else str(geo58_str[index:])
     geo58 = geo58_str if index == -1 else geo58_str[:index]
     try:
         g58 = Geo58(g58=geo58)
@@ -110,6 +110,11 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
         resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
         return
     zoom, x, y = g58.get_coordinates()
+    zoom = DEFAULT_ZOOM_LEVEL if zoom == 20 else zoom
+    if not SHORT_URL_REDIRECT_URL:
+        log.error("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
+        raise ValueError("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
+    log.debug((SHORT_URL_REDIRECT_URL, zoom, x, y, appendix))
     redir_url = SHORT_URL_REDIRECT_URL.format(zoom=zoom, x=x, y=y) + appendix
     log.debug("redirect to --> %s", redir_url)
     resp.status_code = 302
