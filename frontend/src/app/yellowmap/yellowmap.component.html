@@ -11,7 +11,7 @@
 
     <div class="search__button">
       <mat-icon *ngIf="!searchFormControl.value">search</mat-icon>
-      <mat-icon *ngIf="searchFormControl.value" (click)="searchFormControl.setValue(''); clearSearch()">close</mat-icon>
+      <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()">close</mat-icon>
     </div>
 
   </mat-toolbar>
@@ -25,7 +25,7 @@
   </mat-autocomplete>
 
   <div class="map__wrapper">
-    <div id="map" class="map" #mapElement (window:resize)="onResize($event)"></div>
+    <div id="map" class="map" #mapElement></div>
     <div class="map__beta-sleeve mat-elevation-z2">BETA</div>
     <button mat-fab (click)="getLocation()" class="map__location-button">
       <mat-icon aria-label="Position finden">gps_fixed</mat-icon>

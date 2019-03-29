@@ -30,7 +30,7 @@ import {MatAutocompleteTrigger} from '@angular/material';
   templateUrl: './yellowmap.component.html',
   styleUrls: ['./yellowmap.component.scss']
 })
-export class YellowmapComponent implements OnInit, AfterViewInit {
+export class YellowmapComponent implements OnInit {
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
@@ -193,8 +193,7 @@ export class YellowmapComponent implements OnInit, AfterViewInit {
     });
 
     this.map.on('moveend', (evt) => {
-      // this.searchInput.nativeElement.blur(); // breaks Android browsers
-      this.searchElasticSearch();
+      this.searchElasticSearch(false);
       this.updateUrl(evt);
     });
 
@@ -205,19 +204,6 @@ export class YellowmapComponent implements OnInit, AfterViewInit {
     this.map.once('moveend', (evt) => {
       this.openNode();
     });
-  }
-
-  ngAfterViewInit() {
-    this.initMapHeight();
-  }
-
-  public hideKeyboard() {
-    // this.searchInput.nativeElement.blur();
-    console.log('TODO: blurring breaks Android search');
-  }
-
-  public closeAutocomplete() {
-    this.autocomplete.closePanel();
   }
 
   public updateUrl(evt) {
@@ -267,11 +253,21 @@ export class YellowmapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public searchElasticSearch() {
+  public hideKeyboard() {
+    this.searchInput.nativeElement.blur();
+  }
+
+  public closeAutocomplete() {
+    this.autocomplete.closePanel();
+  }
+
+  public searchElasticSearch(closeAutocomplete = true) {
     this.clearSearch();
     this.selectedFeature = null;
-    this.hideKeyboard();
-    this.closeAutocomplete();
+    if (closeAutocomplete) {
+      this.closeAutocomplete();
+      this.hideKeyboard();
+    }
 
     if (!this.searchFormControl.value || this.searchFormControl.value.length < 2) {
       return;
@@ -377,10 +373,19 @@ export class YellowmapComponent implements OnInit, AfterViewInit {
 
   public onResize(event) {
     const height = event.target.window.innerHeight - this.toolbarElement.nativeElement.offsetHeight;
-    this.mapElement.nativeElement.style.height = height.toString() + 'px';
+    console.log('resizing to ' + height + 'px');
+    // this.mapElement.nativeElement.style.height = height.toString() + 'px';
   }
 
   private initMapHeight() {
     window.dispatchEvent(new Event('resize'));
+  }
+
+  public removeSearchText() {
+    this.searchFormControl.setValue('');
+    this.clearSearch();
+    this.searchInput.nativeElement.focus();
+    // TODO: this doesn't work...
+    this.autocomplete.openPanel();
   }
 }

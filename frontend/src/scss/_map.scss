@@ -8,7 +8,7 @@
     width: 80px;
     height: 25px;
     background: $color-primary;
-    top: 8px;
+    top: 63px;
     right: -20px;
     text-align: center;
     font-size: 13px;
@@ -17,10 +17,15 @@
     color: #fff;
     line-height: 27px;
     transform: rotate(45deg);
+    z-index: 8;
 }
 
 .map__wrapper {
-  position: relative;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 5;
+  overflow: hidden;
 
   &.inactive {
     opacity: 0.25;
