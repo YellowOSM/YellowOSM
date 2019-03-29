@@ -599,6 +599,7 @@ cuisine_replacements = {
     'austrian': 'österreichisch',
     'ice_cream': 'Eis',
     'german': 'deutsch',
+    'african': 'afrikanisch',
     'coffee_shop': 'Kaffeehaus',
     'greek': 'griechisch',
     'alpine_hut': 'Almhütte',
@@ -638,6 +639,17 @@ def read_line_from_csv():
             if not line:
                 continue
             yield line
+
+def split_and_translate(tr_str, translations):
+    strings = tr_str.split(';')
+    str_temp = []
+    for s in strings:
+        if s in translations:
+            str_temp.append(translations[s])
+        else:
+            str_temp.append(s)
+    return(", ".join(str_temp))
+
 
 osm_ids = {}
 yosm_type = None
@@ -808,18 +820,7 @@ with open(EXPORT_ES_FILE,'w') as out:
         #     label_dict['cuisine'] in cuisine_replacements:
         #     label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
         if 'cuisine' in label_dict:
-            # split
-            cuisines = label_dict['cuisine'].split(';')
-            cuisines_temp = []
-            # replace
-            for c in cuisines:
-                if c in cuisine_replacements:
-                    cuisines_temp.append(cuisine_replacements[c])
-                else:
-                    cuisines_temp.append(c)
-            # join
-            cuisines = ", ".join(cuisines_temp)
-            label_dict['cuisine'] = cuisines
+            label_dict['cuisine'] = split_and_translate(label_dict['cuisine'], cuisine_replacements)
 
         if 'vending' in label_dict and \
             label_dict['vending'] in vending_replacements:
