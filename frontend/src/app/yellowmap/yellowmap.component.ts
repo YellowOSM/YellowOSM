@@ -310,6 +310,10 @@ export class YellowmapComponent implements OnInit, AfterViewInit {
       }, (err) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);
         this.geoLocationLoading = false;
+      },
+      {
+        maximumAge: Infinity,
+        timeout: 5000
       }
     );
   }
