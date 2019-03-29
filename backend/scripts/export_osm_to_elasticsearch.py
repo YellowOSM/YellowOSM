@@ -22,7 +22,7 @@ EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 poly = True
 # poly = False
 query_db = True
-# query_db = False
+query_db = False
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -130,6 +130,7 @@ export_amenity = { "key": "amenity",
                         "arts_centre",
                         "theatre",
                         "marketplace",
+                        "post_office",
                         # TODO get new tags from taginfo...
                         ]
                  }
@@ -301,6 +302,7 @@ amend = {
     "hospital": ["Spital", "Hospital", "Krankenhaus"],
     "dentist": ["Zahnarzt"],
     "marketplace": ["Marktplatz", "Bauernmarkt", "Markt"],
+    "post_office": ["Post", "Postamt", "Paket", "Packerl", "Brief"],
     # "": ["",],
 }
 
@@ -406,6 +408,10 @@ yosm_types = {
         'marketplace': {
             'type': 'marketplace',
             'label': 'Marktplatz',
+        },
+        'post_office': {
+            'type': 'post_office',
+            'label': 'Post',
         },
     },
     'healthcare': {
