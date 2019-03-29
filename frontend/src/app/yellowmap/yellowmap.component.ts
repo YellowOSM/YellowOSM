@@ -191,7 +191,6 @@ export class YellowmapComponent implements OnInit {
       const features = this.map.getFeaturesAtPixel(event.pixel);
       if (features) {
         this.selectedFeature = features[0];
-        console.log(features[0]);
       } else {
         this.selectedFeature = null;
       }

@@ -27,7 +27,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   locationSubType = '';
   labels: object = {};
   opening_hours = '';
-  open_now = false;
+  open_now = undefined;
 
   constructor(
     private geo58service: Geo58Service
@@ -89,6 +89,8 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   }
 
   private parseOpeningHours() {
+    this.opening_hours = '';
+    this.open_now = undefined;
     if (!this.feature.values_.labels['opening_hours']) {
       return '';
     }
@@ -97,6 +99,5 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
     this.opening_hours = this.feature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
-    console.log(oh.prettifyValue(this.feature.values_.labels['opening_hours']));
   }
 }

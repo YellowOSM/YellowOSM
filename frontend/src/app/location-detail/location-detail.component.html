@@ -10,9 +10,10 @@
 
   <ul class="location-detail__main">
     <li>
-      <span *ngIf="locationSubType">{{ locationSubType }} ⋅ </span>
-      <span class="location-open" *ngIf="open_now">jetzt geöffnet</span>
-      <span class="location-closed" *ngIf="!open_now">jetzt geschlossen</span>
+      <span *ngIf="locationSubType">{{ locationSubType }}</span>
+      <span *ngIf="locationSubType && (open_now == true || open_now == false)"> ⋅ </span>
+      <span class="location-open" *ngIf="open_now === true">jetzt geöffnet</span>
+      <span class="location-closed" *ngIf="open_now === false">jetzt geschlossen</span>
     </li>
     <li *ngIf="labels['address']">{{ labels['address'] }}</li>
   </ul>
