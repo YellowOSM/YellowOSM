@@ -93,7 +93,8 @@ export class LocationDetailComponent implements OnInit, OnChanges {
       return '';
     }
 
-    const oh = new opening_hours(this.feature.values_.labels['opening_hours']);
+    const oh = new opening_hours(this.feature.values_.labels['opening_hours'], null);
+    // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
     this.opening_hours = this.feature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
   }
