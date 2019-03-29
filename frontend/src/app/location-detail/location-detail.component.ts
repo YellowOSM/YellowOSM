@@ -80,7 +80,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   private getShortLink(propertyUrlPart, lonLat) {
     this.geo58service.toGeo58(19, lonLat[1], lonLat[0])
       .subscribe(hashUrl => {
-          this.permalink = environment.shortLinkBaseUrl + '/' + hashUrl['g58'] + ';' + propertyUrlPart;
+          this.permalink = environment.shortLinkBaseUrl + '/' + hashUrl['geo58'] + ';' + propertyUrlPart;
         },
         error => {
           console.error('Error: Geo58 link could net be retrieved');
@@ -97,5 +97,6 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
     this.opening_hours = this.feature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
+    console.log(oh.prettifyValue(this.feature.values_.labels['opening_hours']));
   }
 }
