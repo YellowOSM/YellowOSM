@@ -509,6 +509,9 @@ yosm_types = {
         'museum': '',
         'information': '',
     },
+    'office': {
+        'type': 'office',
+    }
 }
 
 table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
@@ -689,6 +692,10 @@ with open(EXPORT_ES_FILE,'w') as out:
                 if osmtype in label_dict:
                     # print("="*75)
                     # print(label_dict[osmtype])
+                    if osmtype.lower() in ["office"]:
+                        yosm_subtype = None
+                        continue
+
                     if label_dict[osmtype] in yosm_types[osmtype] and \
                         label_dict[osmtype] in yosm_types[osmtype] and \
                         'type' in yosm_types[osmtype][label_dict[osmtype]]:
@@ -855,6 +862,9 @@ with open(EXPORT_ES_FILE,'w') as out:
         # # print({"name": line[0], "location": [lon,lat], "description": line[3]})
         # print(json.dumps({"name": name, "location": [lon,lat], "description": desc}))
         if yosm_type:
-            out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "subtype": yosm_subtype, "description": desc, "labels": label_dict}) + "\n")
+            if yosm_subtype:
+                out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "subtype": yosm_subtype, "description": desc, "labels": label_dict}) + "\n")
+            else:
+                out.write(json.dumps({"name": name, "location": [lon,lat], "type": yosm_type, "description": desc, "labels": label_dict}) + "\n")
         else:
             out.write(json.dumps({"name": name, "location": [lon,lat], "description": desc, "labels": label_dict}) + "\n")
