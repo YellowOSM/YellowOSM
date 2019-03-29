@@ -588,13 +588,18 @@ labels = [
 ]
 
 cuisine_replacements = {
+    'vegetrian': 'vegetarisch',
     'italian': 'italienisch',
     'chinese': 'chinesisch',
+    'french': 'französisch',
+    'fish': 'Fisch',
+    'chicken': 'Huhn',
     'asian': 'asiatisch',
     'cake': 'Kuchen & Torten',
     'austrian': 'österreichisch',
     'ice_cream': 'Eis',
     'german': 'deutsch',
+    'african': 'afrikanisch',
     'coffee_shop': 'Kaffeehaus',
     'greek': 'griechisch',
     'alpine_hut': 'Almhütte',
@@ -634,6 +639,17 @@ def read_line_from_csv():
             if not line:
                 continue
             yield line
+
+def split_and_translate(tr_str, translations):
+    strings = tr_str.split(';')
+    str_temp = []
+    for s in strings:
+        if s in translations:
+            str_temp.append(translations[s])
+        else:
+            str_temp.append(s)
+    return(", ".join(str_temp))
+
 
 osm_ids = {}
 yosm_type = None
@@ -800,17 +816,20 @@ with open(EXPORT_ES_FILE,'w') as out:
         # wikidata leave the same
         # wikipedia leave the same
 
-        if 'cuisine' in label_dict and \
-            label_dict['cuisine'] in cuisine_replacements:
-            label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
+        # if 'cuisine' in label_dict and \
+        #     label_dict['cuisine'] in cuisine_replacements:
+        #     label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
+        if 'cuisine' in label_dict:
+            label_dict['cuisine'] = split_and_translate(label_dict['cuisine'], cuisine_replacements)
+
         if 'vending' in label_dict and \
             label_dict['vending'] in vending_replacements:
             label_dict['vending'] = vending_replacements[label_dict['vending']]
-        if 'healthcare_speciality' in label_dict and \
-            label_dict['healthcare_speciality'] in healthcare_replacements:
-            label_dict['healthcare_speciality'] = healthcare_replacements[label_dict['healthcare_speciality']]
+        if 'healthcare_speciality' in label_dict:
+            label_dict['healthcare_speciality'] = split_and_translate(label_dict['healthcare_speciality'], healthcare_replacements)
+
         if 'healthcare_speciality_de' in label_dict:
-            label_dict['healthcare_speciality'] = label_dict['healthcare_speciality_de']
+            label_dict['healthcare_speciality'] = ", ".join(label_dict['healthcare_speciality_de'].split(';'))
             del label_dict['healthcare_speciality_de']
 
         if label_dict['osm_data_type'] == 'n': # node
