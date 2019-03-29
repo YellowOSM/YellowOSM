@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {environment} from '../../environments/environment';
@@ -30,7 +30,7 @@ import {MatAutocompleteTrigger} from '@angular/material';
   templateUrl: './yellowmap.component.html',
   styleUrls: ['./yellowmap.component.scss']
 })
-export class YellowmapComponent implements OnInit {
+export class YellowmapComponent implements OnInit, AfterViewInit {
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
@@ -47,6 +47,10 @@ export class YellowmapComponent implements OnInit {
   autocomplete: MatAutocompleteTrigger;
   @ViewChild('searchInput')
   searchInput: ElementRef;
+  @ViewChild('mapElement')
+  mapElement: ElementRef;
+  @ViewChild('toolbarElement', {read: ElementRef})
+  toolbarElement: ElementRef;
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
     lat: +this.route.snapshot.paramMap.get('lat'),
@@ -201,6 +205,10 @@ export class YellowmapComponent implements OnInit {
     this.map.once('moveend', (evt) => {
       this.openNode();
     });
+  }
+
+  ngAfterViewInit() {
+    this.initMapHeight();
   }
 
   public hideKeyboard() {
@@ -361,5 +369,14 @@ export class YellowmapComponent implements OnInit {
     const filterValue = value.toLowerCase();
 
     return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  public onResize(event) {
+    const height = event.target.window.innerHeight - this.toolbarElement.nativeElement.offsetHeight;
+    this.mapElement.nativeElement.style.height = height.toString() + 'px';
+  }
+
+  private initMapHeight() {
+    window.dispatchEvent(new Event('resize'));
   }
 }
