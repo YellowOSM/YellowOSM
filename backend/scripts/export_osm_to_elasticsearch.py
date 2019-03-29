@@ -588,8 +588,12 @@ labels = [
 ]
 
 cuisine_replacements = {
+    'vegetrian': 'vegetarisch',
     'italian': 'italienisch',
     'chinese': 'chinesisch',
+    'french': 'französisch',
+    'fish': 'Fisch',
+    'chicken': 'Huhn',
     'asian': 'asiatisch',
     'cake': 'Kuchen & Torten',
     'austrian': 'österreichisch',
@@ -800,9 +804,23 @@ with open(EXPORT_ES_FILE,'w') as out:
         # wikidata leave the same
         # wikipedia leave the same
 
-        if 'cuisine' in label_dict and \
-            label_dict['cuisine'] in cuisine_replacements:
-            label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
+        # if 'cuisine' in label_dict and \
+        #     label_dict['cuisine'] in cuisine_replacements:
+        #     label_dict['cuisine'] = cuisine_replacements[label_dict['cuisine']]
+        if 'cuisine' in label_dict:
+            # split
+            cuisines = label_dict['cuisine'].split(';')
+            cuisines_temp = []
+            # replace
+            for c in cuisines:
+                if c in cuisine_replacements:
+                    cuisines_temp.append(cuisine_replacements[c])
+                else:
+                    cuisines_temp.append(c)
+            # join
+            cuisines = ", ".join(cuisines_temp)
+            label_dict['cuisine'] = cuisines
+
         if 'vending' in label_dict and \
             label_dict['vending'] in vending_replacements:
             label_dict['vending'] = vending_replacements[label_dict['vending']]
