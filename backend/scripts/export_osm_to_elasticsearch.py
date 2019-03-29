@@ -647,7 +647,7 @@ def split_and_translate(tr_str, translations):
         if s in translations:
             str_temp.append(translations[s])
         else:
-            str_temp.append(s)
+            str_temp.append(s.replace("_"," ").title())
     return(", ".join(str_temp))
 
 
@@ -831,6 +831,10 @@ with open(EXPORT_ES_FILE,'w') as out:
         if 'healthcare_speciality_de' in label_dict:
             label_dict['healthcare_speciality'] = ", ".join(label_dict['healthcare_speciality_de'].split(';'))
             del label_dict['healthcare_speciality_de']
+
+        if 'sport' in label_dict:
+            d = ", ".join(s.replace("_"," ").title() for s in label_dict['sport'].split(';'))
+            label_dict['sport'] = d
 
         if label_dict['osm_data_type'] == 'n': # node
             label_dict['osm_data_type'] = 'node'
