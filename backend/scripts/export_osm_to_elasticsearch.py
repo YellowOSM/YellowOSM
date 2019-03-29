@@ -826,10 +826,10 @@ with open(EXPORT_ES_FILE,'w') as out:
             label_dict['vending'] in vending_replacements:
             label_dict['vending'] = vending_replacements[label_dict['vending']]
         if 'healthcare_speciality' in label_dict and \
-            label_dict['healthcare_speciality'] in healthcare_replacements:
-            label_dict['healthcare_speciality'] = healthcare_replacements[label_dict['healthcare_speciality']]
+            label_dict['healthcare_speciality'] = split_and_translate(label_dict['healthcare_speciality'], healthcare_replacements)
+
         if 'healthcare_speciality_de' in label_dict:
-            label_dict['healthcare_speciality'] = label_dict['healthcare_speciality_de']
+            label_dict['healthcare_speciality'] = ", ".join(label_dict['healthcare_speciality_de'].split(';'))
             del label_dict['healthcare_speciality_de']
 
         if label_dict['osm_data_type'] == 'n': # node
