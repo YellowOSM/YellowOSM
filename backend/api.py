@@ -110,7 +110,7 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
         resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
         return
     zoom, x, y = g58.get_coordinates()
-    zoom = DEFAULT_ZOOM_LEVEL if zoom == 20 else 20
+    zoom = DEFAULT_ZOOM_LEVEL if zoom == 20 else zoom
     if not SHORT_URL_REDIRECT_URL:
         log.error("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
         raise ValueError("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
