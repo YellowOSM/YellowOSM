@@ -31,7 +31,7 @@ import {MatAutocompleteTrigger} from '@angular/material';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
-  DEBUG = true;
+  DEBUG = Boolean(true && environment.localDevEnv);
   selectedFeature: Feature = null;
   selectedFeatureDraggedUp = false;
   searchFormControl = new FormControl();

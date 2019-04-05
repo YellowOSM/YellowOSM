@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  localDevEnv: true,
   elasticSearchBaseUrl: 'https://es.yosm.at',
   elasticSearchIndex: 'yosm_dev',
   // no label standard tile:
