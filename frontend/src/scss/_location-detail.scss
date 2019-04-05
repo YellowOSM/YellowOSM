@@ -105,6 +105,24 @@ app-location-detail {
   margin: 0 auto;
   padding: 15px 0;
 
+  .label--desktop {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: column;
+    justify-content: flex-start;
+
+    .label--mobile {
+      display: none;
+    }
+
+    .label--desktop {
+      display: block;
+      margin-left: 20px;
+    }
+  }
+
   a {
     text-decoration: none;
     color: $color-gray;
@@ -117,6 +135,12 @@ app-location-detail {
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
+
+  @media (min-width: 768px) {
+    justify-content: flex-start;
+    flex-direction: row;
+    margin: 5px 0;
+  }
 
   button {
     margin-bottom: 8px;

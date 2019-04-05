@@ -40,7 +40,8 @@
         <button mat-fab>
           <mat-icon>phone</mat-icon>
         </button>
-        <div>Anrufen</div>
+        <div class="label--mobile">Anrufen</div>
+        <a class="label--desktop">{{ labels['phone'] }}</a>
       </a>
     </div>
     <div *ngIf="labels['contact_email']">
@@ -48,7 +49,8 @@
         <button mat-fab>
           <mat-icon>email</mat-icon>
         </button>
-        <div>E-Mail</div>
+        <div class="label--mobile">E-Mail</div>
+        <a class="label--desktop">{{ labels['contact_email'] }}</a>
       </a>
     </div>
     <div *ngIf="labels['website']">
@@ -56,7 +58,8 @@
         <button mat-fab>
           <mat-icon>public</mat-icon>
         </button>
-        <div>Website</div>
+        <div class="label--mobile">Website</div>
+        <a class="label--desktop">{{ labels['website'] }}</a>
       </a>
     </div>
   </div>
