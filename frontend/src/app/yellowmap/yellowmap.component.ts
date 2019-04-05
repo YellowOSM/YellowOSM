@@ -179,8 +179,8 @@ export class YellowmapComponent implements OnInit {
       target: 'map',
       layers: [
         layer,
+        geoLayer,
         this.esLayer,
-        geoLayer
       ],
       controls: [],
       view: this.view
@@ -189,7 +189,7 @@ export class YellowmapComponent implements OnInit {
     this.map.on('click', (event) => {
       this.searchInput.nativeElement.blur();
       const features = this.map.getFeaturesAtPixel(event.pixel);
-      if (features) {
+      if (features && features[0].values_.hasOwnProperty('labels')) {
         this.selectedFeature = features[0];
       } else {
         this.selectedFeature = null;
@@ -214,7 +214,7 @@ export class YellowmapComponent implements OnInit {
 
     // DEBUG
     if (this.DEBUG) {
-      this.searchFormControl.setValue('moser');
+      this.searchFormControl.setValue('peter');
       this.searchElasticSearch();
     }
   }
