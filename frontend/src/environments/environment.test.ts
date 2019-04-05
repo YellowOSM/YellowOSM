@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  localDevEnv: false,
   name: 'test',
   elasticSearchBaseUrl: 'https://es.yosm.at',
   elasticSearchIndex: 'yosm_dev',
