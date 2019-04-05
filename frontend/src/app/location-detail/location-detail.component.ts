@@ -23,6 +23,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   @Input() feature: Feature = null;
 
   permalink = '';
+  osmlink = '';
   locationType = '';
   locationSubType = '';
   labels: object = {};
@@ -51,6 +52,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     this.labels = this.feature.values_.labels;
     const lonLat = toLonLat(this.feature.getGeometry().getCoordinates());
     this.permalink = this.getPermalink(lonLat);
+    this.osmlink = this.getOsmLink();
     this.parseOpeningHours();
   }
 
@@ -75,6 +77,14 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     return window.location.origin + '/19/' +
       Number.parseFloat(lonLat[1].toFixed(5).toString()) + '/' +
       Number.parseFloat(lonLat[0].toFixed(5).toString()) + ';' + propertyUrlPart;
+  }
+
+  private getOsmLink() {
+    if (!this.labels || !this.labels['osm_data_type'] || !this.labels['osm_id']) {
+      return '';
+    }
+
+    return 'https://www.openstreetmap.org/edit?editor=id&' + this.labels['osm_data_type'] + '=' + this.labels['osm_id'];
   }
 
   private getShortLink(propertyUrlPart, lonLat) {
