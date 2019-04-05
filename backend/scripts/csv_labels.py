@@ -4,6 +4,7 @@ queries in `backend/scripts/export_osm_to_elasticsearch.py`
 """
 
 # get an INCOMPLETE list of labels from the DB:
+# the DB queries will add additional elements
 # table = """sudo -u postgres psql  -d gis -c "\d planet_osm_point" | \
 # grep -A 500 osm_id | grep -B 500 \ way\   | grep -v way |\
 #  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'

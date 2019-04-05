@@ -3,7 +3,7 @@ import os
 import json
 import csv
 import argparse
-# import yosm_poi
+
 from yosm_poi import YOSM_POI
 
 csv.field_size_limit(100000000)
@@ -24,7 +24,7 @@ EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 poly = True
 # poly = False
 query_db = True
-query_db = False
+# query_db = False
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -235,15 +235,15 @@ export_emergency = { "key": "emergency",
 
 classes_to_export = [
     export_amenity,
-    export_leisure,
+    export_leisure, # leave this in here, even if it's also a special_access_classes element
     export_atm,
     export_healthcare,
     ]
 any_classes = [export_shop, export_tourism, export_craft, export_office]
 special_access_classes = [export_leisure,]
 
-# clear
 if query_db:
+    # clear files
     open(EXPORT_FILE,'w').close()
     open(EXPORT_ES_FILE,'w').close()
 
@@ -270,11 +270,7 @@ if query_db:
                 print(command_now)
                 os.system(command_now)
 
-
-
-
 ############### Export ###################
-
 def read_line_from_csv():
     # format: name1,lon,lat,type1,*
     with open(EXPORT_FILE,'r') as f:
@@ -284,7 +280,7 @@ def read_line_from_csv():
                 continue
             yield line
 
-osm_ids = {}
+osm_ids = {} # keep track of exported OSM_ids
 yosm_type = None
 yosm_subtype = None
 with open(EXPORT_ES_FILE,'w') as out:
@@ -297,15 +293,14 @@ with open(EXPORT_ES_FILE,'w') as out:
             continue
         else:
             osm_ids[line[5]] = True
-        # TODO make YOSM_POI class element
+
         poi = YOSM_POI(line)
 
         # build elastic search import file:
         out.write(json.dumps({"index": {}}) + "\n")
         lat = poi.lat
         lon = poi.lon
-        # # print({"name": line[0], "location": [lon,lat], "description": line[3]})
-        # print(json.dumps({"name": name, "location": [lon,lat], "description": desc}))
+
         if poi.yosm_type:
             if poi.yosm_subtype:
                 out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "subtype": poi.yosm_subtype, "description": poi.desc, "labels": poi.label_dict}) + "\n")
