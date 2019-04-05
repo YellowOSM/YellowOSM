@@ -387,8 +387,8 @@ export class YellowmapComponent implements OnInit {
   public removeSearchText() {
     this.searchFormControl.setValue('');
     this.clearSearch();
-    this.searchInput.nativeElement.focus();
-    // TODO: this doesn't work...
-    this.autocomplete.openPanel();
+    setTimeout(() => { // necessary to actually open the panel
+      this.autocomplete.openPanel();
+    }, 0);
   }
 }
