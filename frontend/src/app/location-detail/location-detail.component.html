@@ -1,5 +1,10 @@
 <div class="location-detail" *ngIf="feature">
   <h1>{{ labels['name'] }}</h1>
+  <div class="location-drag-icons">
+    <mat-icon *ngIf="!draggedUp" (click)="emitGoUp()">keyboard_arrow_up</mat-icon>
+    <mat-icon *ngIf="draggedUp" (click)="emitGoDown()">keyboard_arrow_down</mat-icon>
+  </div>
+  <div class="clear"></div>
   <div class="location-properties">
     <div *ngIf="labels['wifi']">
       <mat-icon>wifi</mat-icon>
@@ -10,10 +15,12 @@
     <div *ngIf="labels['smoking'] == 'no'">
       <mat-icon>smoke_free</mat-icon>
     </div>
-    <div *ngIf="labels['vegetarian'] == 'yes'"><img src="assets/icons/vegetarian.svg" alt="vegetarisch"
-                                                    class="location-icon"></div>
-    <div *ngIf="labels['wheelchair'] == 'yes'"><img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei"
-                                                    class="location-icon"></div>
+    <div *ngIf="labels['vegetarian'] == 'yes'">
+      <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location-icon">
+    </div>
+    <div *ngIf="labels['wheelchair'] == 'yes'">
+      <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location-icon">
+    </div>
   </div>
 
   <ul class="location-detail__main">
@@ -43,7 +50,7 @@
       </a>
     </div>
     <div *ngIf="labels['website']">
-      <a [href]="labels['website']" class="location-button">
+      <a [href]="labels['website']" class="location-button" target="_blank">
         <button mat-fab>
           <mat-icon>public</mat-icon>
         </button>

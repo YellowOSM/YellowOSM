@@ -15,7 +15,7 @@ app-location-detail {
 
   &.active {
     padding: 15px 12px;
-    height: 300px;
+    height: 230px;
     color: $color-secondary;
 
     &::before {
@@ -27,10 +27,18 @@ app-location-detail {
       border: 1px solid #ddd;
       background-color: #fff;
       border-radius: 10px;
+
+      @media (min-width: 768px) {
+        display: none;
+      }
     }
 
     &.dragged-up {
       height: 450px;
+
+      @media (min-width: 768px) {
+        height: calc(100% - 64px);
+      }
     }
   }
 
@@ -54,10 +62,28 @@ app-location-detail {
     margin: 0 0 6px 0;
     font-weight: 400;
     float: left;
+    max-width: calc(100% - 40px);
   }
 }
 
+.location-drag-icons {
+  float: right;
+
+  mat-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+    margin-top: -5px;
+    margin-right: 8px;
+    color: #777;
+  }
+}
+
+.clear {
+  clear: both;
+}
+
 .location-buttons {
+  clear: both;
   display: flex;
   justify-content: space-around;
   max-width: 500px;
@@ -83,7 +109,7 @@ app-location-detail {
 }
 
 .location-detail__main {
-  clear: both;
+  float: left;
   list-style-type: none;
   font-size: 16px;
   color: $color-gray;

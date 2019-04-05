@@ -43,7 +43,8 @@
   </div>
 </div>
 
-<app-location-detail [feature]="selectedFeature" [className]="getLocationClasses()"
-                     (panup)="onPanUp($event)" (pandown)="onPanDown($event)"
+<app-location-detail [feature]="selectedFeature" [draggedUp]="selectedFeatureDraggedUp" [className]="getLocationClasses()"
+                     (panup)="onPanUp($event)" (pandown)="onPanDown($event)" (goUp)="onPanUp($event)" (goDown)="onPanDown($event)"
+                     #locationElement
 ></app-location-detail>
 

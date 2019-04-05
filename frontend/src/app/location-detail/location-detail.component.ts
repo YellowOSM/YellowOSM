@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Geo58Service} from '../services/geo58.service';
 import * as opening_hours from 'opening_hours';
 import {environment} from '../../environments/environment';
@@ -21,6 +21,9 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   ];
 
   @Input() feature: Feature = null;
+  @Input() draggedUp = false;
+  @Output() goUp = new EventEmitter<string>();
+  @Output() goDown = new EventEmitter<string>();
 
   permalink = '';
   osmlink = '';
@@ -109,5 +112,15 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
     this.opening_hours = this.feature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
+  }
+
+  public emitGoUp() {
+    console.log('goUp');
+    this.goUp.emit('goUp');
+  }
+
+  public emitGoDown() {
+    console.log('goDown');
+    this.goDown.emit('goDown');
   }
 }
