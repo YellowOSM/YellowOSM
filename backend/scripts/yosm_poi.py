@@ -20,15 +20,20 @@ class YOSM_POI():
         self.desc = line[3]
         self.label_dict = {label: value for label,value in zip(labels,line[4:]) if value}
 
+        if not self.name and self.desc:
+            self.name = translated_info[self.desc][0] if self.desc in translated_info else self.desc.capitalize()
+
         if 'atm' in self.label_dict and \
-            ( self.label_dict['atm'] == 'no' or \
-            self.label_dict['atm'] == 'false' ): # wrong label, but we don't want it in the index
+                ( self.label_dict['atm'] == 'no' or \
+                self.label_dict['atm'] == 'false' ): # wrong label, but we don't want it in the index
             del self.label_dict['atm']
         if 'atm' in self.label_dict and self.label_dict['atm'] != 'no':
             self.desc += " " + " ".join(translated_info['atm'])
+        # set Bankomat as name if no name is given:
+        if 'atm' in self.label_dict and not 'name' in self.label_dict:
+            self.label_dict['name'] = translated_info['atm'][0]
+            self.name = translated_info['atm'][0]
 
-        if not self.name and self.desc:
-            self.name = translated_info[self.desc][0] if self.desc in translated_info else self.desc.capitalize()
 
         for typus in ['amenity','leisure','shop', 'craft', 'tourism']:
             if typus in self.label_dict and self.label_dict[typus] in translated_info:
