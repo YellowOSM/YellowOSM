@@ -31,8 +31,9 @@ import {MatAutocompleteTrigger} from '@angular/material';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
-  DEBUG = false;
+  DEBUG = true;
   selectedFeature: Feature = null;
+  selectedFeatureDraggedUp = false;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
@@ -102,7 +103,6 @@ export class YellowmapComponent implements OnInit {
           that.esSource.addFeature(featurething);
           if (this.DEBUG && !this.selectedFeature) {
             this.selectedFeature = featurething;
-            console.log(featurething);
           }
         });
       },
@@ -390,5 +390,24 @@ export class YellowmapComponent implements OnInit {
     setTimeout(() => { // necessary to actually open the panel
       this.autocomplete.openPanel();
     }, 0);
+  }
+
+  public onPanUp(event) {
+    this.selectedFeatureDraggedUp = true;
+  }
+
+  public onPanDown(event) {
+    this.selectedFeatureDraggedUp = false;
+  }
+
+  getLocationClasses() {
+    let classes = '';
+    if (this.selectedFeature) {
+      classes += 'active';
+      if (this.selectedFeatureDraggedUp) {
+        classes += ' dragged-up';
+      }
+    }
+    return classes;
   }
 }

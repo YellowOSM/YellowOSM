@@ -14,9 +14,24 @@ app-location-detail {
   font-size: 14px;
 
   &.active {
-    padding: 12px;
+    padding: 15px 12px;
     height: 300px;
     color: $color-secondary;
+
+    &::before {
+      content: "";
+      display: block;
+      width: 40px;
+      margin: -10px auto 5px auto;
+      height: 3px;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      border-radius: 10px;
+    }
+
+    &.dragged-up {
+      height: 450px;
+    }
   }
 
   @media (min-width: 768px) {
