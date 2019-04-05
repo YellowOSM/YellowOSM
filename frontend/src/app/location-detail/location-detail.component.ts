@@ -24,6 +24,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   @Input() draggedUp = false;
   @Output() goUp = new EventEmitter<string>();
   @Output() goDown = new EventEmitter<string>();
+  @Output() closeFeature = new EventEmitter<string>();
 
   permalink = '';
   osmlink = '';
@@ -32,6 +33,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   labels: object = {};
   opening_hours = '';
   open_now = undefined;
+  open_next = undefined;
 
   constructor(
     private geo58service: Geo58Service
@@ -112,15 +114,29 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
     this.opening_hours = this.feature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
+    const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
+    this.open_next = oh.getNextChange();
+    this.open_next = days[this.open_next.getDay()] + ', ' + this.addZero(this.open_next.getHours()) + ':' +
+      this.addZero(this.open_next.getMinutes());
+  }
+
+  private addZero(i) {
+    if (i < 10) {
+      i = '0' + i;
+    }
+    return i;
   }
 
   public emitGoUp() {
-    console.log('goUp');
     this.goUp.emit('goUp');
   }
 
   public emitGoDown() {
-    console.log('goDown');
     this.goDown.emit('goDown');
+  }
+
+  public emitCloseFeature() {
+    this.closeFeature.emit('closeFeature');
   }
 }

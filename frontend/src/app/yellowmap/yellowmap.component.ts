@@ -31,7 +31,7 @@ import {MatAutocompleteTrigger} from '@angular/material';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
-  DEBUG = Boolean(true && environment.localDevEnv);
+  DEBUG = Boolean(false && environment.localDevEnv);
   selectedFeature: Feature = null;
   selectedFeatureDraggedUp = false;
   searchFormControl = new FormControl();
@@ -125,7 +125,7 @@ export class YellowmapComponent implements OnInit {
         }
         return new Style({
           image: new CircleStyle({
-            radius: 8,
+            radius: 8.5,
             fill: new Fill({
               color: color
             }),
@@ -426,5 +426,10 @@ export class YellowmapComponent implements OnInit {
       }
     }
     return classes;
+  }
+
+  closeFeature(event) {
+    this.selectedFeature = null;
+    this.selectedFeatureDraggedUp = false;
   }
 }

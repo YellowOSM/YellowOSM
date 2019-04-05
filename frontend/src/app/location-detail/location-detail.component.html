@@ -1,8 +1,9 @@
 <div class="location-detail" *ngIf="feature">
   <h1>{{ labels['name'] }}</h1>
   <div class="location-drag-icons">
-    <mat-icon *ngIf="!draggedUp" (click)="emitGoUp()">keyboard_arrow_up</mat-icon>
-    <mat-icon *ngIf="draggedUp" (click)="emitGoDown()">keyboard_arrow_down</mat-icon>
+    <mat-icon class="location-icon--mobile"  *ngIf="!draggedUp" (click)="emitGoUp()">keyboard_arrow_up</mat-icon>
+    <mat-icon class="location-icon--mobile"  *ngIf="draggedUp" (click)="emitGoDown()">keyboard_arrow_down</mat-icon>
+    <mat-icon class="location-icon--desktop" (click)="emitCloseFeature()">close</mat-icon>
   </div>
   <div class="clear"></div>
   <div class="location-properties">
@@ -29,6 +30,7 @@
       <span *ngIf="locationSubType && (open_now == true || open_now == false)"> ⋅ </span>
       <span class="location-open" *ngIf="open_now === true">jetzt geöffnet</span>
       <span class="location-closed" *ngIf="open_now === false">jetzt geschlossen</span>
+      <span class="location-closed" *ngIf="(open_now === false) && open_next"> ⋅ öffnet wieder {{ open_next }}</span>
     </li>
     <li *ngIf="labels['address']">{{ labels['address'] }}</li>
   </ul>
