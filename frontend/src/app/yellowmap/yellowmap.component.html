@@ -10,8 +10,8 @@
     </mat-form-field>
 
     <div class="search__button">
-      <mat-icon *ngIf="!searchFormControl.value">search</mat-icon>
-      <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()">close</mat-icon>
+      <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()" class="search__clear">close</mat-icon>
+      <mat-icon (click)="searchElasticSearch()">search</mat-icon>
     </div>
 
   </mat-toolbar>
@@ -43,5 +43,9 @@
   </div>
 </div>
 
-<app-location-detail [feature]="selectedFeature" [className]="selectedFeature ? 'active' : ''"></app-location-detail>
+<app-location-detail [feature]="selectedFeature" [draggedUp]="selectedFeatureDraggedUp"
+                     [className]="getLocationClasses()" (panup)="onPanUp($event)" (pandown)="onPanDown($event)"
+                     (goUp)="onPanUp($event)" (goDown)="onPanDown($event)" (closeFeature)="closeFeature($event)"
+                     #locationElement
+></app-location-detail>
 

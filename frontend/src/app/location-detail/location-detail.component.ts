@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Geo58Service} from '../services/geo58.service';
 import * as opening_hours from 'opening_hours';
 import {environment} from '../../environments/environment';
@@ -21,13 +21,19 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   ];
 
   @Input() feature: Feature = null;
+  @Input() draggedUp = false;
+  @Output() goUp = new EventEmitter<string>();
+  @Output() goDown = new EventEmitter<string>();
+  @Output() closeFeature = new EventEmitter<string>();
 
   permalink = '';
+  osmlink = '';
   locationType = '';
   locationSubType = '';
   labels: object = {};
   opening_hours = '';
   open_now = undefined;
+  open_next = undefined;
 
   constructor(
     private geo58service: Geo58Service
@@ -51,6 +57,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     this.labels = this.feature.values_.labels;
     const lonLat = toLonLat(this.feature.getGeometry().getCoordinates());
     this.permalink = this.getPermalink(lonLat);
+    this.osmlink = this.getOsmLink();
     this.parseOpeningHours();
   }
 
@@ -77,6 +84,14 @@ export class LocationDetailComponent implements OnInit, OnChanges {
       Number.parseFloat(lonLat[0].toFixed(5).toString()) + ';' + propertyUrlPart;
   }
 
+  private getOsmLink() {
+    if (!this.labels || !this.labels['osm_data_type'] || !this.labels['osm_id']) {
+      return '';
+    }
+
+    return 'https://www.openstreetmap.org/edit?editor=id&' + this.labels['osm_data_type'] + '=' + this.labels['osm_id'];
+  }
+
   private getShortLink(propertyUrlPart, lonLat) {
     this.geo58service.toGeo58(19, lonLat[1], lonLat[0])
       .subscribe(hashUrl => {
@@ -99,5 +114,29 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
     this.opening_hours = this.feature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
+    const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
+    this.open_next = oh.getNextChange();
+    this.open_next = days[this.open_next.getDay()] + ', ' + this.addZero(this.open_next.getHours()) + ':' +
+      this.addZero(this.open_next.getMinutes());
+  }
+
+  private addZero(i) {
+    if (i < 10) {
+      i = '0' + i;
+    }
+    return i;
+  }
+
+  public emitGoUp() {
+    this.goUp.emit('goUp');
+  }
+
+  public emitGoDown() {
+    this.goDown.emit('goDown');
+  }
+
+  public emitCloseFeature() {
+    this.closeFeature.emit('closeFeature');
   }
 }

@@ -31,8 +31,9 @@ import {MatAutocompleteTrigger} from '@angular/material';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
-  DEBUG = false;
+  DEBUG = Boolean(false && environment.localDevEnv);
   selectedFeature: Feature = null;
+  selectedFeatureDraggedUp = false;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
@@ -52,6 +53,8 @@ export class YellowmapComponent implements OnInit {
   mapElement: ElementRef;
   @ViewChild('toolbarElement', {read: ElementRef})
   toolbarElement: ElementRef;
+  @ViewChild('locationElement', {read: ElementRef})
+  locationElement: ElementRef;
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
     lat: +this.route.snapshot.paramMap.get('lat'),
@@ -100,9 +103,13 @@ export class YellowmapComponent implements OnInit {
             labels: result['_source']['labels']
           });
           that.esSource.addFeature(featurething);
+          if (featurething.values_.labels && that.selectedFeature && that.selectedFeature.values_.labels &&
+            that.selectedFeature.values_.labels.osm_id &&
+            featurething.values_.labels.osm_id === that.selectedFeature.values_.labels.osm_id) {
+            that.selectedFeature = featurething;
+          }
           if (this.DEBUG && !this.selectedFeature) {
             this.selectedFeature = featurething;
-            console.log(featurething);
           }
         });
       },
@@ -118,7 +125,7 @@ export class YellowmapComponent implements OnInit {
         }
         return new Style({
           image: new CircleStyle({
-            radius: 7.5,
+            radius: 8.5,
             fill: new Fill({
               color: color
             }),
@@ -179,8 +186,8 @@ export class YellowmapComponent implements OnInit {
       target: 'map',
       layers: [
         layer,
+        geoLayer,
         this.esLayer,
-        geoLayer
       ],
       controls: [],
       view: this.view
@@ -189,7 +196,7 @@ export class YellowmapComponent implements OnInit {
     this.map.on('click', (event) => {
       this.searchInput.nativeElement.blur();
       const features = this.map.getFeaturesAtPixel(event.pixel);
-      if (features) {
+      if (features && features[0].values_.hasOwnProperty('labels')) {
         this.selectedFeature = features[0];
       } else {
         this.selectedFeature = null;
@@ -214,7 +221,7 @@ export class YellowmapComponent implements OnInit {
 
     // DEBUG
     if (this.DEBUG) {
-      this.searchFormControl.setValue('moser');
+      this.searchFormControl.setValue('tribeka');
       this.searchElasticSearch();
     }
   }
@@ -274,10 +281,9 @@ export class YellowmapComponent implements OnInit {
     this.autocomplete.closePanel();
   }
 
-  public searchElasticSearch(closeAutocomplete = true) {
-    this.clearSearch();
-    this.selectedFeature = null;
-    if (closeAutocomplete) {
+  public searchElasticSearch(clearResults = true) {
+    if (clearResults) {
+      this.clearSearch();
       this.closeAutocomplete();
       this.hideKeyboard();
     }
@@ -291,12 +297,15 @@ export class YellowmapComponent implements OnInit {
     const center = toLonLat(this.view.getCenter());
 
     this.es.fullTextSearch(this.searchFormControl.value, topLeft, bottomRight, center).then((result) => {
-      console.log(result);
       if (result !== null && result.hits.total > 0) {
+        console.log(result['hits']['hits']);
         this.esSearchResult = result['hits']['hits'];
-        this.esLayer.getSource().clear();
-        this.esLayer.getSource().refresh();
+      } else {
+        console.log('empty result for search');
+        this.esSearchResult = [];
       }
+      this.esLayer.getSource().clear();
+      this.esLayer.getSource().refresh();
     }, error => {
       this.clearSearch();
       console.error('Server is down', error);
@@ -307,6 +316,10 @@ export class YellowmapComponent implements OnInit {
 
   private clearSearch() {
     this.esSearchResult = [];
+    this.selectedFeature = null;
+    this.selectedFeatureDraggedUp = false;
+    this.esLayer.getSource().clear();
+    this.esLayer.getSource().refresh();
   }
 
   public getLocation() {
@@ -388,7 +401,35 @@ export class YellowmapComponent implements OnInit {
     this.searchFormControl.setValue('');
     this.clearSearch();
     this.searchInput.nativeElement.focus();
-    // TODO: this doesn't work...
-    this.autocomplete.openPanel();
+    setTimeout(() => { // necessary to actually open the panel
+      this.autocomplete.openPanel();
+    }, 0);
+  }
+
+  public onPanUp(event) {
+    this.selectedFeatureDraggedUp = true;
+    // TODO: panning all the way down
+    // this.locationElement.nativeElement.style.margin = '0 0 -' + String(event.deltaY) + 'px 0';
+    // this.locationElement.nativeElement.style.transform = 'translateY(' + String(event.deltaY) + 'px)';
+  }
+
+  public onPanDown(event) {
+    this.selectedFeatureDraggedUp = false;
+  }
+
+  getLocationClasses() {
+    let classes = '';
+    if (this.selectedFeature) {
+      classes += 'active';
+      if (this.selectedFeatureDraggedUp) {
+        classes += ' dragged-up';
+      }
+    }
+    return classes;
+  }
+
+  closeFeature(event) {
+    this.selectedFeature = null;
+    this.selectedFeatureDraggedUp = false;
   }
 }

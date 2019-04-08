@@ -45,6 +45,7 @@ a {
   width: 100%;
   margin-left: 8px;
   margin-top: 4px;
+  padding-right: 5px;
 
   .mat-form-field-label {
     color: map_get($mat-grey, 500) !important;
@@ -55,6 +56,11 @@ a {
   margin-left: -30px;
   margin-top: 6px;
   z-index: 1000;
+}
+
+.search__clear {
+  color: gray;
+  margin-right: 10px;
 }
 
 .fa-crosshairs {
