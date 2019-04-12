@@ -12,6 +12,7 @@ import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
 import {fromLonLat, toLonLat, transformExtent} from 'ol/proj';
+import Polygon from 'ol/geom/Polygon';
 import {getTopLeft, getBottomRight} from 'ol/extent';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
@@ -23,7 +24,7 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
 import {MatAutocompleteTrigger} from '@angular/material';
-
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-yellowmap',
@@ -60,12 +61,14 @@ export class YellowmapComponent implements OnInit {
     lat: +this.route.snapshot.paramMap.get('lat'),
     lon: +this.route.snapshot.paramMap.get('lon')
   };
+  openFirstFeature = false;
 
   constructor(
     private es: ElasticsearchService,
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -108,8 +111,9 @@ export class YellowmapComponent implements OnInit {
             featurething.values_.labels.osm_id === that.selectedFeature.values_.labels.osm_id) {
             that.selectedFeature = featurething;
           }
-          if (this.DEBUG && !this.selectedFeature) {
+          if ((this.openFirstFeature || this.DEBUG) && !this.selectedFeature) {
             this.selectedFeature = featurething;
+            this.openFirstFeature = false;
           }
         });
       },
@@ -207,7 +211,7 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.map.on('moveend', (evt) => {
-      this.searchElasticSearch(false);
+      this.searchElasticSearch(false, false);
       this.updateUrl(evt);
     });
 
@@ -281,7 +285,7 @@ export class YellowmapComponent implements OnInit {
     this.autocomplete.closePanel();
   }
 
-  public searchElasticSearch(clearResults = true) {
+  public searchElasticSearch(clearResults = true, moveToClosestResult = true) {
     if (clearResults) {
       this.clearSearch();
       this.closeAutocomplete();
@@ -294,18 +298,53 @@ export class YellowmapComponent implements OnInit {
     const extent = this.view.calculateExtent(this.map.getSize());
     const topLeft = toLonLat(getTopLeft(extent));
     const bottomRight = toLonLat(getBottomRight(extent));
-    const center = toLonLat(this.view.getCenter());
 
-    this.es.fullTextSearch(this.searchFormControl.value, topLeft, bottomRight, center).then((result) => {
+    this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight).then((result) => {
       if (result !== null && result.hits.total > 0) {
         console.log(result['hits']['hits']);
         this.esSearchResult = result['hits']['hits'];
+        this.esLayer.getSource().clear();
+        this.esLayer.getSource().refresh();
       } else {
         console.log('empty result for search');
         this.esSearchResult = [];
+        if (moveToClosestResult) {
+          this.findClosestResult();
+        }
       }
-      this.esLayer.getSource().clear();
-      this.esLayer.getSource().refresh();
+    }, error => {
+      this.clearSearch();
+      console.error('Server is down', error);
+    }).then(() => {
+      this.cd.detectChanges();
+    });
+  }
+
+  private findClosestResult() {
+    const center = toLonLat(this.view.getCenter());
+    this.es.fullTextClosestSearch(this.searchFormControl.value, center).then((closestResults) => {
+      if (closestResults !== null && closestResults.hits.total > 0) {
+        console.log(closestResults['hits']['hits']);
+        this.esSearchResult = closestResults['hits']['hits'];
+        this.openFirstFeature = true;
+        if (this.geoLocation.getTracking()) {
+          const extent = this.view.calculateExtent(this.map.getSize());
+          const targetCoords = fromLonLat(closestResults.hits.hits[0]._source.location);
+          const topLeft = getTopLeft(extent);
+          const bottomRight = getBottomRight(extent);
+          const polygon = new Polygon([[targetCoords, topLeft, bottomRight, targetCoords]]);
+          this.map.getView().fit(polygon, {size: this.map.getSize()});
+        } else {
+          const coords = fromLonLat(closestResults.hits.hits[0]._source.location);
+          this.map.getView().animate({center: coords});
+        }
+      } else {
+        console.log('empty result for closest search');
+        this.snackBar.open('keine Ergebnisse gefunden', 'okay', {
+          duration: 5000,
+          verticalPosition: 'top'
+        });
+      }
     }, error => {
       this.clearSearch();
       console.error('Server is down', error);
