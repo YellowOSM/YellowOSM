@@ -6,6 +6,7 @@ import {
   MatInputModule,
   MatAutocompleteModule,
   MatButtonModule,
+  MatSnackBarModule,
 } from '@angular/material';
 
 @NgModule({
@@ -15,6 +16,7 @@ import {
     MatInputModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatSnackBarModule,
   ],
   exports: [
     MatToolbarModule,
@@ -22,6 +24,7 @@ import {
     MatInputModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatSnackBarModule,
   ]
 })
 export class MaterialModule {}

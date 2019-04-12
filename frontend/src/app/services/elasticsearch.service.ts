@@ -8,29 +8,16 @@ import {environment} from '../../environments/environment';
 })
 export class ElasticsearchService {
 
-  private client: Client;
-
   constructor() {
     if (!this.client) {
       this._connect();
     }
   }
 
-  private _connect() {
-    this.client = new elasticsearch.Client({
-      host: environment.elasticSearchBaseUrl,
-    });
-  }
+  private client: Client;
 
-  isAvailable(): any {
-    return this.client.ping({
-      requestTimeout: Infinity,
-      body: 'hello yosm!'
-    });
-  }
-
-  fullTextSearch(userQuery: string, topLeft: any, bottomRight: any, center: any): any {
-    return this.client.search({
+  private static getCommonFullTextQueryBody(userQuery: string) {
+    return {
       index: environment.elasticSearchIndex,
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
@@ -45,47 +32,85 @@ export class ElasticsearchService {
                     'query': userQuery.trim() + '*',
                     'default_operator': 'AND',
                     'fields': [
-                        'labels.name^5',
-                        'description^2',
-                        // 'labels.website^3',
-                        // 'labels.contact_website',
-                        // 'labels.addr_street',
-                        'labels.addr_city',
-                        'labels.amenity',
-                        'labels.tourism',
-                        'labels.sport',
-                        'labels.craft',
-                        'labels.leisure',
-                        'labels.shop',
-                        'labels.healthcare',
-                        'labels.emergency',
-                        'labels.healthcare_speciality'
+                      'labels.name^5',
+                      'description^2',
+                      // 'labels.website^3',
+                      // 'labels.contact_website',
+                      // 'labels.addr_street',
+                      'labels.addr_city',
+                      'labels.amenity',
+                      'labels.tourism',
+                      'labels.sport',
+                      'labels.craft',
+                      'labels.leisure',
+                      'labels.shop',
+                      'labels.healthcare',
+                      'labels.emergency',
+                      'labels.healthcare_speciality'
                     ]
                   }
               }
             ],
             'minimum_should_match': 1,
-            'filter': {
-              'geo_bounding_box': {
-                'location': {
-                  'top_left': {
-                    'lat': topLeft[1],
-                    'lon': topLeft[0]
-                  },
-                  'bottom_right': {
-                    'lat': bottomRight[1],
-                    'lon': bottomRight[0]
-                  }
-                }
-              }
-            }
           }
         }
       }
+    };
+  }
+
+  private _connect() {
+    this.client = new elasticsearch.Client({
+      host: environment.elasticSearchBaseUrl,
     });
   }
 
-  searchByOsmId(osmId: string): any {
+  public isAvailable(): any {
+    return this.client.ping({
+      requestTimeout: Infinity,
+      body: 'hello yosm!'
+    });
+  }
+
+  public fullTextBoundingBoxSearch(userQuery: string, topLeft: any, bottomRight: any) {
+    const esQuery = ElasticsearchService.getCommonFullTextQueryBody(userQuery);
+    esQuery.body.query.bool['filter'] = {
+      'geo_bounding_box': {
+        'location': {
+          'top_left': {
+            'lat': topLeft[1],
+            'lon': topLeft[0]
+          },
+          'bottom_right': {
+            'lat': bottomRight[1],
+            'lon': bottomRight[0]
+          }
+        }
+      }
+    };
+
+    return this.client.search(esQuery);
+  }
+
+  public fullTextClosestSearch(userQuery: string, center: any) {
+    const esQuery = ElasticsearchService.getCommonFullTextQueryBody(userQuery);
+    esQuery.body.size = 1;
+    esQuery.body['sort'] = [
+      {
+        '_geo_distance': {
+          'location': {
+            'lat': center[1],
+            'lon': center[0]
+          },
+          'order': 'asc',
+          'unit': 'km',
+          'distance_type': 'plane'
+        }
+      }
+    ];
+    return this.client.search(esQuery);
+  }
+
+  public searchByOsmId(osmId: string): any {
     return this.client.search({
       index: environment.elasticSearchIndex,
       type: '_doc',
@@ -100,7 +125,7 @@ export class ElasticsearchService {
     });
   }
 
-  searchVicinityByProperty(propertyType: string, propertyValue: string, center: any): any {
+  public searchVicinityByProperty(propertyType: string, propertyValue: string, center: any): any {
     const propertyTypeString = 'labels.' + propertyType;
     return this.client.search({
       index: environment.elasticSearchIndex,

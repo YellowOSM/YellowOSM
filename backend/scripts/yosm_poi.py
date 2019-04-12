@@ -138,6 +138,11 @@ class YOSM_POI():
             self.label_dict['website'] = self.label_dict['contact_facebook']
             del self.label_dict['contact_facebook']
 
+        # fix missing http
+        if 'website' in self.label_dict:
+            if not self.label_dict['website'].startswith("http"):
+                self.label_dict['website'] = "http://" + self.label_dict['website']
+
         #  addr
         if 'addr_street' in self.label_dict:
             street = self.label_dict['addr_street']

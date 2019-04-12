@@ -1,0 +1,1 @@
+# the data structure follows https://drivendata.github.io/cookiecutter-data-science/#starting-a-new-project

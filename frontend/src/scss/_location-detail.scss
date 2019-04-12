@@ -12,10 +12,11 @@ app-location-detail {
   overflow: hidden;
   transition: all 0.2s ease-in-out;
   font-size: 14px;
+  overflow-wrap: break-word;
 
   &.active {
     padding: 15px 12px;
-    height: 230px;
+    height: 200px;
     color: $color-secondary;
 
     &::before {
@@ -34,7 +35,7 @@ app-location-detail {
     }
 
     &.dragged-up {
-      height: 450px;
+      height: 430px;
 
       @media (min-width: 768px) {
         height: calc(100% - 64px);
@@ -52,7 +53,7 @@ app-location-detail {
 
     &.active {
       height: calc(100% - 64px);
-      width: 350px;
+      width: 400px;
       padding: 30px;
     }
   }
@@ -120,6 +121,10 @@ app-location-detail {
     .label--desktop {
       display: block;
       margin-left: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 250px;
     }
   }
 
@@ -140,6 +145,7 @@ app-location-detail {
     justify-content: flex-start;
     flex-direction: row;
     margin: 5px 0;
+    text-transform: none;
   }
 
   button {
@@ -190,6 +196,16 @@ app-location-detail {
 }
 
 .details__link {
-  font-size: 12px;
-  margin-bottom: 5px;
+  font-size: 16px;
+  margin: 8px 0;
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
 }

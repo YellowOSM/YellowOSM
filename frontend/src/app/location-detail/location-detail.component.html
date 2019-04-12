@@ -67,14 +67,11 @@
     {{ opening_hours }}
   </div>
   <div class="details">
-    <div class="details__link" *ngIf="permalink">
-      Permalink:
-      <a [href]="permalink" target="_blank">
-        {{permalink}}
-      </a>
-    </div>
     <div class="details__link" *ngIf="osmlink">
-      <a [href]="osmlink" target="_blank">auf OSM bearbeiten</a>
+      <a [href]="osmlink" target="_blank"><mat-icon>edit</mat-icon> Eintrag bearbeiten</a>
+    </div>
+    <div class="details__link" *ngIf="permalink">
+      <a [href]="permalink" target="_blank"><mat-icon>link</mat-icon> {{permalink}}</a>
     </div>
   </div>
 </div>

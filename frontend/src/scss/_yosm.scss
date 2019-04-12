@@ -92,3 +92,13 @@ a {
   top: 50px;
   z-index: 1000;
 }
+
+.mat-snack-bar-handset .mat-snack-bar-container {
+  margin-top: 70px !important;
+}
+
+.mat-snack-bar-container {
+  @media (min-width: 768px) {
+    margin-top: 70px !important;
+  }
+}
