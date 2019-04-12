@@ -13,6 +13,7 @@ import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
 import {fromLonLat, toLonLat, transformExtent} from 'ol/proj';
 import Polygon from 'ol/geom/Polygon';
+import LineString from 'ol/geom/LineString';
 import {getTopLeft, getBottomRight} from 'ol/extent';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
@@ -328,11 +329,9 @@ export class YellowmapComponent implements OnInit {
         this.esSearchResult = closestResults['hits']['hits'];
         this.openFirstFeature = true;
         if (this.geoLocation.getTracking()) {
-          const extent = this.view.calculateExtent(this.map.getSize());
           const targetCoords = fromLonLat(closestResults.hits.hits[0]._source.location);
-          const topLeft = getTopLeft(extent);
-          const bottomRight = getBottomRight(extent);
-          const polygon = new Polygon([[targetCoords, topLeft, bottomRight, targetCoords]]);
+          const geoLocation = this.geoLocation.getPosition();
+          const polygon = new LineString([targetCoords, geoLocation]);
           this.map.getView().fit(polygon, {size: this.map.getSize()});
         } else {
           const coords = fromLonLat(closestResults.hits.hits[0]._source.location);
@@ -341,7 +340,7 @@ export class YellowmapComponent implements OnInit {
       } else {
         console.log('empty result for closest search');
         this.snackBar.open('keine Ergebnisse gefunden', 'okay', {
-          duration: 5000,
+          duration: 3000,
           verticalPosition: 'top'
         });
       }
@@ -374,7 +373,7 @@ export class YellowmapComponent implements OnInit {
       },
       {
         maximumAge: Infinity,
-        timeout: 5000
+        timeout: 8000
       }
     );
   }
