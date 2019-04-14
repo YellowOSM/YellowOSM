@@ -5,7 +5,7 @@ import sys
 log = logging.getLogger(__name__)
 log.setLevel('DEBUG')
 
-LOG_TO_CONSOLE = True
+LOG_TO_CONSOLE = False
 if LOG_TO_CONSOLE:
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.DEBUG)
@@ -30,7 +30,6 @@ class Geo58():
         self._lat = lat or x
         self._lon = lon or y
         self._int = None
-        # self._merged_int = None
         self._geo58 = g58
 
         log.debug("_init: {} {} {}".format(zoom, self._lat, self._lon))
@@ -109,11 +108,6 @@ class Geo58():
         merged_coords = self._bin_merge_x_y(x, y)
 
         z = int(float(z) + 0.5) # round to closest full int
-        # # max values
-        # x = -8999999
-        # y = -17999999
-        # z = 12
-
         z = (z - 20) * -1 # zoom 20 = b0x0
 
         # coord = z << 51 | x << 26 | y #25 bits
@@ -185,7 +179,10 @@ class Geo58():
 
     def _bin_merge_x_y(self, x, y):
         """merge two integers (x: 25 bit, y: 26 bit) on binary level so that
-        LSB and MSB are close to each other"""
+        LSB and MSB are close to each other
+        This will make geo-location codes for locations that are close to
+        each other similar.
+        """
         x = int(x)
         y = int(y)
         a = 0
@@ -295,6 +292,8 @@ def main():
     g58 = Geo58(x=47.07068, y=15.44130)
     g58 = Geo58(x=47.07068, y=15.44117)
     g58 = Geo58(g58='4dHEin8gh')
+    g58 = Geo58(x=47.07068, y=15.44130, zoom=19)
+    g58 = Geo58(x=47.07068, y=15.44117, zoom=19)
 
 # if __name__ == "__main__":
 #     main()
