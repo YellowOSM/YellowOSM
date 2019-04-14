@@ -30,6 +30,7 @@ class Geo58():
         self._lat = lat or x
         self._lon = lon or y
         self._int = None
+        self._merged_int = None
         self._geo58 = g58
 
         log.debug("_init: {} {} {}".format(zoom, self._lat, self._lon))
@@ -42,6 +43,8 @@ class Geo58():
             # log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
             self._validate_coords(self._zoom, self._lat, self._lon)
 
+        self._merged_int = self._merge_x_y(self._lat, self._lon)
+        # print(self._unmerge_x_y(self._merged_int))
         log.debug("_init: {} {} {}".format(self._zoom, self._lat, self._lon))
         log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
 
@@ -133,6 +136,56 @@ class Geo58():
         log.debug("_convertIntToCoords: {} {} {}".format(z, x, y))
         return (z,x,y)
 
+    def _merge_x_y(self, x,y):
+        """Merge x and y coordinates
+        will merge x and y coordinates to one integer to keep them similar for
+        locations that are close to each other.
+        e.g:
+        x =  4512345
+        y = 12309876
+        will become: 0142531029384756
+        """
+        if x < 0 or y < 0:
+            raise Geo58.Geo58Exception("x and y must be > 0: {} {}".format(x, y))
+        x = x *100_000
+        y = y *100_000
+        d = 10_000_000
+        i = 0
+        while d > 0:
+            # print("d: {}".format(d))
+            a = x // d * 10
+            b = y // d
+            i += a + b
+            # print("i, a, b, x, y : {} {} {} {} {}".format(i,a,b,x,y))
+            x %= d
+            y %= d
+            d //= 10
+            if d > 0:
+                i = i * 100
+            # print("i: {}".format(i))
+        return int(i)
+
+    def _unmerge_x_y(self, i):
+        x = 0
+        y = 0
+        d = 10_000_000_000_000_000
+        a = None
+        b = None
+        while d > 10:
+            # print("===================")
+            d //= 10
+            a = i // d
+            x = x + a
+            d //= 10
+            b = (i // d) % 10
+            y = y + b
+            if d > 10:
+                i = i % d
+                x *= 10
+                y *= 10
+            # print("x,y : {} {}, i, d: {} {}, a, b: {} {}".format(x,y, i, d,a,b))
+        return (x,y)
+
     def _coordsToGeo58(self, zoom,x,y):
         i = self._convertCoordsToInt(x,y,zoom)
         return self._int2base58(i)
@@ -219,45 +272,48 @@ def test(lat=0.0,lon=0.0,zoom=5,coords=None):
 
 
 def main():
-    test(lat=87.07071,lon=175.43951,zoom=15)
-    zoom,x,y = 19,10.12346,0.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 18,10.12347,0.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 17,47.12346,15.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 16,47.12346,15.12344
-    test(coords=(x,y,zoom))
-    zoom,x,y = 15,77.12346,15.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 14,-17.12346,150.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 13,7.12346,1.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 12,47.12346,15.12345
-    test(coords=(x,y,zoom))
-    # zoom,x,y = 11,47.12346,15.12345
+    # test(lat=87.07071,lon=175.43951,zoom=15)
+    # zoom,x,y = 19,10.12346,0.12345
     # test(coords=(x,y,zoom))
-    zoom,x,y = 15,-47.12346,15.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 19,47.12346,-15.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 17,-47.12346,-15.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 14,-89.12346,-179.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 14,89.12346,-179.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 14,-89.12346,179.12345
-    test(coords=(x,y,zoom))
-    zoom,x,y = 12,90,180
-    test(coords=(x,y,zoom))
-    zoom,x,y = 19,-90,180
-    test(coords=(x,y,zoom))
-    zoom,x,y = 19,-90,-180
-    test(coords=(x,y,zoom))
-    zoom,x,y = 19,90,-180
-    test(coords=(x,y,zoom))
+    # zoom,x,y = 18,10.12347,0.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 17,47.12346,15.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 16,47.12346,15.12344
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 15,77.12346,15.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 14,-17.12346,150.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 13,7.12346,1.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 12,47.12346,15.12345
+    # test(coords=(x,y,zoom))
+    # # zoom,x,y = 11,47.12346,15.12345
+    # # test(coords=(x,y,zoom))
+    # zoom,x,y = 15,-47.12346,15.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 19,47.12346,-15.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 17,-47.12346,-15.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 14,-89.12346,-179.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 14,89.12346,-179.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 14,-89.12346,179.12345
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 12,90,180
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 19,-90,180
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 19,-90,-180
+    # test(coords=(x,y,zoom))
+    # zoom,x,y = 19,90,-180
+    # test(coords=(x,y,zoom))
+    g58 = Geo58(x=47.12345, y=123.09876)
+    print(g58._int)
+    print(g58._merged_int)
 
 if __name__ == "__main__":
     main()
