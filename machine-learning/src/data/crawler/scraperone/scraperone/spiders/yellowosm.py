@@ -24,7 +24,7 @@ NO_FOLLOW_LINK = [
     "mailto:",
     "callto:",
 ]
-TARGETSJSON = BASE_PATH + "osm_crawler_at.jsona"  # every line is a valid json string
+TARGETSJSON = BASE_PATH + "osm_crawler_at_with_phone_and_website.jsona"  # every line is a valid json string
 
 
 class YellowosmSpider(scrapy.Spider):

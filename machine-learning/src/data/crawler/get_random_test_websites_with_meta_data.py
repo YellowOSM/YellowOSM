@@ -11,13 +11,16 @@ if len(args) > 1:
 else:
     raise ValueError("""input file provide you must!\nrun:\n{} <your_input_file.json>""".format(args[0]))
 
+
 class Element():
     def __init__(self, line):
         self.data = json.loads(line)
+
     def __repr__(self):
         return str(self.data)
 
-with open(datafile,'r') as f:
+
+with open(datafile, 'r') as f:
     for line in f.readlines():
         if line.startswith('{"index": '):
             continue
