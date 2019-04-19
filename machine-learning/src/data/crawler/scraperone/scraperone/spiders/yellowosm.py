@@ -5,10 +5,6 @@ import json
 import scrapy
 from tqdm import tqdm
 
-# BASE_PATH = "/tmp/"
-BASE_PATH = "/Users/daniel/devel/YellowOSM/yellowosm/data-processing/data/raw/"
-CRAWLER_DEPOSITS = BASE_PATH + "crawler_deposits/"
-
 IGNORED_FILES = [
     ".pdf",
     ".jpg",
@@ -24,7 +20,11 @@ NO_FOLLOW_LINK = [
     "mailto:",
     "callto:",
 ]
-TARGETSJSON = BASE_PATH + "osm_crawler_at_with_phone_and_website.jsona"  # every line is a valid json string
+
+BASE_PATH = "/Users/daniel/devel/YellowOSM/yellowosm/machine-learning/data/raw/"
+CRAWLER_DEPOSITS = BASE_PATH + "crawler_deposits/"
+TARGETSJSON_WITHOUT_PHONE = BASE_PATH + "osm_crawler_at_without_phone_and_with_website.jsona"  # every line is a valid json string
+TARGETSJSON_WITH_PHONE = BASE_PATH + "osm_crawler_at_with_phone_and_website.jsona"  # every line is a valid json string
 
 
 class YellowosmSpider(scrapy.Spider):
@@ -43,9 +43,19 @@ class YellowosmSpider(scrapy.Spider):
         called only once
         default generates list from start_urls"""
         targets = []
-        with open(TARGETSJSON, 'r') as myfile:
-            for line in myfile.readlines():
-                targets.append(json.loads(line))
+        for jsona_file_name in [
+            TARGETSJSON_WITHOUT_PHONE,
+            TARGETSJSON_WITH_PHONE
+        ]:
+            with open(jsona_file_name) as infile:
+                for line in infile.readlines():
+                    targets.append(json.loads(line))
+
+        print(len(targets))
+
+        for t in targets[9953:9955]:
+            if 'website' in t:
+                print(t['website'])
 
         for target in tqdm(targets):
             self.logger.debug(target)
@@ -72,7 +82,10 @@ class YellowosmSpider(scrapy.Spider):
         return re.sub(r"[.?/:*]", "-", website)
 
     def parse(self, response):
-        file_name = self.get_url_file_name(response.url)
+        original_url = response.url
+        if 'redirect_urls' in  response.request.meta:
+            original_url = response.request.meta['redirect_urls'][-1]
+        file_name = self.get_url_file_name(original_url)
         with open(CRAWLER_DEPOSITS + file_name, 'w') as outfile:
             outfile.write(response.text)
 
