@@ -38,7 +38,7 @@ export class YellowmapComponent implements OnInit {
   selectedFeatureDraggedUp = false;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
-  options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Café', 'Bäckerei'];
+  options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
   map: OlMap;
   source: OlXYZ;
   esLayer: VectorLayer;
