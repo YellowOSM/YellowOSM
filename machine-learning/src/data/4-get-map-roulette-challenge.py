@@ -22,7 +22,11 @@ for t in targets:
 
 with open('../../data/export/map-roulette-challenge.json', 'w') as outfile:
     for idx, t in enumerate(relevant_targets):
-        if idx >= 10:
+        # idx <= 10 was used in first challenge
+        # 10 < idx < 1500 was used in second challenge
+        if idx < 10:
+            continue
+        if idx > 1500:
             break
         website_file_name = get_website_file_name(t['labels']['website'])
         try:
@@ -44,11 +48,10 @@ with open('../../data/export/map-roulette-challenge.json', 'w') as outfile:
             properties['address'] = t['labels']['address']
 
         for idx, potential_phone in enumerate(strings):
-            properties['potential phone number ' + str(idx+1)] = potential_phone
+            properties['potential phone number ' + str(idx + 1)] = potential_phone
 
         outfile.write('{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": ' +
-                      '{"type": "Point", "coordinates": [' + str(t['location'][0]) + ', ' + str(t['location'][1]) + ']}, ' +
-                      # '{"type": "Point", "coordinates": [-82.9908295, 42.435009]}, ' +
-                      # '"properties": {"address": "13001 East Seven Mile", "latitude": "42.435009", "longitude": "-82.9908295", "business_name": "Lions Auto Sales"}'
+                      '{"type": "Point", "coordinates": [' + str(t['location'][0]) +
+                      ', ' + str(t['location'][1]) + ']}, ' +
                       '"properties": {' + ','.join('"' + k + '": "' + v + '"' for k, v in properties.items()) + '}'
                       + '}]}\n')
