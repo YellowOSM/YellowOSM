@@ -21,12 +21,11 @@ for t in targets:
         relevant_targets.append(t)
 
 with open('../../data/export/map-roulette-challenge.json', 'w') as outfile:
-    for idx, t in enumerate(relevant_targets):
-        # idx <= 10 was used in first challenge
-        # 10 < idx < 1500 was used in second challenge
-        if idx < 10:
-            continue
-        if idx > 1500:
+    # idx <= 10 was used in first challenge
+    # 10 < idx <= 1510 was used in second challenge
+    idx = 10
+    for t in relevant_targets:
+        if idx >= 1510:
             break
         website_file_name = get_website_file_name(t['labels']['website'])
         try:
@@ -47,11 +46,13 @@ with open('../../data/export/map-roulette-challenge.json', 'w') as outfile:
         if 'address' in t['labels']:
             properties['address'] = t['labels']['address']
 
-        for idx, potential_phone in enumerate(strings):
-            properties['potential phone number ' + str(idx + 1)] = potential_phone
+        for i, potential_phone in enumerate(strings):
+            properties['potential phone number ' + str(i + 1)] = potential_phone
 
         outfile.write('{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": ' +
                       '{"type": "Point", "coordinates": [' + str(t['location'][0]) +
                       ', ' + str(t['location'][1]) + ']}, ' +
-                      '"properties": {' + ','.join('"' + k + '": "' + v + '"' for k, v in properties.items()) + '}'
+                      # '"properties": ' + ','.join('"' + k + '": "' + v.replace('"', '\\"') + '"' for k, v in properties.items()) + '}'
+                       '"properties": ' + json.dumps(properties, ensure_ascii=False)
                       + '}]}\n')
+        idx += 1
