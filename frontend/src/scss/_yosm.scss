@@ -63,21 +63,6 @@ a {
   margin-right: 10px;
 }
 
-.fa-crosshairs {
-  opacity: 0.75;
-  margin-left: -30px;
-
-  &:hover,
-  &:active,
-  &:focus {
-    opacity: 1;
-  }
-
-  &.loading {
-    animation: rotation 2s infinite linear;
-  }
-}
-
 @keyframes rotation {
   from {
     transform: rotate(0deg);

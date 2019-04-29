@@ -14,8 +14,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-Run `ng build --prod --build-optimizer=false` to build for production. 
-Note: the optimization doesn't work with OpenLayers v5.3.0 (https://github.com/openlayers/openlayers/issues/8962)
+Run `ng build --prod` to build for production. 
 
 To build for a subdirectory (e.g., yosm.org/beta) build with `--base-href='/beta/'`.
 
