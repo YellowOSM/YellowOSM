@@ -210,6 +210,12 @@ class YOSM_POI():
         if 'vending' in self.label_dict and \
                 self.label_dict['vending'] in vending_replacements:
             self.label_dict['vending'] = vending_replacements[self.label_dict['vending']]
+
+
+        # dentists may appear in amenity:
+        if 'amenity' in self.label_dict and self.label_dict['amenity'] == 'dentist':
+            self.label_dict['healthcare_speciality'] = self._split_and_translate('dentist', healthcare_replacements)
+
         if 'healthcare_speciality' in self.label_dict:
             self.label_dict['healthcare_speciality'] = self._split_and_translate(self.label_dict['healthcare_speciality'], healthcare_replacements)
 
