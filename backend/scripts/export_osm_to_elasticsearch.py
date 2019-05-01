@@ -132,8 +132,10 @@ export_amenity = { "key": "amenity",
                         "arts_centre",
                         "theatre",
                         "marketplace",
-                        "post_office",
                         "brewery",
+                        "post_office",
+                        "post_box",
+                        "telephone",
                         # TODO get new tags from taginfo...
                         ]
                  }

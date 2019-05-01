@@ -142,6 +142,8 @@ translated_info = {
     "dentist": ["Zahnarzt"],
     "marketplace": ["Marktplatz", "Bauernmarkt", "Markt"],
     "post_office": ["Post", "Postamt", "Paket", "Packerl", "Brief"],
+    "post_box": ["Postkasten", "Briefkasten"],
+    "telephone": ["Telefon", "Telefonzelle", "Telephon"],
     # "": ["",],
 }
 
