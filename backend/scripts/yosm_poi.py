@@ -40,6 +40,7 @@ class YOSM_POI():
         for typus in ['amenity','leisure','shop', 'craft', 'tourism']:
             if typus in self.label_dict and self.label_dict[typus] in translated_info:
                 self.desc += " " + " ".join(translated_info[self.label_dict[typus]])
+            # if self.label_dict[subtype]
 
         try:
             for osmtype, _ in yosm_types.items():
@@ -68,11 +69,15 @@ class YOSM_POI():
                         not 'label' in yosm_types[osmtype][self.label_dict[osmtype]] or \
                         not yosm_types[osmtype][self.label_dict[osmtype]]['label']:
 
-                        self.yosm_subtype = " ".join(self.label_dict[osmtype].capitalize().split('_'))
+                        if self.label_dict[osmtype] in translated_info:
+                            self.yosm_subtype = " ".join(translated_info[self.label_dict[osmtype]][0].capitalize().split('_'))
+                        else:
+                            self.yosm_subtype = " ".join(self.label_dict[osmtype].capitalize().split('_'))
                         # print("yosm_subtype: " + yosm_subtype)
                     else:
                         self.yosm_subtype = " ".join(yosm_types[osmtype][self.label_dict[osmtype]]['label'].capitalize().split('_'))
                         # print("yosm_subtype: " + yosm_subtype)
+
         except KeyError as ex:
             print(self.label_dict)
             print("Key Error {}, {}, {}".format(ex, osmtype, self.label_dict))
