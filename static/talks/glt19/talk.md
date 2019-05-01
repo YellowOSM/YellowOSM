@@ -1,19 +1,9 @@
 <div style="display:flex; flex-direction:column; justify-content:center">
 <a href="https://yellowosm.com/"><img src="imgs/YOSM_square_200.png" /></a>
 <h1 style="text-transform:none">YellowOSM</h1></div><!-- .slide: data-background-image="imgs/bg1.jpg" -->
-Note: Für gute Mitarbeit gibt's sticker
 
 
 # Warum?
-Note: Anfangsumfrage: Wer verwendet was zu Finden eines **Friseur**? Stricherlliste etc...
-verwenden: **Google, Herold, OSM**; empfehlen (**Grossmutter**):
-There is google, yellowpages (aka herold), that's it. We wanted a service that
-uses free data to find the right business in your neighborhood.
-How do you find the next hair-dresser to your location - right now?
-Afraid of **Tracking**? No? Really?
-not free data, actuality, democratic?,
-key features: atms, cigarette vending machine,
-goal: make data more accessible, make data pool powerful and dominant like wikipedia's.
 
 
 ### Schon bei OSM nach "Friseur" gesucht?
@@ -25,8 +15,6 @@ goal: make data more accessible, make data pool powerful and dominant like wikip
 * zahlreiche Interfaces dafür, aber oft schwer zu bedienen
 * auf mobilen Geräten teilweise nicht verfügbar
 
-Note: trotz allem ist osm.org oft Hauptanlaufstelle
-
 
 # Warum?
 * keine freie & offene Alternative zu Google, Herold etc.
@@ -37,15 +25,11 @@ Note: trotz allem ist osm.org oft Hauptanlaufstelle
   * Monopolstellung
 * teilweise langsam bei Aktualisierung
 
-Note: seit Juni 2018 ist Google Maps nur noch mit Kreditkarte auf einer Website einbindbar
-
 
 ## Der "umbenannt worden" Ring
-<a href="https://blog.flo.cx/2012/07/der-umbenannt-worden-ring/" target="_blank">
-  https://blog.flo.cx/2012/07/der-umbenannt-worden-ring/
-</a>
-<img src="imgs/google_maps_umbenannt_worden.png">
-Note: Google, TripAdvisor, Yelp, Herold
+<a href="https://blog.flo.cx/2012/07/der-umbenannt-worden-ring/" target="blank">
+  https://blog.flo.cx/2012/07/der-umbenannt-worden-ring/</a>
+<img src="imgs/google_maps_umbenannt_worden.png" />
 
 
 # Unsere Ziele
@@ -57,14 +41,11 @@ Note: Google, TripAdvisor, Yelp, Herold
   * uneinholbar voran, vgl. Wikipedia, StackOverflow
 * Vermeiden von Tracking
 
-Note: OpenStreetMap as data base for business data, it's free and the best we know.
-
 
 <div style="display:flex; flex-direction:column; justify-content:center">
 <a href="https://yellowosm.com/"><img src="imgs/YOSM_square_200.png" /></a>
 <h1 style="text-transform:none">YellowOSM</h1></div><!-- .slide: data-background-image="imgs/bg1.jpg" -->
 <h2><a href="https://yellowosm.com/map">Demo Time!</a></h2>
-Note: Graz herzeigen, Geschäft suchen, Details anzeigen (Öffnungszeiten...) - noch ein gutes Beispiel suchen!
 
 
 ## WebApp
@@ -78,34 +59,26 @@ Note: Graz herzeigen, Geschäft suchen, Details anzeigen (Öffnungszeiten...) - 
 
 <img src="imgs/screenshots/mobile.png" style="width: 30%; height: auto">
 
-Note: Ziel: PWA-Features verwenden (Offline-first, Notifications)
-
 
 ## Technik
 * Daten von der <a href="https://download.geofabrik.de/europe/austria.html">Geofabrik</a>
 * Import in PostgreSQL-Datenbank
-* Export für Solr (Python-Skripts)
+* Export für ElasticSearch (Python-Skripts)
 * Frontend in Angular
 * Integration bestehender Tools:
   * osm2pgsql, OpenLayers, opening_hours.js
 
-Note: Wir möchten uns gerne in die OSM-Community einbringen
-
 
 ## API
 * offene API zur freien Verwendung
-* **Gebäudeutomatisierung**: Zeige alle jetzt verfügbaren Lieferdienste in 5km Umkreis
+* **Gebäudeautomatisierung**: Zeige alle jetzt verfügbaren Lieferdienste in 5km Umkreis
 * Einbinden in Webseiten, z.B. "Geschäfte in der Nähe"
 * Auswertungen, z.B. Standortanalysen
-
-Note: noch nicht so gut dokumentiert, bitte gerne mit uns reden
 
 
 ## Analyse: Datenqualität
 Fallstudie: Reitschulgasse
 <img src="imgs/screenshots/osm.png">
-
-Note: 200m lang, im Herzen von Graz
 
 
 ## Datenqualität: Reitschulgasse
@@ -118,11 +91,6 @@ Note: 200m lang, im Herzen von Graz
 Wie viele gibt es auf der Karte?
 
 <img src="imgs/reitschulgasse/chart1.png">
-
-Note: Außerdem hatte GM zwei vom Dietrichsteinplatz, AM & OSM je 5 geschlossene Geschäfte
-Haben begonnen, das auszubessern
-GM hat 75% davon, OSM 55%, AM 34%
-komplett richtig hat GM 55%, OSM 32%, AM 23%
 
 
 ## Datenqualität: Reitschulgasse
@@ -151,20 +119,6 @@ Wie viele haben die richtigen Infos?
 * Browsing
 * Datenqualität verbessern
 * Projekt nachhaltig etablieren
-
-Note: derzeit von netidee unterstützt für die Erstentwicklung
-* Freemium
-* Dienstleistungen für Geschäfte anbieten
-* Community-finanziert (Spenden/Dienstleistungen)
-
-* ES nice for geo-data
-  * no need for Postgis in our case
-* UI more complicated than you think
-  * needs much thought
-* Datenqualität nicht so gut für Gewerbe wie erhofft
-* Daten rauschen mehr als gedacht
-  * 80% Der Daten mit 20% des Aufwandes (wir treffen Annahmen - und prüfen nicht immer nach)
-* contact_phone vs phone, website vs contact_website
 
 
 ### Fun Fact: Warum gibt's in Tirol und Vorarlberg keine Fleischer?
