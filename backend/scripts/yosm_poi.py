@@ -131,6 +131,14 @@ class YOSM_POI():
             self.label_dict['phone'] = self.label_dict['contact_phone']
             del self.label_dict['contact_phone']
 
+        # only use contact_mobile if contact_phone or phone not present
+        if not 'phone' in self.label_dict and 'contact_mobile' in self.label_dict:
+            self.label_dict['phone'] = self.label_dict['contact_mobile']
+            del self.label_dict['contact_mobile']
+
+        # contact_fax is the same
+        # contact_email is the same
+
         # leave website the same
         # just overwrite if contact_website present
         if 'contact_website' in self.label_dict:

@@ -10,7 +10,7 @@ queries in `backend/scripts/export_osm_to_elasticsearch.py`
 #  cut -d \| -f 1 | sed 's/ //g' | sed 's/^/"/g;s/$/", /;s/:/_/g'
 # """
 
-labels = [
+labels = [ # order important!
     "osm_data_type",
     "osm_id",
     "addr_city",
