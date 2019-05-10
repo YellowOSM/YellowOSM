@@ -228,6 +228,13 @@ export class YellowmapComponent implements OnInit {
       this.searchFormControl.setValue('tribeka');
       this.searchElasticSearch();
     }
+
+    const urlSearchTerm = this.route.snapshot.paramMap.get('q');
+    if (urlSearchTerm) {
+      console.log('search term present - searching');
+      this.searchFormControl.setValue(urlSearchTerm);
+      this.searchElasticSearch();
+    }
   }
 
   public updateUrl(evt) {
@@ -260,21 +267,23 @@ export class YellowmapComponent implements OnInit {
     }
 
     if (changeUrl) {
-      this.router.navigate(
-        [
-          Number.parseFloat(zoom).toFixed(2),
-          Number.parseFloat(center[1]).toFixed(5),
-          Number.parseFloat(center[0]).toFixed(5)
-        ],
-        {replaceUrl: true}
+      console.log('change Url!');
+      let query = '';
+      if (this.searchFormControl.value) {
+        query = ';q=' + this.searchFormControl.value;
+      }
+      this.router.navigateByUrl(
+        '/' +
+        Number.parseFloat(zoom).toFixed(2) + '/' +
+        Number.parseFloat(center[1]).toFixed(5) + '/' +
+        Number.parseFloat(center[0]).toFixed(5) +
+        query,
+        {
+          replaceUrl: true,
+        },
       );
     }
 
-    const urlSearchTerm = this.route.snapshot.paramMap.get('q');
-    if (urlSearchTerm) {
-      this.searchFormControl.setValue(urlSearchTerm);
-      this.searchElasticSearch();
-    }
   }
 
   public hideKeyboard() {
@@ -396,6 +405,7 @@ export class YellowmapComponent implements OnInit {
   }
 
   private openNode() {
+    console.log('open node!');
     const urlPropertyValue = this.getPropertyValueFromUrl();
     if (!urlPropertyValue) {
       return;
