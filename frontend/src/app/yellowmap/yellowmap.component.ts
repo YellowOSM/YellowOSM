@@ -129,7 +129,7 @@ export class YellowmapComponent implements OnInit {
         }
         return new Style({
           image: new CircleStyle({
-            radius: 8.5,
+            radius: 11,
             fill: new Fill({
               color: color
             }),
