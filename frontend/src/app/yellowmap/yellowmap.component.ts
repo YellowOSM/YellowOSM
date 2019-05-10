@@ -12,7 +12,6 @@ import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
 import {fromLonLat, toLonLat, transformExtent} from 'ol/proj';
-import Polygon from 'ol/geom/Polygon';
 import LineString from 'ol/geom/LineString';
 import {getTopLeft, getBottomRight} from 'ol/extent';
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
@@ -291,6 +290,10 @@ export class YellowmapComponent implements OnInit {
       this.clearSearch();
       this.closeAutocomplete();
       this.hideKeyboard();
+    }
+
+    if (this.autocomplete.activeOption) {
+      this.searchFormControl.setValue(this.autocomplete.activeOption.value);
     }
 
     if (!this.searchFormControl.value || this.searchFormControl.value.length < 2) {
