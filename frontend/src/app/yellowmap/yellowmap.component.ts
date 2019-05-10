@@ -212,11 +212,10 @@ export class YellowmapComponent implements OnInit {
 
     this.map.on('moveend', (evt) => {
       this.searchElasticSearch(false, false);
-      this.updateUrl(evt);
     });
 
     this.view.on('change:resolution', (evt) => {
-      this.updateUrl(evt);
+      this.searchElasticSearch(false, false);
     });
 
     this.map.once('moveend', (evt) => {
@@ -237,7 +236,7 @@ export class YellowmapComponent implements OnInit {
     }
   }
 
-  public updateUrl(evt) {
+  public updateUrl() {
     const center = toLonLat(this.view.getCenter());
     let zoom = this.view.getZoom();
     let changeUrl = false;
@@ -304,6 +303,8 @@ export class YellowmapComponent implements OnInit {
     if (this.autocomplete.activeOption) {
       this.searchFormControl.setValue(this.autocomplete.activeOption.value);
     }
+
+    this.updateUrl();
 
     if (!this.searchFormControl.value || this.searchFormControl.value.length < 2) {
       return;
