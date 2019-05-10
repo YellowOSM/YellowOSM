@@ -79,6 +79,7 @@ labels = [ # order important!
     "takeaway",
     "wikipedia",
     "wikidata",
+    "collection_times",
 ]
 
 translated_info = {

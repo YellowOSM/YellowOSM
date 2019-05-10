@@ -147,6 +147,7 @@ node,way   diet:vegetarian     text  linear
 node,way   takeaway            text  linear
 node,way   wikipedia           text  linear
 node,way   wikidata            text  linear
+node,way   collection_times    text  linear
 
 # Area tags
 # We don't make columns for these tags, but objects with them are areas.
