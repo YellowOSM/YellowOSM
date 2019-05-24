@@ -89,7 +89,8 @@ export class YellowmapComponent implements OnInit {
     this.view = new OlView({
       center: fromLonLat([+this.route.snapshot.paramMap.get('lon'), +this.route.snapshot.paramMap.get('lat')]),
       zoom: +this.route.snapshot.paramMap.get('zoom'),
-      maxZoom: 19
+      maxZoom: 19,
+      enableRotation: false
     });
 
     const that = this;
