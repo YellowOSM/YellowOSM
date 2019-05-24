@@ -10,6 +10,9 @@ export const environment = {
   // no label standard tile
   // tileServerURL: '//tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png',
 
+  // Wikimedia
+  tileServerURL: '//maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+
   // bergfex (not sure if ok to use)
   // tileServerURL: '//maps.bergfex.at/osm/512px/{z}/{x}/{y}.jpg',
 
@@ -17,7 +20,10 @@ export const environment = {
   // tileServerURL: '//cartodb-basemaps-{a-d}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
 
   // HOT:
-  tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  // tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+
+  // b/w
+  // tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',
 
   // Stamen no SSL:
   // tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',

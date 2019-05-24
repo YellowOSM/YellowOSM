@@ -35,6 +35,7 @@ import {MatSnackBar} from '@angular/material';
 })
 export class YellowmapComponent implements OnInit {
   DEBUG = Boolean(false && environment.localDevEnv);
+  features = [];
   selectedFeature: Feature = null;
   selectedFeatureDraggedUp = false;
   searchFormControl = new FormControl();
@@ -100,6 +101,7 @@ export class YellowmapComponent implements OnInit {
     this.esSource = new VectorSource({
       format: new GeoJSON(),
       loader: (extent, resolution, projection) => {
+        that.features = [];
         that.esSearchResult.forEach(result => {
           if (that.showOnlyOpenedLocations) {
             try {
@@ -121,6 +123,7 @@ export class YellowmapComponent implements OnInit {
             labels: result['_source']['labels']
           });
           that.esSource.addFeature(featurething);
+          that.features.push(featurething);
 
           if (featurething.values_.labels && that.selectedFeature && that.selectedFeature.values_.labels &&
             that.selectedFeature.values_.labels.osm_id &&
