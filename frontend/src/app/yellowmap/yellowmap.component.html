@@ -24,6 +24,11 @@
     </mat-option>
   </mat-autocomplete>
 
+  <mat-chip-list class="yosm__filters">
+    <mat-chip [color]="showOnlyOpenedLocations ? 'accent': 'standard'" selected
+              (click)="toogleOpenedLocations()">jetzt geöffnet</mat-chip>
+  </mat-chip-list>
+
   <div class="map__wrapper">
     <div id="map" class="map" #mapElement></div>
     <div class="map__beta-sleeve mat-elevation-z2">BETA</div>

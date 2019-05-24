@@ -87,3 +87,16 @@ a {
     margin-top: 70px !important;
   }
 }
+
+.yosm__filters {
+  margin-top: 60px;
+  z-index: 999;
+}
+
+.mat-chip-list-wrapper {
+  justify-content: center;
+}
+
+.mat-chip.mat-standard-chip {
+  border: 2px solid $color-primary;
+}

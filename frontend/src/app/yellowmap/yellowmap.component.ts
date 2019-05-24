@@ -19,6 +19,8 @@ import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
 
+import * as opening_hours from 'opening_hours';
+
 import {ElasticsearchService} from '../services/elasticsearch.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -62,6 +64,7 @@ export class YellowmapComponent implements OnInit {
     lon: +this.route.snapshot.paramMap.get('lon')
   };
   openFirstFeature = false;
+  showOnlyOpenedLocations = false;
 
   constructor(
     private es: ElasticsearchService,
@@ -98,6 +101,17 @@ export class YellowmapComponent implements OnInit {
       format: new GeoJSON(),
       loader: (extent, resolution, projection) => {
         that.esSearchResult.forEach(result => {
+          if (that.showOnlyOpenedLocations) {
+            try {
+              const oh = new opening_hours(result['_source']['labels']['opening_hours'], null);
+              // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
+              if (!oh.getState()) {
+                return;
+              }
+            } catch (error) {
+              return;
+            }
+          }
           const lonLat = fromLonLat([result['_source']['location'][0], result['_source']['location'][1]]);
           const featurething = new Feature({
             name: result['_source']['name'],
@@ -107,6 +121,7 @@ export class YellowmapComponent implements OnInit {
             labels: result['_source']['labels']
           });
           that.esSource.addFeature(featurething);
+
           if (featurething.values_.labels && that.selectedFeature && that.selectedFeature.values_.labels &&
             that.selectedFeature.values_.labels.osm_id &&
             featurething.values_.labels.osm_id === that.selectedFeature.values_.labels.osm_id) {
@@ -480,5 +495,13 @@ export class YellowmapComponent implements OnInit {
   closeFeature(event) {
     this.selectedFeature = null;
     this.selectedFeatureDraggedUp = false;
+  }
+
+  toogleOpenedLocations() {
+    console.log(this.showOnlyOpenedLocations);
+    this.showOnlyOpenedLocations = !this.showOnlyOpenedLocations;
+    this.searchElasticSearch();
+    console.log(this.showOnlyOpenedLocations);
+    console.log('--------');
   }
 }
