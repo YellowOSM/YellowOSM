@@ -7,14 +7,21 @@ export const environment = {
   localDevEnv: true,
   elasticSearchBaseUrl: 'https://es.yosm.at',
   elasticSearchIndex: 'yosm_dev',
-  // no label standard tile:
+  // no label standard tile
   // tileServerURL: '//tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png',
+
   // bergfex (not sure if ok to use)
-  tileServerURL: '//maps.bergfex.at/osm/512px/{z}/{x}/{y}.jpg',
+  // tileServerURL: '//maps.bergfex.at/osm/512px/{z}/{x}/{y}.jpg',
+
+  // cartodb (hard to read)
+  // tileServerURL: '//cartodb-basemaps-{a-d}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+
   // HOT:
-  // tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  tileServerURL: '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+
   // Stamen no SSL:
   // tileServerURL: '//a.tile.stamen.com/toner/{z}/{x}/{y}.png',
+
   // osm.de:
   // tileServerURL: '//d.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   apiBaseUrl: '//localhost:5000/api',
