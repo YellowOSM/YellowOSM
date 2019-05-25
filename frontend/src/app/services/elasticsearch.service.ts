@@ -39,14 +39,15 @@ export class ElasticsearchService {
                       // 'labels.addr_street',
                       'labels.addr_city',
                       'labels.amenity',
-                      'labels.tourism',
-                      'labels.sport',
                       'labels.craft',
+                      'labels.emergency',
+                      'labels.healthcare',
+                      'labels.healthcare_speciality',
                       'labels.leisure',
                       'labels.shop',
-                      'labels.healthcare',
-                      'labels.emergency',
-                      'labels.healthcare_speciality'
+                      'labels.sport',
+                      'labels.tourism',
+                      'labels.vending'
                     ]
                   }
               }
