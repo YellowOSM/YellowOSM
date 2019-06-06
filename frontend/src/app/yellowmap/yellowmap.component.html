@@ -1,3 +1,4 @@
+<form>
 <div class="yosm__container">
   <mat-toolbar color="secondary" class="search__toolbar mat-elevation-z3" #toolbarElement>
     <a href="/" class="search__logo-wrapper">
@@ -10,7 +11,9 @@
     </mat-form-field>
     <div class="search__button">
       <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()" class="search__clear">close</mat-icon>
-      <mat-icon (click)="searchElasticSearch()">search</mat-icon>
+      <button type="submit">
+        <mat-icon (click)="searchElasticSearch()">search</mat-icon>
+      </button>
     </div>
 
   </mat-toolbar>
@@ -46,6 +49,7 @@
     </div>
   </div>
 </div>
+</form>
 
 <app-location-detail [feature]="selectedFeature" [draggedUp]="selectedFeatureDraggedUp"
                      [style.top.px]="selectedFeatureTopPos"

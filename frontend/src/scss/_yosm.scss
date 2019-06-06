@@ -56,6 +56,12 @@ a {
   margin-left: -30px;
   margin-top: 6px;
   z-index: 1000;
+
+  button {
+    appearance: none;
+    border: none;
+    background: none;
+  }
 }
 
 .search__clear {
