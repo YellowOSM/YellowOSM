@@ -14,6 +14,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from './material.module';
 import * as Hammer from 'hammerjs';
 import {LocationListComponent} from './location-list/location-list.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 export class MyHammerConfig extends HammerGestureConfig {
   overrides = <any>{
@@ -39,6 +41,7 @@ export class MyHammerConfig extends HammerGestureConfig {
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [
     {
