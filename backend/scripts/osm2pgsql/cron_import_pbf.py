@@ -11,9 +11,11 @@ import sys
 # state_url="http://download.geofabrik.de/europe/dach-updates/state.txt"
 # download_sub_path="https://download.geofabrik.de/europe/dach-"
 
-pbffile="/tmp/austria-current.osm.pbf"
-state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
-download_sub_path="https://download.geofabrik.de/europe/austria-"
+# austria
+# pbffile="/tmp/austria-current.osm.pbf"
+# state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
+# download_sub_path="https://download.geofabrik.de/europe/austria-"
+
 # testing small file:
 pbffile="/tmp/liechtenstein-current.osm.pbf"
 state_url="http://download.geofabrik.de/europe/liechtenstein-updates/state.txt"
@@ -36,55 +38,23 @@ parser.set_defaults(init=False)
 parser.add_argument('--force-download', action="store_true",
                      help='force download of pbf file, even if not older than 12 hours')
 parser.set_defaults(force_download=False)
+parser.add_argument('--update-db', action="store_true",
+                     help='update existing database with osc files from remote server')
+parser.set_defaults(update_db=False)
+
 
 args = vars(parser.parse_args())
-INIT = args['init']
-FORCE_DOWNLOAD = args['force_download']
 
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(10)
-# print(args)
-# print(INIT)
+# logger.setLevel(50)
 
 logger.debug(args)
 
-if INIT:
-    logger.debug("init")
 
-    # re-download if file is older than 12h or does not exist
-    # if ! test -f $pbffile || [ $pbffile = "`find $pbffile -mmin +720`" ]; then
-    #   curl ${download_sub_path}`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
-    # fi
-
-    yesterday=(datetime.date.today()-datetime.timedelta(1)).strftime("%y%m%d")
-    # download
-    download_url = download_sub_path+"{}.osm.pbf".format(yesterday)
-
-    logger.debug("would be downloading: {} to {}".format(download_url, pbffile))
-
-    # download only if older than 12h
-    do_download = False
-    try:
-        now = datetime.datetime.now()
-        print(now)
-        mtime = datetime.datetime.fromtimestamp(os.path.getmtime(pbffile))
-        print(mtime)
-        age = (now - mtime).total_seconds()
-        if age > 3600*12 or FORCE_DOWNLOAD: # older than 12 hours
-            do_download = True
-    except FileNotFoundError as e:
-        age = None
-        mtime = None
-        do_download = True # force download if file does not exist
-        pass
-
-    logger.debug(str(mtime) + " " + str(now) + " age: " + str(age))
-    if do_download:
-        logger.debug("downloading: {} to {}".format(download_url, pbffile))
-    do_download = False
-    if do_download:
-        os.system("curl {} -o {}".format(download_url, pbffile))
+def init():
+    logger.debug("initializing DB")
 
     # command = "docker exec $(docker ps | grep yosm_postgres | " +
     #           "awk '{print $1}') psql -U postgres -d gis " +
@@ -108,9 +78,48 @@ if INIT:
     # os.system("cd osm2pgsql; time osm2pgsql -H 127.0.0.1 -U postgres -C 3000 --slim --create --database gis {} --style yosm.style".format(pbffile))
     os.system("echo 'it works!'; echo $PGPASSWORD")
 
-else:
+def download_pbf(force_download=False):
+    # re-download if file is older than 12h or does not exist
+    # if ! test -f $pbffile || [ $pbffile = "`find $pbffile -mmin +720`" ]; then
+    #   curl ${download_sub_path}`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
+    # fi
+
+    yesterday=(datetime.date.today()-datetime.timedelta(1)).strftime("%y%m%d")
+    # download
+    download_url = download_sub_path+"{}.osm.pbf".format(yesterday)
+
+    logger.debug("would be downloading: {} to {}".format(download_url, pbffile))
+
+    # download only if older than 12h
+    do_download = False
+    try:
+        now = datetime.datetime.now()
+        logger.debug("now: " + str(now))
+        mtime = datetime.datetime.fromtimestamp(os.path.getmtime(pbffile))
+        logger.debug("file mtime: " + str(mtime))
+        # print(mtime)
+        age = (now - mtime).total_seconds()
+        if age > 3600*12 or force_download: # older than 12 hours
+            do_download = True
+    except FileNotFoundError as e:
+        age = None
+        mtime = None
+        do_download = True # force download if file does not exist
+        pass
+
+    logger.debug(str(mtime) + " " + str(now) + " age: " + str(age))
+    # TODO remove next line
+    # do_download = False
+    if do_download:
+        logger.debug("downloading: {} to {}".format(download_url, pbffile))
+        os.system("curl {} -o {}".format(download_url, pbffile))
+    else:
+        logger.debug("NOT downloading")
+
+
+def update_db():
     # echo "update"
-    logger.debug("update")
+    logger.debug("updating DB...")
 
     # get state of update file
     # http://download.geofabrik.de/europe/austria-updates/state.txt
@@ -120,3 +129,27 @@ else:
 
     # calculate new download path eg:
     # http://download.geofabrik.de/europe/austria-updates/000/002/242.osc.gz
+
+def main(args):
+    INIT = args['init']
+    FORCE_DOWNLOAD = args['force_download']
+    UPDATE_DB = args['update_db']
+
+    # no params given -> exit
+    if not INIT and not FORCE_DOWNLOAD and not UPDATE_DB:
+        parser.print_help()
+        return
+
+    if FORCE_DOWNLOAD:
+        download_pbf(force_download=FORCE_DOWNLOAD)
+
+    if UPDATE_DB:
+        # don't init DB if update-db is chosen
+        INIT = False
+        update_db()
+
+    if INIT:
+        init()
+
+if __name__ == '__main__':
+    main(args)
