@@ -6,6 +6,16 @@ import time
 import datetime
 import sys
 
+# TODO add ability to add more regions
+# REGIONS=["liechtenstein"]
+
+# REGION="austria"
+# REGION="germany"
+# REGION="dach" # Germany, Austria, Switzerland
+# REGION="luxembourg"
+REGION="liechtenstein"
+# TODO
+# add continent (eg. EUROPE etc), for path
 
 # pbffile="/tmp/dach-current.osm.pbf"
 # state_url="http://download.geofabrik.de/europe/dach-updates/state.txt"
@@ -16,10 +26,18 @@ import sys
 # state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
 # download_sub_path="https://download.geofabrik.de/europe/austria-"
 
+WORKOSM_DIR="/home/flo/tmp/osmosis/"
+
 # testing small file:
-pbffile="/tmp/liechtenstein-current.osm.pbf"
-state_url="http://download.geofabrik.de/europe/liechtenstein-updates/state.txt"
-download_sub_path="https://download.geofabrik.de/europe/liechtenstein-"
+pbffile="/tmp/"+REGION+"-current.osm.pbf"
+statefile="/tmp/"+REGION+"-state.txt"
+state_url="http://download.geofabrik.de/europe/"+REGION+"-updates/state.txt"
+download_sub_path="https://download.geofabrik.de/europe/"+REGION+"-"
+pbf_path="http://download.geofabrik.de/europe/"+REGION+"-latest.osm.pbf"
+# curl http://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf -O $WORKOSM_DIR/liechtenstein-latest.osm.pbf
+# wget "https://download.geofabrik.de/europe/liechtenstein-updates/state.txt" -O $WORKOSM_DIR/state.txt
+
+
 # TODO:
 # add
 # http://download.geofabrik.de/europe/germany-latest.osm.pbf
@@ -51,6 +69,10 @@ logger.setLevel(10)
 # logger.setLevel(50)
 
 logger.debug(args)
+
+def prepare_osmosis():
+    WORKDIR="/home/flo/tmp/osmosis/"
+    # mkdir -p $WORKOSM_DIR ; cd $WORKOSM_DIR
 
 
 def init():
@@ -84,10 +106,10 @@ def download_pbf(force_download=False):
     #   curl ${download_sub_path}`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
     # fi
 
-    yesterday=(datetime.date.today()-datetime.timedelta(1)).strftime("%y%m%d")
-    # download
-    download_url = download_sub_path+"{}.osm.pbf".format(yesterday)
-
+    # yesterday=(datetime.date.today()-datetime.timedelta(1)).strftime("%y%m%d")
+    # # download
+    # download_url = download_sub_path+"{}.osm.pbf".format(yesterday)
+    download_url = download_sub_path+"latest.osm.pbf"
     logger.debug("would be downloading: {} to {}".format(download_url, pbffile))
 
     # download only if older than 12h
@@ -113,6 +135,7 @@ def download_pbf(force_download=False):
     if do_download:
         logger.debug("downloading: {} to {}".format(download_url, pbffile))
         os.system("curl {} -o {}".format(download_url, pbffile))
+        os.system("curl {} -o {}".format(state_url, ))
     else:
         logger.debug("NOT downloading")
 

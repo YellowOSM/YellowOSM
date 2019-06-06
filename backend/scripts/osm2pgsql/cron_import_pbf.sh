@@ -1,8 +1,23 @@
 #!/bin/sh
 
-pbffile="/tmp/austria-current.osm.pbf"
-state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
-download_sub_path="https://download.geofabrik.de/europe/austria-"
+# pbffile="/tmp/austria-current.osm.pbf"
+WORKOSM_DIR="/tmp/osmosis/"
+
+export PGHOST=127.0.0.1
+export PGPORT=5432
+export PGUSER=postgres
+# export PGPASSWORD=postgres_007%
+export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
+
+
+pbffile="/tmp/liechtenstein-current.osm.pbf"
+PBF_FILE=$pbffile
+statefile="/tmp/state.txt"
+# state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
+state_url="http://download.geofabrik.de/europe/liechtenstein-updates/state.txt"
+# download_sub_path="https://download.geofabrik.de/europe/austria-"
+# download_path="https://download.geofabrik.de/europe/austria-latest.osm.pbf"
+download_path="https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf"
 # TODO:
 # add
 # http://download.geofabrik.de/europe/germany-latest.osm.pbf
@@ -18,10 +33,13 @@ download_sub_path="https://download.geofabrik.de/europe/austria-"
 if [ "$1" == "--init" ] ; then
 # init
 echo "init"
-
+mkdir -p $WORKOSM_DIR
 # re-download if file is older than 12h or does not exist
 if ! test -f $pbffile || [ $pbffile = "`find $pbffile -mmin +720`" ]; then
-  curl ${download_sub_path}`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
+  # curl ${download_sub_path}`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
+  curl ${download_path} -o $pbffile
+  # state file generated below:
+  # curl ${state_url} -o $statefile
 fi
 
 docker exec $(docker ps | grep yosm_postgres | awk '{print $1}') psql -U postgres -d gis -c 'CREATE EXTENSION postgis; CREATE EXTENSION hstore;'
@@ -32,20 +50,24 @@ sleep 2
 cd osm2pgsql
 # export POSTGRES_PASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
-time osm2pgsql -H 127.0.0.1 -U postgres -C 3000 --slim --create --database gis $pbffile --style yosm.style
+time osm2pgsql -H $PGHOST -U $PGUSER -C 3000 --slim --create --database gis $pbffile --style yosm.style
+
+# PBF_FILE=liechtenstein-latest.osm.pbf
+REPLICATION_BASE_URL="$(osmium fileinfo -g 'header.option.osmosis_replication_base_url' "${PBF_FILE}")"
+echo -e "baseUrl=${REPLICATION_BASE_URL}\nmaxInterval=90000" > "${WORKOSM_DIR}/configuration.txt"
+
+REPLICATION_SEQUENCE_NUMBER="$( printf "%09d" "$(osmium fileinfo -g 'header.option.osmosis_replication_sequence_number' "${PBF_FILE}")" | sed ':a;s@\B[0-9]\{3\}\>@/&@;ta' )"
+curl -s -L -o "${WORKOSM_DIR}/state.txt" "${REPLICATION_BASE_URL}/${REPLICATION_SEQUENCE_NUMBER}.state.txt"
 
 else
-echo "update"
-
-# get state of update file
-# http://download.geofabrik.de/europe/austria-updates/state.txt
-# from sequence number -> 2242 -> 000 002 242.osc.gz
-sequence_number=`curl "${state_url}" | grep sequenceNumber | cut -d \= -f 2`
-
-
-# calculate new download path eg:
-# http://download.geofabrik.de/europe/austria-updates/000/002/242.osc.gz
-
-
+  echo "update"
+  mkdir -p $WORKOSM_DIR
+  cp yosm.style $WORKOSM_DIR/
+  # WORKOSM_DIR=/home/tileserver/osmosisworkingdir
+  # cd ~/src/openstreetmap-carto
+  # HOSTNAME=localhost # set it to the actual ip address or host name
+  osmosis --read-replication-interval workingDirectory=${WORKOSM_DIR} --simplify-change --write-xml-change - | \
+  osm2pgsql --append -s -C 300 -G --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
+  # osm2pgsql --append -s -C 300 -G --hstore --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
 
 fi
