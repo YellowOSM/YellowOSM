@@ -397,7 +397,7 @@ export class YellowmapComponent implements OnInit {
     this.geoLocationLoading = true;
     navigator.geolocation.getCurrentPosition((pos) => {
         const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-        this.map.getView().animate({center: coords});
+        this.map.getView().animate({center: coords, zoom: 17});
         this.geoLocationLoading = false;
       }, (err) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);

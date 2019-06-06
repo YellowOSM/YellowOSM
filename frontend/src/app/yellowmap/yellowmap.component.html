@@ -8,7 +8,6 @@
              [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
              (keydown.enter)="searchElasticSearch()">
     </mat-form-field>
-
     <div class="search__button">
       <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()" class="search__clear">close</mat-icon>
       <mat-icon (click)="searchElasticSearch()">search</mat-icon>
