@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {environment} from '../../environments/environment';
@@ -11,10 +11,10 @@ import Geolocation from 'ol/Geolocation.js';
 import {Vector as VectorLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
-import {fromLonLat, toLonLat, transformExtent} from 'ol/proj';
+import {fromLonLat, toLonLat} from 'ol/proj';
 import LineString from 'ol/geom/LineString';
-import {getTopLeft, getBottomRight} from 'ol/extent';
-import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
+import {getBottomRight, getTopLeft} from 'ol/extent';
+import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
@@ -25,8 +25,7 @@ import {ElasticsearchService} from '../services/elasticsearch.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
-import {MatAutocompleteTrigger} from '@angular/material';
-import {MatSnackBar} from '@angular/material';
+import {MatAutocompleteTrigger, MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-yellowmap',
@@ -38,10 +37,11 @@ export class YellowmapComponent implements OnInit {
   features = [];
   selectedFeature: Feature = null;
   selectedFeatureDraggedUp = false;
-  innerHeight = 0;
   selectedFeatureTopPos = 0;
   selectedFeatureTopStartPos = 0;
+  BREAKPOINT_DESKTOP = 768;
   FEATURE_OFFSET = 100;
+  FEATURE_OFFSET_DESKTOP = 340;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
@@ -81,10 +81,9 @@ export class YellowmapComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.innerHeight = window.innerHeight;
-    if (window.innerWidth < 768) {
-      this.selectedFeatureTopPos = this.innerHeight - this.FEATURE_OFFSET;
-    }  else {
+    if (window.innerWidth < this.BREAKPOINT_DESKTOP) {
+      this.selectedFeatureTopPos = window.innerHeight - this.FEATURE_OFFSET;
+    } else {
       this.selectedFeatureTopPos = 64;
     }
 
@@ -232,6 +231,17 @@ export class YellowmapComponent implements OnInit {
       const features = this.map.getFeaturesAtPixel(event.pixel);
       if (features && features[0].values_.hasOwnProperty('labels')) {
         this.selectedFeature = features[0];
+        const padding = 50;
+        const center = this.map.getView().getCenter();
+        const resolution = this.map.getView().getResolution();
+
+        if (window.innerWidth < this.BREAKPOINT_DESKTOP && event.pixel[1] > (window.innerHeight - this.FEATURE_OFFSET)) {
+          const distance = this.FEATURE_OFFSET + padding - (window.innerHeight - event.pixel[1]);
+          this.map.getView().animate({center: [center[0], center[1] - distance * resolution]});
+        } else if (window.innerWidth >= this.BREAKPOINT_DESKTOP && event.pixel[0] < this.FEATURE_OFFSET_DESKTOP) {
+          const distance = this.FEATURE_OFFSET_DESKTOP + padding + event.pixel[0];
+          this.map.getView().animate({center: [center[0] - distance * resolution,  center[1]]});
+        }
       } else {
         this.selectedFeature = null;
       }
@@ -496,32 +506,27 @@ export class YellowmapComponent implements OnInit {
   }
 
   onPan(event: any): void {
-    if (window.innerWidth >= 768) {
+    if (window.innerWidth >= this.BREAKPOINT_DESKTOP) {
       return;
     }
 
     event.preventDefault();
     this.selectedFeatureTopPos = Math.max(this.FEATURE_OFFSET, this.selectedFeatureTopStartPos + event.deltaY);
-    this.selectedFeatureTopPos = Math.min(this.innerHeight - this.FEATURE_OFFSET, this.selectedFeatureTopPos);
-    this.selectedFeatureDraggedUp = this.selectedFeatureTopPos < (this.innerHeight - this.FEATURE_OFFSET);
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.innerHeight = window.innerHeight;
+    this.selectedFeatureTopPos = Math.min(window.innerHeight - this.FEATURE_OFFSET, this.selectedFeatureTopPos);
+    this.selectedFeatureDraggedUp = this.selectedFeatureTopPos < (window.innerHeight - this.FEATURE_OFFSET);
   }
 
   openFeature(event) {
     this.selectedFeatureDraggedUp = true;
-    if (window.innerWidth < 768) {
-      this.selectedFeatureTopPos = this.innerHeight - 2 * this.FEATURE_OFFSET;
+    if (window.innerWidth < this.BREAKPOINT_DESKTOP) {
+      this.selectedFeatureTopPos = window.innerHeight - 2 * this.FEATURE_OFFSET;
     }
   }
 
   closeFeature(event) {
     this.selectedFeatureDraggedUp = false;
-    if (window.innerWidth < 768) {
-      this.selectedFeatureTopPos = this.innerHeight - this.FEATURE_OFFSET;
+    if (window.innerWidth < this.BREAKPOINT_DESKTOP) {
+      this.selectedFeatureTopPos = window.innerHeight - this.FEATURE_OFFSET;
     } else {
       this.selectedFeature = null;
 
