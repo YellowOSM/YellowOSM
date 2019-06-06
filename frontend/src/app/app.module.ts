@@ -13,7 +13,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from './material.module';
 import * as Hammer from 'hammerjs';
-import {LocationListComponent} from './location-list/location-list.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
@@ -28,7 +27,6 @@ export class MyHammerConfig extends HammerGestureConfig {
     AppComponent,
     YellowmapComponent,
     LocationDetailComponent,
-    LocationListComponent,
     AboutComponent,
     PageNotFoundComponent,
     Geo58RedirectComponent

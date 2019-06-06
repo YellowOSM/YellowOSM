@@ -35,6 +35,7 @@ import {MatAutocompleteTrigger, MatSnackBar} from '@angular/material';
 export class YellowmapComponent implements OnInit {
   DEBUG = Boolean(false && environment.localDevEnv);
   features = [];
+  showFeatureList = false;
   selectedFeature: Feature = null;
   selectedFeatureDraggedUp = false;
   selectedFeatureTopPos = 0;
@@ -240,7 +241,7 @@ export class YellowmapComponent implements OnInit {
           this.map.getView().animate({center: [center[0], center[1] - distance * resolution]});
         } else if (window.innerWidth >= this.BREAKPOINT_DESKTOP && event.pixel[0] < this.FEATURE_OFFSET_DESKTOP) {
           const distance = this.FEATURE_OFFSET_DESKTOP + padding + event.pixel[0];
-          this.map.getView().animate({center: [center[0] - distance * resolution,  center[1]]});
+          this.map.getView().animate({center: [center[0] - distance * resolution, center[1]]});
         }
       } else {
         this.selectedFeature = null;
@@ -270,7 +271,6 @@ export class YellowmapComponent implements OnInit {
 
     const urlSearchTerm = this.route.snapshot.paramMap.get('q');
     if (urlSearchTerm) {
-      console.log('search term present - searching');
       this.searchFormControl.setValue(urlSearchTerm);
       this.searchElasticSearch();
     }
@@ -306,7 +306,6 @@ export class YellowmapComponent implements OnInit {
     }
 
     if (changeUrl) {
-      console.log('change Url!');
       let query = '';
       if (this.searchFormControl.value) {
         query = ';q=' + this.searchFormControl.value;
@@ -338,6 +337,7 @@ export class YellowmapComponent implements OnInit {
       this.clearSearch();
       this.closeAutocomplete();
       this.hideKeyboard();
+      this.showFeatureList = false;
     }
 
     if (this.autocomplete.activeOption) {
@@ -359,6 +359,7 @@ export class YellowmapComponent implements OnInit {
         this.esSearchResult = result['hits']['hits'];
         this.esLayer.getSource().clear();
         this.esLayer.getSource().refresh();
+        this.showFeatureList = true;
       } else {
         console.log('empty result for search');
         this.esSearchResult = [];
@@ -446,7 +447,6 @@ export class YellowmapComponent implements OnInit {
   }
 
   private openNode() {
-    console.log('open node!');
     const urlPropertyValue = this.getPropertyValueFromUrl();
     if (!urlPropertyValue) {
       return;
@@ -495,7 +495,7 @@ export class YellowmapComponent implements OnInit {
   }
 
   getLocationClasses() {
-    if (this.selectedFeature) {
+    if (this.features) {
       return 'active';
     }
     return '';
@@ -525,21 +525,17 @@ export class YellowmapComponent implements OnInit {
 
   closeFeature(event) {
     this.selectedFeatureDraggedUp = false;
-    if (window.innerWidth < this.BREAKPOINT_DESKTOP) {
-      this.selectedFeatureTopPos = window.innerHeight - this.FEATURE_OFFSET;
-    } else {
-      this.selectedFeature = null;
+    this.selectedFeature = null;
+    // force redraw
+    this.esLayer.setStyle(this.esLayer.getStyle());
+  }
 
-      // force redraw
-      this.esLayer.setStyle(this.esLayer.getStyle());
-    }
+  closeFeatureList(event) {
+    this.showFeatureList = false;
   }
 
   toogleOpenedLocations() {
-    console.log(this.showOnlyOpenedLocations);
     this.showOnlyOpenedLocations = !this.showOnlyOpenedLocations;
     this.searchElasticSearch();
-    console.log(this.showOnlyOpenedLocations);
-    console.log('--------');
   }
 }

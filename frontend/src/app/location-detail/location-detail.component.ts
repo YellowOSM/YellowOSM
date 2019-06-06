@@ -20,11 +20,14 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     'atm'
   ];
 
-  @Input() feature: Feature = null;
+  @Input() selectedFeature: Feature = null;
+  @Input() @Output() features: Feature[] = [];
   @Input() draggedUp = false;
+  @Input() showFeatureList = false;
   @Output() goUp = new EventEmitter<string>();
   @Output() goDown = new EventEmitter<string>();
   @Output() closeFeature = new EventEmitter<string>();
+  @Output() closeFeatureList = new EventEmitter<string>();
 
   permalink = '';
   osmlink = '';
@@ -49,13 +52,13 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   }
 
   private parseFeatures() {
-    if (!this.feature) {
+    if (!this.selectedFeature) {
       return;
     }
-    this.locationType = this.feature.values_.locationType;
-    this.locationSubType = this.feature.values_.locationSubType;
-    this.labels = this.feature.values_.labels;
-    const lonLat = toLonLat(this.feature.getGeometry().getCoordinates());
+    this.locationType = this.selectedFeature.values_.locationType;
+    this.locationSubType = this.selectedFeature.values_.locationSubType;
+    this.labels = this.selectedFeature.values_.labels;
+    const lonLat = toLonLat(this.selectedFeature.getGeometry().getCoordinates());
     this.permalink = this.getPermalink(lonLat);
     this.osmlink = this.getOsmLink();
     this.parseOpeningHours();
@@ -106,13 +109,13 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   private parseOpeningHours() {
     this.opening_hours = '';
     this.open_now = undefined;
-    if (!this.feature.values_.labels['opening_hours']) {
+    if (!this.selectedFeature.values_.labels['opening_hours']) {
       return '';
     }
 
-    const oh = new opening_hours(this.feature.values_.labels['opening_hours'], null);
+    const oh = new opening_hours(this.selectedFeature.values_.labels['opening_hours'], null);
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
-    this.opening_hours = this.feature.values_.labels['opening_hours'];
+    this.opening_hours = this.selectedFeature.values_.labels['opening_hours'];
     this.open_now = oh.getState();
     const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
@@ -138,5 +141,9 @@ export class LocationDetailComponent implements OnInit, OnChanges {
 
   public emitCloseFeature() {
     this.closeFeature.emit('closeFeature');
+  }
+
+  public emitCloseFeatureList() {
+    this.closeFeatureList.emit('closeFeatureList');
   }
 }

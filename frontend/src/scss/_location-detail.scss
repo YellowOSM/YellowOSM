@@ -200,3 +200,13 @@ app-location-detail {
     width: 16px;
   }
 }
+
+.location-list {
+  z-index: 999;
+  background-color: whitesmoke;
+  color: $color-primary;
+  width: 100%;
+  font-size: 14px;
+  overflow-wrap: break-word;
+  padding: 15px 12px;
+}

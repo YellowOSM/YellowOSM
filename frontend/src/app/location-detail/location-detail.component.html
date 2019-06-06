@@ -1,77 +1,94 @@
-<div class="location-detail" *ngIf="feature">
-  <h1>{{ labels['name'] }}</h1>
+<div>
   <div class="location-drag-icons">
-    <mat-icon class="location-icon--mobile" *ngIf="!draggedUp" (click)="emitGoUp()">keyboard_arrow_up</mat-icon>
-    <mat-icon class="location-icon--mobile" *ngIf="draggedUp" (click)="emitGoDown()">keyboard_arrow_down</mat-icon>
-    <mat-icon class="location-icon--desktop" (click)="emitCloseFeature()">close</mat-icon>
+    <mat-icon class="location-icon--mobile" *ngIf="!draggedUp && !selectedFeature" (click)="emitGoUp()">keyboard_arrow_up</mat-icon>
+    <mat-icon class="location-icon--mobile" *ngIf="draggedUp && !selectedFeature" (click)="emitGoDown()">keyboard_arrow_down</mat-icon>
+    <mat-icon class="location-icon--mobile" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
+
+    <mat-icon class="location-icon--desktop" *ngIf="!selectedFeature" (click)="emitCloseFeatureList()">close</mat-icon>
+    <mat-icon class="location-icon--desktop" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
   </div>
-  <div class="clear"></div>
-  <div class="location-properties">
-    <div *ngIf="labels['wifi']">
-      <mat-icon>wifi</mat-icon>
-    </div>
-    <div *ngIf="labels['smoking'] == 'yes'">
-      <mat-icon>smoking_rooms</mat-icon>
-    </div>
-    <div *ngIf="labels['smoking'] == 'no'">
-      <mat-icon>smoke_free</mat-icon>
-    </div>
-    <div *ngIf="labels['vegetarian'] == 'yes'">
-      <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location-icon">
-    </div>
-    <div *ngIf="labels['wheelchair'] == 'yes'">
-      <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location-icon">
+
+  <div class="location-list" *ngIf="features && !selectedFeature && showFeatureList">
+    <div *ngFor="let feature of features">
+      {{ feature.values_.labels['name'] }}
     </div>
   </div>
 
-  <ul class="location-detail__main">
-    <li>
-      <span *ngIf="locationSubType">{{ locationSubType }}</span>
-      <span *ngIf="locationSubType && (open_now == true || open_now == false)"> ⋅ </span>
-      <span class="location-open" *ngIf="open_now === true">jetzt geöffnet</span>
-      <span class="location-closed" *ngIf="open_now === false">jetzt geschlossen</span>
-      <span class="location-closed" *ngIf="(open_now === false) && open_next"> ⋅ öffnet wieder {{ open_next }}</span>
-    </li>
-    <li *ngIf="labels['address']">{{ labels['address'] }}</li>
-  </ul>
-  <div class="location-buttons">
-    <div *ngIf="labels['phone']">
-      <a [href]="'tel:' + labels['phone']" class="location-button">
-        <button mat-fab>
-          <mat-icon>phone</mat-icon>
-        </button>
-        <div class="label--mobile">Anrufen</div>
-        <a class="label--desktop">{{ labels['phone'] }}</a>
-      </a>
+  <div class="location-detail" *ngIf="selectedFeature">
+    <h1>{{ labels['name'] }}</h1>
+    <div class="clear"></div>
+    <div class="location-properties">
+      <div *ngIf="labels['wifi']">
+        <mat-icon>wifi</mat-icon>
+      </div>
+      <div *ngIf="labels['smoking'] == 'yes'">
+        <mat-icon>smoking_rooms</mat-icon>
+      </div>
+      <div *ngIf="labels['smoking'] == 'no'">
+        <mat-icon>smoke_free</mat-icon>
+      </div>
+      <div *ngIf="labels['vegetarian'] == 'yes'">
+        <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location-icon">
+      </div>
+      <div *ngIf="labels['wheelchair'] == 'yes'">
+        <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location-icon">
+      </div>
     </div>
-    <div *ngIf="labels['contact_email']">
-      <a [href]="'mailto:' + labels['contact_email']" class="location-button">
-        <button mat-fab>
-          <mat-icon>email</mat-icon>
-        </button>
-        <div class="label--mobile">E-Mail</div>
-        <a class="label--desktop">{{ labels['contact_email'] }}</a>
-      </a>
+
+    <ul class="location-detail__main">
+      <li>
+        <span *ngIf="locationSubType">{{ locationSubType }}</span>
+        <span *ngIf="locationSubType && (open_now == true || open_now == false)"> ⋅ </span>
+        <span class="location-open" *ngIf="open_now === true">jetzt geöffnet</span>
+        <span class="location-closed" *ngIf="open_now === false">jetzt geschlossen</span>
+        <span class="location-closed" *ngIf="(open_now === false) && open_next"> ⋅ öffnet wieder {{ open_next }}</span>
+      </li>
+      <li *ngIf="labels['address']">{{ labels['address'] }}</li>
+    </ul>
+    <div class="location-buttons">
+      <div *ngIf="labels['phone']">
+        <a [href]="'tel:' + labels['phone']" class="location-button">
+          <button mat-fab>
+            <mat-icon>phone</mat-icon>
+          </button>
+          <div class="label--mobile">Anrufen</div>
+          <a class="label--desktop">{{ labels['phone'] }}</a>
+        </a>
+      </div>
+      <div *ngIf="labels['contact_email']">
+        <a [href]="'mailto:' + labels['contact_email']" class="location-button">
+          <button mat-fab>
+            <mat-icon>email</mat-icon>
+          </button>
+          <div class="label--mobile">E-Mail</div>
+          <a class="label--desktop">{{ labels['contact_email'] }}</a>
+        </a>
+      </div>
+      <div *ngIf="labels['website']">
+        <a [href]="labels['website']" class="location-button" target="_blank">
+          <button mat-fab>
+            <mat-icon>public</mat-icon>
+          </button>
+          <div class="label--mobile">Website</div>
+          <a class="label--desktop">{{ labels['website'] }}</a>
+        </a>
+      </div>
     </div>
-    <div *ngIf="labels['website']">
-      <a [href]="labels['website']" class="location-button" target="_blank">
-        <button mat-fab>
-          <mat-icon>public</mat-icon>
-        </button>
-        <div class="label--mobile">Website</div>
-        <a class="label--desktop">{{ labels['website'] }}</a>
-      </a>
+    <div class="details__hours">
+      {{ opening_hours }}
     </div>
-  </div>
-  <div class="details__hours">
-    {{ opening_hours }}
-  </div>
-  <div class="details">
-    <div class="details__link" *ngIf="osmlink">
-      <a [href]="osmlink" target="_blank"><mat-icon>edit</mat-icon> Eintrag bearbeiten</a>
-    </div>
-    <div class="details__link" *ngIf="permalink">
-      <a [href]="permalink" target="_blank"><mat-icon>link</mat-icon> {{permalink}}</a>
+    <div class="details">
+      <div class="details__link" *ngIf="osmlink">
+        <a [href]="osmlink" target="_blank">
+          <mat-icon>edit</mat-icon>
+          Eintrag bearbeiten</a>
+      </div>
+      <div class="details__link" *ngIf="permalink">
+        <a [href]="permalink" target="_blank">
+          <mat-icon>link</mat-icon>
+          {{permalink}}</a>
+      </div>
     </div>
   </div>
 </div>
+
