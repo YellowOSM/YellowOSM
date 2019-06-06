@@ -10,14 +10,15 @@ export PGUSER=postgres
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 
 
-pbffile="/tmp/liechtenstein-current.osm.pbf"
+# pbffile="/tmp/liechtenstein-current.osm.pbf"
+pbffile="/tmp/austria-current.osm.pbf"
 PBF_FILE=$pbffile
 statefile="/tmp/state.txt"
-# state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
-state_url="http://download.geofabrik.de/europe/liechtenstein-updates/state.txt"
-# download_sub_path="https://download.geofabrik.de/europe/austria-"
-# download_path="https://download.geofabrik.de/europe/austria-latest.osm.pbf"
-download_path="https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf"
+# state_url="http://download.geofabrik.de/europe/liechtenstein-updates/state.txt"
+state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
+## download_sub_path="https://download.geofabrik.de/europe/austria-"
+# download_path="https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf"
+download_path="https://download.geofabrik.de/europe/austria-latest.osm.pbf"
 # TODO:
 # add
 # http://download.geofabrik.de/europe/germany-latest.osm.pbf
