@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {environment} from '../../environments/environment';
@@ -38,6 +38,10 @@ export class YellowmapComponent implements OnInit {
   features = [];
   selectedFeature: Feature = null;
   selectedFeatureDraggedUp = false;
+  innerHeight = 0;
+  selectedFeatureTopPos = 0;
+  selectedFeatureTopStartPos = 0;
+  FEATURE_OFFSET = 100;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
@@ -77,6 +81,13 @@ export class YellowmapComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.innerHeight = window.innerHeight;
+    if (window.innerWidth < 768) {
+      this.selectedFeatureTopPos = this.innerHeight - this.FEATURE_OFFSET;
+    }  else {
+      this.selectedFeatureTopPos = 64;
+    }
+
     this.filteredOptions = this.searchFormControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filterAutocomplete(value))
@@ -473,31 +484,50 @@ export class YellowmapComponent implements OnInit {
     this.clearSearch();
   }
 
-  public onPanUp(event) {
-    this.selectedFeatureDraggedUp = true;
-    // TODO: panning all the way down
-    // this.locationElement.nativeElement.style.margin = '0 0 -' + String(event.deltaY) + 'px 0';
-    // this.locationElement.nativeElement.style.transform = 'translateY(' + String(event.deltaY) + 'px)';
-  }
-
-  public onPanDown(event) {
-    this.selectedFeatureDraggedUp = false;
-  }
-
   getLocationClasses() {
-    let classes = '';
     if (this.selectedFeature) {
-      classes += 'active';
-      if (this.selectedFeatureDraggedUp) {
-        classes += ' dragged-up';
-      }
+      return 'active';
     }
-    return classes;
+    return '';
+  }
+
+  onPanStart(event: any): void {
+    this.selectedFeatureTopStartPos = this.selectedFeatureTopPos;
+  }
+
+  onPan(event: any): void {
+    if (window.innerWidth >= 768) {
+      return;
+    }
+
+    event.preventDefault();
+    this.selectedFeatureTopPos = Math.max(this.FEATURE_OFFSET, this.selectedFeatureTopStartPos + event.deltaY);
+    this.selectedFeatureTopPos = Math.min(this.innerHeight - this.FEATURE_OFFSET, this.selectedFeatureTopPos);
+    this.selectedFeatureDraggedUp = this.selectedFeatureTopPos < (this.innerHeight - this.FEATURE_OFFSET);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.innerHeight = window.innerHeight;
+  }
+
+  openFeature(event) {
+    this.selectedFeatureDraggedUp = true;
+    if (window.innerWidth < 768) {
+      this.selectedFeatureTopPos = this.innerHeight - 2 * this.FEATURE_OFFSET;
+    }
   }
 
   closeFeature(event) {
-    this.selectedFeature = null;
     this.selectedFeatureDraggedUp = false;
+    if (window.innerWidth < 768) {
+      this.selectedFeatureTopPos = this.innerHeight - this.FEATURE_OFFSET;
+    } else {
+      this.selectedFeature = null;
+
+      // force redraw
+      this.esLayer.setStyle(this.esLayer.getStyle());
+    }
   }
 
   toogleOpenedLocations() {

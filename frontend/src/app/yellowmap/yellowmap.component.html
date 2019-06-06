@@ -48,8 +48,11 @@
 </div>
 
 <app-location-detail [feature]="selectedFeature" [draggedUp]="selectedFeatureDraggedUp"
-                     [className]="getLocationClasses()" (panup)="onPanUp($event)" (pandown)="onPanDown($event)"
-                     (goUp)="onPanUp($event)" (goDown)="onPanDown($event)" (closeFeature)="closeFeature($event)"
+                     [style.top.px]="selectedFeatureTopPos"
+                     [className]="getLocationClasses()"
+                     (panstart)="onPanStart($event)" (panmove)="onPan($event)"
+                     (goUp)="openFeature($event)" (goDown)="closeFeature($event)"
+                     (closeFeature)="closeFeature($event)"
                      #locationElement
 ></app-location-detail>
 

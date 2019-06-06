@@ -10,13 +10,12 @@ app-location-detail {
   width: 100%;
   height: 0;
   overflow: hidden;
-  transition: all 0.2s ease-in-out;
   font-size: 14px;
   overflow-wrap: break-word;
 
   &.active {
     padding: 15px 12px;
-    height: 200px;
+    height: auto;
     color: $color-secondary;
 
     &::before {
@@ -31,14 +30,6 @@ app-location-detail {
 
       @media (min-width: 768px) {
         display: none;
-      }
-    }
-
-    &.dragged-up {
-      height: 430px;
-
-      @media (min-width: 768px) {
-        height: calc(100% - 64px);
       }
     }
   }
