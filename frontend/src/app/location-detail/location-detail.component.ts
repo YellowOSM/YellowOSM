@@ -4,6 +4,8 @@ import * as opening_hours from 'opening_hours';
 import {environment} from '../../environments/environment';
 import Feature from 'ol/Feature';
 import {toLonLat} from 'ol/proj';
+import {AppSettings} from '../app.settings';
+import {OpeningHoursService} from '../services/opening-hours.service';
 
 @Component({
   selector: 'app-location-detail',
@@ -21,13 +23,12 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   ];
 
   @Input() selectedFeature: Feature = null;
-  @Input() @Output() features: Feature[] = [];
-  @Input() draggedUp = false;
-  @Input() showFeatureList = false;
-  @Output() goUp = new EventEmitter<string>();
-  @Output() goDown = new EventEmitter<string>();
   @Output() closeFeature = new EventEmitter<string>();
-  @Output() closeFeatureList = new EventEmitter<string>();
+
+  BOTTOM_OFFSET = 100;
+  INITIAL_BOTTOM_OFFSET = 250;
+  topStartPos = 0;
+  topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
 
   permalink = '';
   osmlink = '';
@@ -39,7 +40,8 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   open_next = undefined;
 
   constructor(
-    private geo58service: Geo58Service
+    private geo58service: Geo58Service,
+    private opening_hours_service: OpeningHoursService
   ) {
   }
 
@@ -55,6 +57,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     if (!this.selectedFeature) {
       return;
     }
+
     this.locationType = this.selectedFeature.values_.locationType;
     this.locationSubType = this.selectedFeature.values_.locationSubType;
     this.labels = this.selectedFeature.values_.labels;
@@ -107,43 +110,27 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   }
 
   private parseOpeningHours() {
-    this.opening_hours = '';
-    this.open_now = undefined;
-    if (!this.selectedFeature.values_.labels['opening_hours']) {
-      return '';
-    }
-
-    const oh = new opening_hours(this.selectedFeature.values_.labels['opening_hours'], null);
-    // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
-    this.opening_hours = this.selectedFeature.values_.labels['opening_hours'];
-    this.open_now = oh.getState();
-    const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-
-    this.open_next = oh.getNextChange();
-    this.open_next = days[this.open_next.getDay()] + ', ' + this.addZero(this.open_next.getHours()) + ':' +
-      this.addZero(this.open_next.getMinutes());
-  }
-
-  private addZero(i) {
-    if (i < 10) {
-      i = '0' + i;
-    }
-    return i;
-  }
-
-  public emitGoUp() {
-    this.goUp.emit('goUp');
-  }
-
-  public emitGoDown() {
-    this.goDown.emit('goDown');
+    const hours = this.opening_hours_service.getOpenNowAndNext(this.selectedFeature.values_.labels['opening_hours']);
+    this.open_now = hours['open_now'];
+    this.open_next = hours['open_next'];
   }
 
   public emitCloseFeature() {
     this.closeFeature.emit('closeFeature');
+    this.topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
   }
 
-  public emitCloseFeatureList() {
-    this.closeFeatureList.emit('closeFeatureList');
+  onPanStart(event: any): void {
+    this.topStartPos = this.topPos;
+  }
+
+  onPan(event: any): void {
+    if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP) {
+      return;
+    }
+
+    event.preventDefault();
+    this.topPos = Math.max(this.BOTTOM_OFFSET, this.topStartPos + event.deltaY);
+    this.topPos = Math.min(window.innerHeight - this.BOTTOM_OFFSET, this.topPos);
   }
 }

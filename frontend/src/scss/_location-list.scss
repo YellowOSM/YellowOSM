@@ -1,0 +1,10 @@
+.location__list {
+  @include pull-up-card;
+}
+
+.location__list-detail {
+  margin: 15px 0;
+  border-bottom: 1px solid #000;
+  clear: both;
+  overflow: auto;
+}

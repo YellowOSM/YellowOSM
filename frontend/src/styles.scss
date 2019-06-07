@@ -14,6 +14,8 @@ $color-gray: #888;
 @import "scss/_fonts.scss";
 @import "scss/_yosm.scss";
 @import "scss/_map.scss";
+@import "scss/_location-common.scss";
+@import "scss/_location-list.scss";
 @import "scss/_location-detail.scss";
 
 html, body {

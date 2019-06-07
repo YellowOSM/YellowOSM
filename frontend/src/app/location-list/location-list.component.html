@@ -1,0 +1,31 @@
+<div class="location__list" *ngIf="features && features.length > 0 && !selectedFeature" [style.top.px]="topPos"
+     (panstart)="onPanStart($event)" (panmove)="onPan($event)">
+  <div *ngFor="let feature of features" class="location__list-detail" (click)="emitSelectFeature(feature)">
+    <h1>{{ feature.values_.labels['name'] }}</h1>
+    <div class="clear"></div>
+    <div class="location__properties">
+      <div *ngIf="feature.values_.labels['wifi']">
+        <mat-icon>wifi</mat-icon>
+      </div>
+      <div *ngIf="feature.values_.labels['smoking'] == 'yes'">
+        <mat-icon>smoking_rooms</mat-icon>
+      </div>
+      <div *ngIf="feature.values_.labels['smoking'] == 'no'">
+        <mat-icon>smoke_free</mat-icon>
+      </div>
+      <div *ngIf="feature.values_.labels['vegetarian'] == 'yes'">
+        <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location__icon">
+      </div>
+      <div *ngIf="feature.values_.labels['wheelchair'] == 'yes'">
+        <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location__icon">
+      </div>
+    </div>
+    <ul class="location-detail__main">
+      <li>
+        <span *ngIf="feature.values_.locationSubType">{{ feature.values_.locationSubType }}</span>
+        <span class="location-open" *ngIf="getOpenNow(feature.values_.labels['opening_hours']) === true">jetzt geöffnet</span>
+      </li>
+      <li *ngIf="feature.values_.labels['address']">{{ feature.values_.labels['address'] }}</li>
+    </ul>
+  </div>
+</div>

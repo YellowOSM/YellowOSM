@@ -1,57 +1,14 @@
-<div>
+<div class="location__detail" *ngIf="selectedFeature" [style.top.px]="topPos"
+     (panstart)="onPanStart($event)" (panmove)="onPan($event)">
   <div class="location-drag-icons">
-    <mat-icon class="location-icon--mobile" *ngIf="!draggedUp && !selectedFeature" (click)="emitGoUp()">
-      keyboard_arrow_up
-    </mat-icon>
-    <mat-icon class="location-icon--mobile" *ngIf="draggedUp && !selectedFeature" (click)="emitGoDown()">
-      keyboard_arrow_down
-    </mat-icon>
-    <mat-icon class="location-icon--mobile" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
-
-    <mat-icon class="location-icon--desktop" *ngIf="!selectedFeature" (click)="emitCloseFeatureList()">close</mat-icon>
-    <mat-icon class="location-icon--desktop" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
-  </div>
-
-  <div class="location-list" *ngIf="features && !selectedFeature && showFeatureList">
-    <div *ngFor="let feature of features" class="location-detail">
-      <h1>{{ labels['name'] }}</h1>
-      <div class="clear"></div>
-      <div class="location-properties">
-        <div *ngIf="labels['wifi']">
-          <mat-icon>wifi</mat-icon>
-        </div>
-        <div *ngIf="labels['smoking'] == 'yes'">
-          <mat-icon>smoking_rooms</mat-icon>
-        </div>
-        <div *ngIf="labels['smoking'] == 'no'">
-          <mat-icon>smoke_free</mat-icon>
-        </div>
-        <div *ngIf="labels['vegetarian'] == 'yes'">
-          <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location-icon">
-        </div>
-        <div *ngIf="labels['wheelchair'] == 'yes'">
-          <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location-icon">
-        </div>
-      </div>
-
-      <ul class="location-detail__main">
-        <li>
-          <span *ngIf="locationSubType">{{ locationSubType }}</span>
-          <span *ngIf="locationSubType && (open_now == true || open_now == false)"> ⋅ </span>
-          <span class="location-open" *ngIf="open_now === true">jetzt geöffnet</span>
-          <span class="location-closed" *ngIf="open_now === false">jetzt geschlossen</span>
-          <span class="location-closed"
-                *ngIf="(open_now === false) && open_next"> ⋅ öffnet wieder {{ open_next }}</span>
-        </li>
-        <li *ngIf="labels['address']">{{ labels['address'] }}</li>
-      </ul>
-    </div>
+    <mat-icon class="location__icon--mobile" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
+    <mat-icon class="location__icon--desktop" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
   </div>
 
   <div class="location-detail" *ngIf="selectedFeature">
     <h1>{{ labels['name'] }}</h1>
     <div class="clear"></div>
-    <div class="location-properties">
+    <div class="location__properties">
       <div *ngIf="labels['wifi']">
         <mat-icon>wifi</mat-icon>
       </div>
@@ -62,10 +19,10 @@
         <mat-icon>smoke_free</mat-icon>
       </div>
       <div *ngIf="labels['vegetarian'] == 'yes'">
-        <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location-icon">
+        <img src="assets/icons/vegetarian.svg" alt="vegetarisch" class="location__icon">
       </div>
       <div *ngIf="labels['wheelchair'] == 'yes'">
-        <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location-icon">
+        <img src="assets/icons/wheelchair-accessible.svg" alt="barrierefrei" class="location__icon">
       </div>
     </div>
 

@@ -26,6 +26,8 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
 import {MatAutocompleteTrigger, MatSnackBar} from '@angular/material';
+import {AppSettings} from '../app.settings';
+import {$e} from 'codelyzer/angular/styles/chars';
 
 @Component({
   selector: 'app-yellowmap',
@@ -35,14 +37,7 @@ import {MatAutocompleteTrigger, MatSnackBar} from '@angular/material';
 export class YellowmapComponent implements OnInit {
   DEBUG = Boolean(false && environment.localDevEnv);
   features = [];
-  showFeatureList = false;
   selectedFeature: Feature = null;
-  selectedFeatureDraggedUp = false;
-  selectedFeatureTopPos = 0;
-  selectedFeatureTopStartPos = 0;
-  BREAKPOINT_DESKTOP = 768;
-  FEATURE_OFFSET = 100;
-  FEATURE_OFFSET_DESKTOP = 340;
   searchFormControl = new FormControl();
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
@@ -62,8 +57,7 @@ export class YellowmapComponent implements OnInit {
   mapElement: ElementRef;
   @ViewChild('toolbarElement', {read: ElementRef})
   toolbarElement: ElementRef;
-  @ViewChild('locationElement', {read: ElementRef})
-  locationElement: ElementRef;
+
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
     lat: +this.route.snapshot.paramMap.get('lat'),
@@ -82,12 +76,6 @@ export class YellowmapComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (window.innerWidth < this.BREAKPOINT_DESKTOP) {
-      this.selectedFeatureTopPos = window.innerHeight - this.FEATURE_OFFSET;
-    } else {
-      this.selectedFeatureTopPos = 64;
-    }
-
     this.filteredOptions = this.searchFormControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filterAutocomplete(value))
@@ -236,11 +224,13 @@ export class YellowmapComponent implements OnInit {
         const center = this.map.getView().getCenter();
         const resolution = this.map.getView().getResolution();
 
-        if (window.innerWidth < this.BREAKPOINT_DESKTOP && event.pixel[1] > (window.innerHeight - this.FEATURE_OFFSET)) {
-          const distance = this.FEATURE_OFFSET + padding - (window.innerHeight - event.pixel[1]);
+        if (window.innerWidth < AppSettings.BREAKPOINT_DESKTOP
+          && event.pixel[1] > (window.innerHeight - AppSettings.MIN_BOTTOM_OFFSET)) {
+          const distance = AppSettings.MIN_BOTTOM_OFFSET + padding - (window.innerHeight - event.pixel[1]);
           this.map.getView().animate({center: [center[0], center[1] - distance * resolution]});
-        } else if (window.innerWidth >= this.BREAKPOINT_DESKTOP && event.pixel[0] < this.FEATURE_OFFSET_DESKTOP) {
-          const distance = this.FEATURE_OFFSET_DESKTOP + padding + event.pixel[0];
+        } else if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP
+          && event.pixel[0] < AppSettings.MIN_LEFT_OFFSET) {
+          const distance = AppSettings.MIN_LEFT_OFFSET + padding + event.pixel[0];
           this.map.getView().animate({center: [center[0] - distance * resolution, center[1]]});
         }
       } else {
@@ -321,7 +311,6 @@ export class YellowmapComponent implements OnInit {
         },
       );
     }
-
   }
 
   public hideKeyboard() {
@@ -337,7 +326,6 @@ export class YellowmapComponent implements OnInit {
       this.clearSearch();
       this.closeAutocomplete();
       this.hideKeyboard();
-      this.showFeatureList = false;
     }
 
     if (this.autocomplete.activeOption) {
@@ -359,7 +347,6 @@ export class YellowmapComponent implements OnInit {
         this.esSearchResult = result['hits']['hits'];
         this.esLayer.getSource().clear();
         this.esLayer.getSource().refresh();
-        this.showFeatureList = true;
       } else {
         console.log('empty result for search');
         this.esSearchResult = [];
@@ -409,7 +396,6 @@ export class YellowmapComponent implements OnInit {
   private clearSearch() {
     this.esSearchResult = [];
     this.selectedFeature = null;
-    this.selectedFeatureDraggedUp = false;
     this.esLayer.getSource().clear();
     this.esLayer.getSource().refresh();
   }
@@ -494,48 +480,18 @@ export class YellowmapComponent implements OnInit {
     this.clearSearch();
   }
 
-  getLocationClasses() {
-    if (this.features) {
-      return 'active';
-    }
-    return '';
-  }
-
-  onPanStart(event: any): void {
-    this.selectedFeatureTopStartPos = this.selectedFeatureTopPos;
-  }
-
-  onPan(event: any): void {
-    if (window.innerWidth >= this.BREAKPOINT_DESKTOP) {
-      return;
-    }
-
-    event.preventDefault();
-    this.selectedFeatureTopPos = Math.max(this.FEATURE_OFFSET, this.selectedFeatureTopStartPos + event.deltaY);
-    this.selectedFeatureTopPos = Math.min(window.innerHeight - this.FEATURE_OFFSET, this.selectedFeatureTopPos);
-    this.selectedFeatureDraggedUp = this.selectedFeatureTopPos < (window.innerHeight - this.FEATURE_OFFSET);
-  }
-
-  openFeature(event) {
-    this.selectedFeatureDraggedUp = true;
-    if (window.innerWidth < this.BREAKPOINT_DESKTOP) {
-      this.selectedFeatureTopPos = window.innerHeight - 2 * this.FEATURE_OFFSET;
-    }
-  }
-
-  closeFeature(event) {
-    this.selectedFeatureDraggedUp = false;
+  public closeFeature(event) {
     this.selectedFeature = null;
     // force redraw
     this.esLayer.setStyle(this.esLayer.getStyle());
   }
 
-  closeFeatureList(event) {
-    this.showFeatureList = false;
-  }
-
-  toogleOpenedLocations() {
+  public toogleOpenedLocations() {
     this.showOnlyOpenedLocations = !this.showOnlyOpenedLocations;
     this.searchElasticSearch();
+  }
+
+  selectFeature($event: any) {
+    this.selectedFeature = $event.event;
   }
 }
