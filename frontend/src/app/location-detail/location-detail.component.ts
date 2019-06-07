@@ -46,6 +46,11 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP) {
+      this.topPos = AppSettings.MIN_TOP_OFFSET;
+    } else {
+      this.topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
+    }
     this.parseFeatures();
   }
 
@@ -117,10 +122,18 @@ export class LocationDetailComponent implements OnInit, OnChanges {
 
   public emitCloseFeature() {
     this.closeFeature.emit('closeFeature');
+    if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP) {
+      return;
+    }
+
     this.topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
   }
 
   onPanStart(event: any): void {
+    if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP) {
+      return;
+    }
+
     this.topStartPos = this.topPos;
   }
 

@@ -1,6 +1,9 @@
-<div class="location__list" *ngIf="features && features.length > 0 && !selectedFeature" [style.top.px]="topPos"
-     (panstart)="onPanStart($event)" (panmove)="onPan($event)">
-  <div *ngFor="let feature of features" class="location__list-detail" (click)="emitSelectFeature(feature)">
+<div [class]="getClasses()" *ngIf="features && features.length > 0 && !selectedFeature" [style.top.px]="topPos"
+     (panstart)="onPanStart($event)"
+     (panmove)="onPan($event)"
+>
+  <div *ngFor="let feature of scrollFeatures" class="location__list-detail"
+       (click)="emitSelectFeature(feature)">
     <h1>{{ feature.values_.labels['name'] }}</h1>
     <div class="clear"></div>
     <div class="location__properties">
@@ -23,7 +26,8 @@
     <ul class="location-detail__main">
       <li>
         <span *ngIf="feature.values_.locationSubType">{{ feature.values_.locationSubType }}</span>
-        <span class="location-open" *ngIf="getOpenNow(feature.values_.labels['opening_hours']) === true">jetzt geöffnet</span>
+        <span *ngIf="feature.open_now === true"> ⋅ </span>
+        <span class="location-open" *ngIf="feature.open_now === true">jetzt geöffnet</span>
       </li>
       <li *ngIf="feature.values_.labels['address']">{{ feature.values_.labels['address'] }}</li>
     </ul>

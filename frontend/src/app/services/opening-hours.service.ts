@@ -6,6 +6,8 @@ import * as opening_hours from 'opening_hours';
 })
 export class OpeningHoursService {
 
+  DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
   constructor() {
   }
 
@@ -28,9 +30,8 @@ export class OpeningHoursService {
     const oh = new opening_hours(hours_string, null);
     // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
 
-    const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
     const open_next = oh.getNextChange();
-    const open_next_text = days[open_next.getDay()] + ', ' + this.addZero(open_next.getHours()) + ':' +
+    const open_next_text = this.DAYS[open_next.getDay()] + ', ' + this.addZero(open_next.getHours()) + ':' +
       this.addZero(open_next.getMinutes());
 
     return {

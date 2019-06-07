@@ -7,6 +7,7 @@
   list-style-type: none;
   font-size: 16px;
   color: $color-gray;
+  width: calc(100% - 100px);
 
   li {
     display: block;

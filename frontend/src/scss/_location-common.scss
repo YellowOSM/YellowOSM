@@ -1,6 +1,6 @@
 @mixin pull-up-card() {
   position: absolute;
-  z-index: 1000;
+  z-index: 999;
   bottom: 0;
   right: 0;
   left: 0;
@@ -33,15 +33,9 @@
     z-index: 990;
     right: unset;
     top: 64px;
-    width: 0;
-    height: calc(100% - 64px);
+    width: 400px;
+    padding: 30px;    height: calc(100% - 64px);
     box-shadow: 3px 0px 3px -2px rgba(0, 0, 0, 0.2), 3px 0px 4px 0px rgba(0, 0, 0, 0.14), 1px 0px 8px 0px rgba(0, 0, 0, 0.12);
-
-    &.active {
-      height: calc(100% - 64px);
-      width: 400px;
-      padding: 30px;
-    }
   }
 
   h1 {

@@ -1,9 +1,19 @@
 .location__list {
   @include pull-up-card;
+
+  &.scrolling {
+    overflow: scroll;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin: 0;
+  }
 }
 
 .location__list-detail {
   margin: 15px 0;
+  padding: 5px 0 15px 0;
   border-bottom: 1px solid #000;
   clear: both;
   overflow: auto;
