@@ -38,6 +38,16 @@ export class LocationListComponent implements OnChanges, OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.features && this.features.length > 0) {
+      this.scrollFeatures = this.features.slice(0, (window.innerWidth < 768) ? this.LOAD_OFFSET_ITEMS : this.LOAD_OFFSET_ITEMS + 15);
+      this.scrollFeatures.forEach((feature) => {
+        feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
+      });
+      this.itemOffset = this.LOAD_OFFSET_ITEMS;
+    }
+  }
+
   public getOpenNow(hours_string) {
     return this.opening_hours_service.getOpenNow(hours_string);
   }
@@ -74,16 +84,6 @@ export class LocationListComponent implements OnChanges, OnInit {
     this.selectFeature.emit({event: feature});
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.features && this.features.length > 0) {
-      this.scrollFeatures = this.features.slice(0, this.LOAD_OFFSET_ITEMS);
-      this.scrollFeatures.forEach((feature) => {
-        feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
-      });
-      this.itemOffset = this.LOAD_OFFSET_ITEMS;
-    }
-  }
-
   private appendScrollFeatures() {
     this.itemOffset += this.LOAD_OFFSET_ITEMS;
     const newFeatures = this.features.slice(this.itemOffset, this.itemOffset + this.LOAD_OFFSET_ITEMS);
@@ -91,5 +91,12 @@ export class LocationListComponent implements OnChanges, OnInit {
       feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
     });
     this.scrollFeatures = this.scrollFeatures.concat(newFeatures);
+  }
+
+  onScroll($event: UIEvent) {
+    if (($event.srcElement.scrollTop) > (this.scrollOffset + this.LOAD_OFFSET_PIXEL)) {
+      this.appendScrollFeatures();
+      this.scrollOffset += this.LOAD_OFFSET_PIXEL;
+    }
   }
 }

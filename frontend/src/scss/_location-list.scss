@@ -9,6 +9,10 @@
     font-size: 20px;
     margin: 0;
   }
+
+  @media (min-width: 768px) {
+    overflow: scroll;
+  }
 }
 
 .location__list-detail {
