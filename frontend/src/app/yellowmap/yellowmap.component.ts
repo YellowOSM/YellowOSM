@@ -493,5 +493,6 @@ export class YellowmapComponent implements OnInit {
 
   selectFeature($event: any) {
     this.selectedFeature = $event.event;
+    this.esLayer.getSource().refresh();
   }
 }
