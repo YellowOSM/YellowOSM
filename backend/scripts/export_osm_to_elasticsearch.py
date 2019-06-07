@@ -10,15 +10,20 @@ csv.field_size_limit(100000000)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--local',action="store_true", help="run script in local context without docker postgres")
+parser.add_argument('--split',action="store_true", help="split json output file into multiple files; this helps with elasticsearch import")
 
 args = vars(parser.parse_args())
 SERVER = not args['local']
+SPLIT = not args['split']
 
 # EXPORT_FILE = "/tmp/dump_small.osm"
 # EXPORT_ES_FILE = "/tmp/osm_es_export_small.json"
 
 EXPORT_FILE = "/tmp/dump.osm"
 EXPORT_ES_FILE = "/tmp/osm_es_export.json"
+# if export is split, those are the files with SPLIT_SIZE elements per file...
+EXPORT_ES_SPLIT_FILE = "/tmp/osm_es_export_{:03d}.json"
+SPLIT_SIZE = 200_000
 
 # also export polygons
 poly = True
@@ -30,7 +35,7 @@ LIMIT = 100000000000
 
 if SERVER:
     # `yosm_postgres` is the name of postres' docker image
-    query_prefix = "docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}')  psql -U postgres -d gis -c \"\copy ("
+    query_prefix = "docker exec $(docker ps | grep yosm_postgres | awk '{{print $1}}') psql -U postgres -d gis -c \"\copy ("
 else:
     query_prefix = "sudo -u postgres psql -d gis -c \"\copy ("
 
@@ -284,31 +289,54 @@ def read_line_from_csv():
                 continue
             yield line
 
+def get_filename():
+    pass
+
+
+# elements_in_file = 0
 osm_ids = {} # keep track of exported OSM_ids
 yosm_type = None
 yosm_subtype = None
-with open(EXPORT_ES_FILE,'w') as out:
-    print("Export ES json:")
-    for line in read_line_from_csv():
-        if not line[1]:
-            continue
-        # only export osm_id once
-        if line[5] in osm_ids:
-            continue
-        else:
-            osm_ids[line[5]] = True
+if not SPLIT:
+    files = EXPORT_ES_FILE
+else:
+    files = [EXPORT_ES_FILE]
 
-        poi = YOSM_POI(line)
+file_count = 1
+all_elements = read_line_from_csv()
+# TODO fix file name handling
+for FILE in files:
+    file_name = EXPORT_ES_FILE.format(file_count)
+    with open(file_name,'w') as out:
 
-        # build elastic search import file:
-        out.write(json.dumps({"index": {}}) + "\n")
-        lat = poi.lat
-        lon = poi.lon
-
-        if poi.yosm_type:
-            if poi.yosm_subtype:
-                out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "subtype": poi.yosm_subtype, "description": poi.desc, "labels": poi.label_dict}) + "\n")
+        elements_in_file = 0
+        print("Export ES json:")
+        for line in all_elements:
+            if not line[1]:
+                continue
+            # only export osm_id once
+            if line[5] in osm_ids:
+                continue
             else:
-                out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "description": poi.desc, "labels": poi.label_dict}) + "\n")
-        else:
-            out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "description": poi.desc, "labels": poi.label_dict}) + "\n")
+                osm_ids[line[5]] = True
+
+            poi = YOSM_POI(line)
+
+            # build elastic search import file:
+            out.write(json.dumps({"index": {}}) + "\n")
+            lat = poi.lat
+            lon = poi.lon
+
+            if poi.yosm_type:
+                if poi.yosm_subtype:
+                    out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "subtype": poi.yosm_subtype, "description": poi.desc, "labels": poi.label_dict}) + "\n")
+                else:
+                    out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "description": poi.desc, "labels": poi.label_dict}) + "\n")
+            else:
+                out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "description": poi.desc, "labels": poi.label_dict}) + "\n")
+
+            elements_in_file += 1
+            if elements_in_file < SPLIT_SIZE:
+                file_count += 1
+                file_name = EXPORT_ES_SPLIT_FILE.format(file_count)
+                break

@@ -9,11 +9,9 @@ export PGUSER=postgres
 # export PGPASSWORD=postgres_007%
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 
-
+region="liechtenstein"
 region="austria"
-region="austria"
-region="austria"
-region="austria"
+region="dach"
 # pbffile="/tmp/liechtenstein-current.osm.pbf"
 #pbffile="/tmp/austria-current.osm.pbf"
 pbffile="/tmp/${region}-current.osm.pbf"
