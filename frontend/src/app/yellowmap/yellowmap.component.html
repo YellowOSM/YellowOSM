@@ -1,21 +1,22 @@
-<form>
 <div class="yosm__container">
   <mat-toolbar color="secondary" class="search__toolbar mat-elevation-z3" #toolbarElement>
     <a href="/" class="search__logo-wrapper">
       <img class="search__logo" src="assets/img/logo.svg" alt="YellowOSM - Open Locations">
     </a>
-    <mat-form-field [floatLabel]="'never'" class="search__input">
-      <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..." [formControl]="searchFormControl"
-             [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
-             (keydown.enter)="searchElasticSearch()">
-    </mat-form-field>
-    <div class="search__button">
-      <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()" class="search__clear">close</mat-icon>
-      <button type="submit">
-        <mat-icon (click)="searchElasticSearch()">search</mat-icon>
-      </button>
-    </div>
-
+    <form class="to-enable-firefox-custom-search">
+      <mat-form-field [floatLabel]="'never'" class="search__input">
+        <input type="text" matInput placeholder="z.B. Café, Apotheke, Bankomat, Bar..."
+               [formControl]="searchFormControl"
+               [matAutocomplete]="auto" #searchInput [matAutocompleteConnectedTo]="origin"
+               (keydown.enter)="searchElasticSearch()">
+      </mat-form-field>
+      <div class="search__button">
+        <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()" class="search__clear">close</mat-icon>
+        <button type="submit">
+          <mat-icon (click)="searchElasticSearch()">search</mat-icon>
+        </button>
+      </div>
+    </form>
   </mat-toolbar>
 
   <div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
@@ -26,9 +27,10 @@
     </mat-option>
   </mat-autocomplete>
 
-  <mat-chip-list class="yosm__filters">
+  <mat-chip-list class="yosm__filters" *ngIf="features">
     <mat-chip [color]="showOnlyOpenedLocations ? 'accent': 'standard'" selected
-              (click)="toogleOpenedLocations()">jetzt geöffnet</mat-chip>
+              (click)="toogleOpenedLocations()">jetzt geöffnet
+    </mat-chip>
   </mat-chip-list>
 
   <div class="map__wrapper">
@@ -49,9 +51,8 @@
     </div>
   </div>
 </div>
-</form>
 
-<app-location-detail [features]="features" [selectedFeature]="selectedFeature" [showFeatureList]="showFeatureList"
+<app-location-list [features]="features" [selectedFeature]="selectedFeature" [showFeatureList]="showFeatureList"
                      [draggedUp]="selectedFeatureDraggedUp" [style.top.px]="selectedFeatureTopPos"
                      [className]="getLocationClasses()"
                      (panstart)="onPanStart($event)" (panmove)="onPan($event)"
@@ -59,4 +60,14 @@
                      (closeFeature)="closeFeature($event)" (closeFeatureList)="closeFeatureList($event)"
                      #locationElement
                      *ngIf="showFeatureList || selectedFeature"
-></app-location-detail>
+></app-location-list>
+
+<!--<app-location-detail [features]="features" [selectedFeature]="selectedFeature" [showFeatureList]="showFeatureList"-->
+<!--                     [draggedUp]="selectedFeatureDraggedUp" [style.top.px]="selectedFeatureTopPos"-->
+<!--                     [className]="getLocationClasses()"-->
+<!--                     (panstart)="onPanStart($event)" (panmove)="onPan($event)"-->
+<!--                     (goUp)="openFeature($event)" (goDown)="closeFeature($event)"-->
+<!--                     (closeFeature)="closeFeature($event)" (closeFeatureList)="closeFeatureList($event)"-->
+<!--                     #locationElement-->
+<!--                     *ngIf="showFeatureList || selectedFeature"-->
+<!--&gt;</app-location-detail>-->
