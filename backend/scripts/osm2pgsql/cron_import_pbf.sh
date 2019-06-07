@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # pbffile="/tmp/austria-current.osm.pbf"
 WORKOSM_DIR="/tmp/osmosis/"
@@ -10,15 +10,22 @@ export PGUSER=postgres
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 
 
+region="austria"
+region="austria"
+region="austria"
+region="austria"
 # pbffile="/tmp/liechtenstein-current.osm.pbf"
-pbffile="/tmp/austria-current.osm.pbf"
+#pbffile="/tmp/austria-current.osm.pbf"
+pbffile="/tmp/${region}-current.osm.pbf"
 PBF_FILE=$pbffile
 statefile="/tmp/state.txt"
 # state_url="http://download.geofabrik.de/europe/liechtenstein-updates/state.txt"
-state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
+# state_url="http://download.geofabrik.de/europe/austria-updates/state.txt"
+state_url="http://download.geofabrik.de/europe/${region}-updates/state.txt"
 ## download_sub_path="https://download.geofabrik.de/europe/austria-"
 # download_path="https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf"
-download_path="https://download.geofabrik.de/europe/austria-latest.osm.pbf"
+# download_path="https://download.geofabrik.de/europe/austria-latest.osm.pbf"
+download_path="https://download.geofabrik.de/europe/${region}-latest.osm.pbf"
 # TODO:
 # add
 # http://download.geofabrik.de/europe/germany-latest.osm.pbf
@@ -48,10 +55,10 @@ docker exec $(docker ps | grep yosm_postgres | awk '{print $1}') psql -U postgre
 # wait for DB to be ready
 sleep 2
 # time osm2pgsql -U flo -C 1200 --create --database gis $pbffile --style yosm.style
-cd osm2pgsql
+## cd osm2pgsql
 # export POSTGRES_PASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
-time osm2pgsql -H $PGHOST -U $PGUSER -C 3000 --slim --create --database gis $pbffile --style yosm.style
+time osm2pgsql -H $PGHOST -U $PGUSER -C 3000 --slim --create --number-processes 8 --database gis $pbffile --style yosm.style
 
 # PBF_FILE=liechtenstein-latest.osm.pbf
 REPLICATION_BASE_URL="$(osmium fileinfo -g 'header.option.osmosis_replication_base_url' "${PBF_FILE}")"
@@ -68,7 +75,7 @@ else
   # cd ~/src/openstreetmap-carto
   # HOSTNAME=localhost # set it to the actual ip address or host name
   osmosis --read-replication-interval workingDirectory=${WORKOSM_DIR} --simplify-change --write-xml-change - | \
-  osm2pgsql --append -s -C 300 -G --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
+  osm2pgsql --append -s -C 300 -G --number-processes 8 --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
   # osm2pgsql --append -s -C 300 -G --hstore --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
 
 fi
