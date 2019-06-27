@@ -25,7 +25,8 @@ import {ElasticsearchService} from '../services/elasticsearch.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
-import {MatAutocompleteTrigger, MatSnackBar} from '@angular/material';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {AppSettings} from '../app.settings';
 import {$e} from 'codelyzer/angular/styles/chars';
 
