@@ -9,12 +9,16 @@ from yosm_poi import YOSM_POI
 csv.field_size_limit(100000000)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--local',action="store_true", help="run script in local context without docker postgres")
-parser.add_argument('--split',action="store_true", help="split json output file into multiple files; this helps with elasticsearch import")
+parser.add_argument('--local', action="store_true", help="run script in local context without docker postgres")
+parser.add_argument('--split', action="store_true", help="split json output file into multiple files; this helps with elasticsearch import")
+parser.add_argument('--no-query', action="store_false", help="don't query db, just reformat dump.csv")
 
-args = vars(parser.parse_args())
-SERVER = not args['local']
-SPLIT = not args['split']
+args = parser.parse_args()
+SERVER = not args.local
+SPLIT = args.split
+query_db = args.no_query
+
+print(args)
 
 # EXPORT_FILE = "/tmp/dump_small.osm"
 # EXPORT_ES_FILE = "/tmp/osm_es_export_small.json"
@@ -24,12 +28,12 @@ EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 # if export is split, those are the files with SPLIT_SIZE elements per file...
 EXPORT_ES_SPLIT_FILE = "/tmp/osm_es_export_{:03d}.json"
 SPLIT_SIZE = 200_000
+SPLIT_SIZE = 200
 
 # also export polygons
 poly = True
 # poly = False
-query_db = True
-# query_db = False
+
 LIMIT = 100000000000
 # LIMIT = 10
 
@@ -297,46 +301,66 @@ def get_filename():
 osm_ids = {} # keep track of exported OSM_ids
 yosm_type = None
 yosm_subtype = None
-if not SPLIT:
-    files = EXPORT_ES_FILE
-else:
-    files = [EXPORT_ES_FILE]
 
-file_count = 1
-all_elements = read_line_from_csv()
-# TODO fix file name handling
-for FILE in files:
-    file_name = EXPORT_ES_FILE.format(file_count)
-    with open(file_name,'w') as out:
+# if not SPLIT:
+#     files = [EXPORT_ES_FILE]
+# else:
+#     files = [EXPORT_ES_FILE]
 
-        elements_in_file = 0
-        print("Export ES json:")
-        for line in all_elements:
-            if not line[1]:
+def convert_line_to_json(line, osm_ids):
+    json_line = None
+    if not line[1]:
+        return json_line
+    # only export osm_id once
+    if line[5] in osm_ids:
+        return json_line
+    else:
+        osm_ids[line[5]] = True
+
+    poi = YOSM_POI(line)
+
+    # build elastic search import file:
+    json_line = json.dumps({"index": {}}) + "\n"
+    lat = poi.lat
+    lon = poi.lon
+
+    if poi.yosm_type:
+        if poi.yosm_subtype:
+            json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "subtype": poi.yosm_subtype, "description": poi.desc, "labels": poi.label_dict}) + "\n"
+        else:
+            json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "description": poi.desc, "labels": poi.label_dict}) + "\n"
+    else:
+        json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "description": poi.desc, "labels": poi.label_dict}) + "\n"
+
+    return json_line
+
+def write_elements_to_file(filename, gen, max_elements=SPLIT_SIZE):
+    have_elements = False
+    with open(filename,'w') as out:
+        written_elements = 0
+        for line in gen:
+
+            line = convert_line_to_json(line, osm_ids)
+            if line == None:
                 continue
-            # only export osm_id once
-            if line[5] in osm_ids:
-                continue
-            else:
-                osm_ids[line[5]] = True
 
-            poi = YOSM_POI(line)
+            out.write(line)
 
-            # build elastic search import file:
-            out.write(json.dumps({"index": {}}) + "\n")
-            lat = poi.lat
-            lon = poi.lon
+            have_elements = True
+            written_elements += 1
+            if written_elements >= max_elements:
+                return
+        else:
+            raise StopIteration("done")
 
-            if poi.yosm_type:
-                if poi.yosm_subtype:
-                    out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "subtype": poi.yosm_subtype, "description": poi.desc, "labels": poi.label_dict}) + "\n")
-                else:
-                    out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "description": poi.desc, "labels": poi.label_dict}) + "\n")
-            else:
-                out.write(json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "description": poi.desc, "labels": poi.label_dict}) + "\n")
+print("Export ES json to file(s):")
+try:
+    file_index = 0
+    all_elements = read_line_from_csv()
+    while True:
+        write_elements_to_file(EXPORT_ES_SPLIT_FILE.format(file_index), all_elements)
+        file_index += 1
 
-            elements_in_file += 1
-            if elements_in_file < SPLIT_SIZE:
-                file_count += 1
-                file_name = EXPORT_ES_SPLIT_FILE.format(file_count)
-                break
+except StopIteration as ex:
+    # print(ex)
+    pass
