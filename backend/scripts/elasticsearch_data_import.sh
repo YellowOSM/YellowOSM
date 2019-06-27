@@ -9,13 +9,20 @@
 # BASE_URL='localhost:9200'
 BASE_URL='https://es.yosm.at'
 INDEX="yosm_dev" # default to dev index
-JSONFILE='/tmp/osm_es_export.json'
+JSONFILES='/tmp/osm_es_export_???.json'
 
-CURL="curl --interface ens3"
 if [[ $1 == '--help' ]]; then
-  echo "usage: ${0} --help | [--local] | [yosm|yosm_dev] | [--file es.json]"
+  echo "usage: ${0} --help | [--device eth0 | --local] [yosm|yosm_dev] [--files es_*.json]"
   exit
 fi
+
+DEVICE='eth0'
+if [[ $1 == '--device' ]]; then
+  DEVICE=$2
+  shift 2
+fi
+CURL="curl --interface $DEVICE"
+
 if [[ $1 == '--local' ]]; then
   CURL="curl"
   shift
@@ -28,9 +35,13 @@ if [[ $1 == 'yosm_dev' ]]; then
   INDEX=$1
   shift
 fi
-if [[ $1 == '--file' ]]; then
-  JSONFILE=$2
+if [[ $1 == '--files' ]]; then
+  JSONFILES=$2
   shift 2
+fi
+if [[ $1 == '--file' ]]; then
+  echo "deprecated flag. aborting..."
+  exit -2
 fi
 
 echo "> $CURL \"${BASE_URL}/_cat/indices?v\""
@@ -67,8 +78,11 @@ $CURL -X PUT "${BASE_URL}/${INDEX}?pretty" -H 'Content-Type: application/json' -
 '
 
 echo "uploading data to index '$INDEX'..."
-# load sample data set
-time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o /dev/null
+for JSONFILE in ${JSONFILES}; do
+  # load data set
+  echo $JSONFILE
+  time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o /dev/null
+done
 echo "done"
 
 # get index status
