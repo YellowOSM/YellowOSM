@@ -363,7 +363,9 @@ try:
     file_index = 0
     all_elements = read_line_from_csv()
     while True:
-        write_elements_to_file(EXPORT_ES_SPLIT_FILE.format(file_index), all_elements)
+        filename = EXPORT_ES_SPLIT_FILE.format(file_index)
+        print(filename)
+        write_elements_to_file(filename, all_elements)
         file_index += 1
 
 except StopIteration as ex:
