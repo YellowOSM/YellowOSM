@@ -93,7 +93,7 @@ export class LocationListComponent implements OnChanges, OnInit {
     this.scrollFeatures = this.scrollFeatures.concat(newFeatures);
   }
 
-  onScroll($event: UIEvent) {
+  onScroll($event) {
     if (($event.srcElement.scrollTop) > (this.scrollOffset + this.LOAD_OFFSET_PIXEL)) {
       this.appendScrollFeatures();
       this.scrollOffset += this.LOAD_OFFSET_PIXEL;

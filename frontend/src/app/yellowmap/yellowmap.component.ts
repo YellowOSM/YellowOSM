@@ -49,13 +49,13 @@ export class YellowmapComponent implements OnInit {
   esSource: VectorSource;
   geoLocation: Geolocation;
   geoLocationLoading = false;
-  @ViewChild('searchInput', {read: MatAutocompleteTrigger})
+  @ViewChild('searchInput', { read: MatAutocompleteTrigger, static: true })
   autocomplete: MatAutocompleteTrigger;
-  @ViewChild('searchInput')
+  @ViewChild('searchInput', { static: true })
   searchInput: ElementRef;
-  @ViewChild('mapElement')
+  @ViewChild('mapElement', { static: true })
   mapElement: ElementRef;
-  @ViewChild('toolbarElement', {read: ElementRef})
+  @ViewChild('toolbarElement', { read: ElementRef, static: true })
   toolbarElement: ElementRef;
 
   previousUrlParams = {
