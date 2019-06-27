@@ -23,7 +23,7 @@ build_frontend:
     refs:
       - master
     changes:
-      - frontend/
+      - frontend/*
   environment:
     name: dev
     url: https://dev.yosm.at
@@ -49,7 +49,7 @@ build_frontend_prod:
     refs:
       - production
     changes:
-      - frontend/
+      - frontend/*
   environment:
     name: prod
     url: https://www.yellowosm.com
@@ -83,7 +83,7 @@ deploy_frontend:
     refs:
       - master
     changes:
-      - frontend/
+      - frontend/*
   environment:
     name: dev
     url: https://dev.yosm.at
@@ -113,7 +113,7 @@ deploy_static_page:
     refs:
       - master
     changes:
-      - static/
+      - static/*
   environment:
     name: dev
     url: https://dev.yosm.at
@@ -147,7 +147,7 @@ deploy_backend:
     refs:
       - master
     changes:
-      - backend/
+      - backend/*
   environment:
     name: dev
     url: https://dev.yosm.at
