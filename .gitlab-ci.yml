@@ -21,6 +21,8 @@ build_frontend:
     expire_in: 2 weeks
   only:
     - master
+    changes:
+      - frontend/
   environment:
     name: dev
     url: https://dev.yosm.at
@@ -44,6 +46,8 @@ build_frontend_prod:
     expire_in: 2 weeks
   only:
     - production
+    changes:
+      - frontend/
   environment:
     name: prod
     url: https://www.yellowosm.com
@@ -75,6 +79,37 @@ deploy_frontend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - master
+    changes:
+      - frontend/
+  environment:
+    name: dev
+    url: https://dev.yosm.at
+
+deploy_static_page:
+  stage: deploy
+  image: node:latest
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    ## DON'T use protected variables for this!!
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ping -c 1 toddvm5.klienux.at
+    - ls -lha
+  script:
+    - >2
+      echo -e "User-agent: *
+      \nDisallow: /" > static/robots.txt
+    - ssh root@toddvm5.klienux.at 'mkdir -p /srv/html/'
+    - scp -r static/* root@toddvm5.klienux.at:/srv/html/
+    - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
+  only:
+    - master
+    changes:
+      - static/
   environment:
     name: dev
     url: https://dev.yosm.at
@@ -106,6 +141,8 @@ deploy_backend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     - master
+    changes:
+      - backend/
   environment:
     name: dev
     url: https://dev.yosm.at
