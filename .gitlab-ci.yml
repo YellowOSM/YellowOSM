@@ -20,7 +20,8 @@ build_frontend:
       - frontend/dist/
     expire_in: 2 weeks
   only:
-    - master
+    refs:
+      - master
     changes:
       - frontend/
   environment:
@@ -45,7 +46,8 @@ build_frontend_prod:
       - frontend/dist/
     expire_in: 2 weeks
   only:
-    - production
+    refs:
+      - production
     changes:
       - frontend/
   environment:
@@ -78,7 +80,8 @@ deploy_frontend:
     - ssh root@toddvm5.klienux.at 'mv /srv/html /srv/html_old; mv /srv/html_new /srv/html; rm -r /srv/html_old'
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
-    - master
+    refs:
+      - master
     changes:
       - frontend/
   environment:
@@ -107,7 +110,8 @@ deploy_static_page:
     - scp -r static/* root@toddvm5.klienux.at:/srv/html/
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
-    - master
+    refs:
+      - master
     changes:
       - static/
   environment:
@@ -140,7 +144,8 @@ deploy_backend:
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; docker-compose build yosm-backend; docker-compose up --detach yosm-backend;'
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
-    - master
+    refs:
+      - master
     changes:
       - backend/
   environment:
