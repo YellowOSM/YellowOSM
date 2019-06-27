@@ -11,7 +11,7 @@ csv.field_size_limit(100000000)
 parser = argparse.ArgumentParser()
 parser.add_argument('--local', action="store_true", help="run script in local context without docker postgres")
 parser.add_argument('--split', action="store_true", help="split json output file into multiple files; this helps with elasticsearch import")
-parser.add_argument('--no-query', action="store_false", help="don't query db, just reformat dump.csv")
+parser.add_argument('--no-query', action="store_false", help="don't query db, just reformat existing dump.csv")
 
 args = parser.parse_args()
 SERVER = not args.local
@@ -28,7 +28,7 @@ EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 # if export is split, those are the files with SPLIT_SIZE elements per file...
 EXPORT_ES_SPLIT_FILE = "/tmp/osm_es_export_{:03d}.json"
 SPLIT_SIZE = 200_000
-SPLIT_SIZE = 200
+# SPLIT_SIZE = 400
 
 # also export polygons
 poly = True
@@ -352,6 +352,11 @@ def write_elements_to_file(filename, gen, max_elements=SPLIT_SIZE):
                 return
         else:
             raise StopIteration("done")
+
+print("remove old files:")
+rm_files = EXPORT_ES_SPLIT_FILE.format(0).replace('000','???')
+os.system('ls ' + rm_files)
+os.system('rm ' + rm_files)
 
 print("Export ES json to file(s):")
 try:
