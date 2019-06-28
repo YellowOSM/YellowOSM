@@ -22,7 +22,7 @@ export class ElasticsearchService {
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
-        'size': 300,
+        'size': 200,
         'query': {
           'bool': {
             'should': [

@@ -5,7 +5,7 @@ import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {path: ':zoom/:lat/:lon', component: YellowmapComponent},
-  {path: '', redirectTo: '/14/47.0707/15.4395', pathMatch: 'full'},
+  {path: '', redirectTo: '/15/47.0707/15.4395', pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent}
 ];
 
