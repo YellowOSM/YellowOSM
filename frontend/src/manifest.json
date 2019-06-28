@@ -4,8 +4,8 @@
   "theme_color": "#ffd303",
   "background_color": "#000000",
   "display": "standalone",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/map",
+  "start_url": "/map/index.html",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",

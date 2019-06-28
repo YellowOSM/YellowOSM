@@ -34,7 +34,7 @@
       "version": 1,
       "cacheConfig": {
         "maxSize": 1024,
-        "maxAge": "2h",
+        "maxAge": "24h",
         "timeout": "2s",
         "strategy": "performance"
       }
