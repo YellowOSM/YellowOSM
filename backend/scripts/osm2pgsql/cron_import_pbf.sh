@@ -9,6 +9,8 @@ export PGUSER=postgres
 # export PGPASSWORD=postgres_007%
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 
+RAM_CACHE=5000
+
 region="liechtenstein"
 region="austria"
 region="dach"
@@ -56,7 +58,7 @@ sleep 2
 ## cd osm2pgsql
 # export POSTGRES_PASSWORD=`cat ~/.pgpass | cut -d : -f 5`
 export PGPASSWORD=`cat ~/.pgpass | cut -d : -f 5`
-time osm2pgsql -H $PGHOST -U $PGUSER -C 3000 --slim --create --number-processes 8 --database gis $pbffile --style yosm.style
+time osm2pgsql -H $PGHOST -U $PGUSER -C $RAM_CACHE --slim --create --number-processes 8 --database gis $pbffile --style yosm.style
 
 # PBF_FILE=liechtenstein-latest.osm.pbf
 REPLICATION_BASE_URL="$(osmium fileinfo -g 'header.option.osmosis_replication_base_url' "${PBF_FILE}")"
@@ -73,7 +75,7 @@ else
   # cd ~/src/openstreetmap-carto
   # HOSTNAME=localhost # set it to the actual ip address or host name
   osmosis --read-replication-interval workingDirectory=${WORKOSM_DIR} --simplify-change --write-xml-change - | \
-  osm2pgsql --append -s -C 300 -G --number-processes 8 --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
+  osm2pgsql --append -s -C $RAM_CACHE -G --number-processes 8 --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
   # osm2pgsql --append -s -C 300 -G --hstore --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
 
 fi

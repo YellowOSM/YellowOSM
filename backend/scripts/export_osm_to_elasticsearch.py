@@ -258,7 +258,8 @@ special_access_classes = [export_leisure,]
 if query_db:
     # clear files
     open(EXPORT_FILE,'w').close()
-    open(EXPORT_ES_FILE,'w').close()
+    if not SPLIT:
+        open(EXPORT_ES_FILE,'w').close()
 
 
     for cl in classes_to_export:
