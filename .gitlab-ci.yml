@@ -15,6 +15,8 @@ build_frontend:
     - npm install
     - ng build --prod --base-href /map/
     - ls -R dist
+    - cd dist
+    - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:9}/g"
   artifacts:
     paths:
       - frontend/dist/
@@ -41,6 +43,8 @@ build_frontend_prod:
     - npm install
     - ng build --prod --base-href /map/
     - ls -R dist
+    - cd dist
+    - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:9}/g"
   artifacts:
     paths:
       - frontend/dist/
