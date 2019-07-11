@@ -65,8 +65,9 @@
         </a>
       </div>
     </div>
-    <div class="details__hours">
-      {{ opening_hours }}
+    <div class="details__hours" *ngIf="opening_hours_pretty">
+      <span>Öffnungszeiten</span>
+      <div [innerHTML]="opening_hours_pretty"></div>
     </div>
     <div class="details">
       <div class="details__link" *ngIf="osmlink">

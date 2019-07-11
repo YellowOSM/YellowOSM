@@ -116,7 +116,15 @@
 }
 
 .details__hours {
-  margin-bottom: 8px;
+  margin: 16px 0 32px 0;
+  font-size: 16px;
+  color: $color-gray;
+
+  span {
+    display: block;
+    padding-bottom: 4px;
+    font-weight: 700;
+  }
 }
 
 .location-open {
