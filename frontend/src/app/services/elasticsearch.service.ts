@@ -33,7 +33,7 @@ export class ElasticsearchService {
                     'default_operator': 'AND',
                     'fields': [
                       'labels.name^5',
-                      'description^2',
+                      'description^50',
                       // 'labels.website^3',
                       // 'labels.contact_website',
                       // 'labels.addr_street',
