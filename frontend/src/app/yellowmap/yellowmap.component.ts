@@ -25,10 +25,9 @@ import {ElasticsearchService} from '../services/elasticsearch.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppSettings} from '../app.settings';
-import {$e} from 'codelyzer/angular/styles/chars';
 
 @Component({
   selector: 'app-yellowmap',
@@ -50,13 +49,13 @@ export class YellowmapComponent implements OnInit {
   esSource: VectorSource;
   geoLocation: Geolocation;
   geoLocationLoading = false;
-  @ViewChild('searchInput', { read: MatAutocompleteTrigger, static: true })
+  @ViewChild('searchInput', {read: MatAutocompleteTrigger, static: true})
   autocomplete: MatAutocompleteTrigger;
-  @ViewChild('searchInput', { static: true })
+  @ViewChild('searchInput', {static: true})
   searchInput: ElementRef;
-  @ViewChild('mapElement', { static: true })
+  @ViewChild('mapElement', {static: true})
   mapElement: ElementRef;
-  @ViewChild('toolbarElement', { read: ElementRef, static: true })
+  @ViewChild('toolbarElement', {read: ElementRef, static: true})
   toolbarElement: ElementRef;
 
   previousUrlParams = {
@@ -146,17 +145,28 @@ export class YellowmapComponent implements OnInit {
         if (this.selectedFeature && this.selectedFeature.hasOwnProperty('ol_uid') && this.selectedFeature['ol_uid'] === feature.ol_uid) {
           color = 'rgba(200,20,20,0.8)';
         }
-        return new Style({
-          image: new CircleStyle({
-            radius: 11,
-            fill: new Fill({
-              color: color
-            }),
-            stroke: new Stroke({
-              color: 'rgba(0,0,0,1)', width: 2.5
+        return [
+          new Style({
+            image: new CircleStyle({
+              radius: 20,
+              fill: new Fill({
+                // color: 'rgba(200,100,10,0.2)'
+                color: 'rgb(70,70,70,0.2)'
+              })
             })
-          })
-        });
+          }),
+          new Style({
+            image: new CircleStyle({
+              radius: 11,
+              fill: new Fill({
+                color: color
+              }),
+              stroke: new Stroke({
+                color: 'rgba(0,0,0,1)', width: 2.5
+              })
+            })
+          }),
+        ];
       },
       strategy: bboxStrategy
     });
@@ -217,21 +227,39 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.map.on('click', (event) => {
+      const distance = feature => {
+        const coords = feature.getGeometry().getCoordinates();
+        const pixel = this.map.getPixelFromCoordinate(coords);
+        const distSquared = Math.pow(event.pixel[0] - pixel[0], 2)
+          + Math.pow(event.pixel[1] - pixel[1], 2);
+        return distSquared;
+      };
+
       this.searchInput.nativeElement.blur();
-      const features = this.map.getFeaturesAtPixel(event.pixel);
-      if (features && features[0].values_.hasOwnProperty('labels')) {
-        this.selectedFeature = features[0];
-        const padding = 50;
+      const clickedFeature = { feat: null, dist: Infinity };
+
+      /* See if we clicked on a feature. If yes, take closest */
+      this.map.forEachFeatureAtPixel(event.pixel, (feature) => {
+        const dist = distance(feature);
+        if (dist < clickedFeature.dist && feature.values_.hasOwnProperty('labels')) {
+          clickedFeature.feat = feature;
+          clickedFeature.dist = dist;
+        }
+      });
+
+      if (clickedFeature.feat) {
+        this.selectedFeature = clickedFeature.feat;
+        const PADDING = 50;
         const center = this.map.getView().getCenter();
         const resolution = this.map.getView().getResolution();
 
         if (window.innerWidth < AppSettings.BREAKPOINT_DESKTOP
           && event.pixel[1] > (window.innerHeight - AppSettings.MIN_BOTTOM_OFFSET)) {
-          const distance = AppSettings.MIN_BOTTOM_OFFSET + padding - (window.innerHeight - event.pixel[1]);
+          const distance = AppSettings.MIN_BOTTOM_OFFSET + PADDING - (window.innerHeight - event.pixel[1]);
           this.map.getView().animate({center: [center[0], center[1] - distance * resolution]});
         } else if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP
           && event.pixel[0] < AppSettings.MIN_LEFT_OFFSET) {
-          const distance = AppSettings.MIN_LEFT_OFFSET + padding + event.pixel[0];
+          const distance = AppSettings.MIN_LEFT_OFFSET + PADDING + event.pixel[0];
           this.map.getView().animate({center: [center[0] - distance * resolution, center[1]]});
         }
       } else {
