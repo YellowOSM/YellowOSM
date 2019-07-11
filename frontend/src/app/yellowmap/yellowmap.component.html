@@ -27,7 +27,7 @@
     </mat-option>
   </mat-autocomplete>
 
-  <mat-chip-list class="yosm__filters" *ngIf="features && features.length > 0">
+  <mat-chip-list class="yosm__filters" *ngIf="searchFormControl.value">
     <mat-chip [color]="showOnlyOpenedLocations ? 'accent': 'standard'" selected
               (click)="toogleOpenedLocations()">jetzt geöffnet
     </mat-chip>
