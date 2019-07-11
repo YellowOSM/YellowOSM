@@ -13,7 +13,7 @@ build_frontend:
     - ls -a
     - cd frontend
     - npm install
-    - ng build --prod --base-href /map/
+    - ng build --configuration test --base-href /map/
     - ls -R dist
     - cd dist
     - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:9}/g"
