@@ -1,0 +1,47 @@
+{
+  "name": "auswertungen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist/*",
+    "clean-prod": "rm -rf dist-prod/*",
+    "build": "npm run clean && webpack --config webpack.dev.js",
+    "build-prod": "npm run clean-prod && webpack --config webpack.prod.js --progress",
+    "watch": "npm run build && webpack --watch --config webpack.dev.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "stylelint": "stylelint scss/*.scss || echo \"There were stylelint errors\"",
+    "stylelint-fix": "stylelint --fix scss/*.scss"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^9.1.1",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "css-loader": "^1.0.0",
+    "cssnano": "^4.0.5",
+    "file-loader": "^1.1.11",
+    "imagemin-webpack-plugin": "^2.2.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "node-sass": "^4.9.3",
+    "optimize-css-assets-webpack-plugin": "^5.0.0",
+    "postcss-loader": "^3.0.0",
+    "raw-loader": "^0.5.1",
+    "resolve-url-loader": "^2.2.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.22.1",
+    "stylelint": "^9.5.0",
+    "stylelint-webpack-plugin": "^0.10.5",
+    "url-loader": "^1.1.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "uglifyjs-webpack-plugin": "^2.1.1"
+  },
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "ol": "^5.3.3"
+  }
+}
