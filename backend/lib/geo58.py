@@ -102,8 +102,8 @@ class Geo58():
 
         # x is mapped from -90 to +90 -> 0 to 180
         # y is mapped from -180 to 180 -> 0 to 360
-        x = int(float(x) * 100_000 +  9_000_000)
-        y = int(float(y) * 100_000 + 18_000_000)
+        x = int( (float(x) + 90 ) * 100_000)
+        y = int( (float(y) + 180) * 100_000)
 
         merged_coords = self._bin_merge_x_y(x, y)
 
@@ -127,59 +127,10 @@ class Geo58():
         log.debug("_convertIntToCoords: {} {} {}".format(z, x, y))
         return (z,x,y)
 
-    # def _merge_x_y(self, x,y):
-    #     """Merge x and y coordinates
-    #     will merge x and y coordinates to one integer to keep them similar for
-    #     locations that are close to each other.
-    #     e.g:
-    #     x =  4512345
-    #     y = 12309876
-    #     will become: 0142531029384756
-    #     """
-    #     if x < 0 or y < 0:
-    #         raise Geo58.Geo58Exception("x and y must be > 0: {} {}".format(x, y))
-    #     x = x *100_000
-    #     y = y *100_000
-    #     d = 10_000_000
-    #     i = 0
-    #     while d > 0:
-    #         # print("d: {}".format(d))
-    #         a = x // d * 10
-    #         b = y // d
-    #         i += a + b
-    #         # print("i, a, b, x, y : {} {} {} {} {}".format(i,a,b,x,y))
-    #         x %= d
-    #         y %= d
-    #         d //= 10
-    #         if d > 0:
-    #             i = i * 100
-    #         # print("i: {}".format(i))
-    #     return int(i)
-    #
-    # def _unmerge_x_y(self, i):
-    #     x = 0
-    #     y = 0
-    #     d = 10_000_000_000_000_000
-    #     a = None
-    #     b = None
-    #     while d > 10:
-    #         # print("===================")
-    #         d //= 10
-    #         a = i // d
-    #         x = x + a
-    #         d //= 10
-    #         b = (i // d) % 10
-    #         y = y + b
-    #         if d > 10:
-    #             i = i % d
-    #             x *= 10
-    #             y *= 10
-    #         # print("x,y : {} {}, i, d: {} {}, a, b: {} {}".format(x,y, i, d,a,b))
-    #     return (x,y)
 
     def _bin_merge_x_y(self, x, y):
         """merge two integers (x: 25 bit, y: 26 bit) on binary level so that
-        LSB and MSB are close to each other
+        LSB and MSB are close to each other.
         This will make geo-location codes for locations that are close to
         each other similar.
         """
@@ -218,8 +169,8 @@ class Geo58():
         log.debug("binary reverted coords: {},{}, {},{}".format(a,b,a-9000000,b-18000000))
         return (int(a), int(b))
 
-    def _coordsToGeo58(self, zoom,x,y):
-        i = self._convertCoordsToInt(x,y,zoom)
+    def _coordsToGeo58(self, zoom, x, y):
+        i = self._convertCoordsToInt(x, y, zoom)
         return self._int2base58(i)
 
     def _geo58ToCoords(self, g58):
