@@ -6,6 +6,7 @@ import Feature from 'ol/Feature';
 import {toLonLat} from 'ol/proj';
 import {AppSettings} from '../app.settings';
 import {OpeningHoursService} from '../services/opening-hours.service';
+import {MatomoService} from '../matomo.service';
 
 @Component({
   selector: 'app-location-detail',
@@ -42,7 +43,8 @@ export class LocationDetailComponent implements OnInit, OnChanges {
 
   constructor(
     private geo58service: Geo58Service,
-    private opening_hours_service: OpeningHoursService
+    private opening_hours_service: OpeningHoursService,
+    private matomoService: MatomoService
   ) {
   }
 
@@ -148,5 +150,9 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     event.preventDefault();
     this.topPos = Math.max(this.BOTTOM_OFFSET, this.topStartPos + event.deltaY);
     this.topPos = Math.min(window.innerHeight - this.BOTTOM_OFFSET, this.topPos);
+  }
+
+  trackPoiAction(actionType: string) {
+    this.matomoService.trackPoiAction(actionType);
   }
 }

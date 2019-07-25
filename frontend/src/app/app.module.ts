@@ -13,6 +13,7 @@ import {Geo58RedirectComponent} from './geo58-redirect/geo58-redirect.component'
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from './material.module';
+import { MatomoModule } from 'ngx-matomo';
 import * as Hammer from 'hammerjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -41,6 +42,7 @@ export class MyHammerConfig extends HammerGestureConfig {
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
+    MatomoModule,
     ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [

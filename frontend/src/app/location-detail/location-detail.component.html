@@ -38,7 +38,7 @@
     </ul>
     <div class="location-buttons">
       <div *ngIf="labels['phone']">
-        <a [href]="'tel:' + labels['phone']" class="location-button">
+        <a [href]="'tel:' + labels['phone']" class="location-button" (click)="trackPoiAction('phone')">
           <button mat-fab>
             <mat-icon>phone</mat-icon>
           </button>
@@ -47,7 +47,7 @@
         </a>
       </div>
       <div *ngIf="labels['contact_email']">
-        <a [href]="'mailto:' + labels['contact_email']" class="location-button">
+        <a [href]="'mailto:' + labels['contact_email']" class="location-button" (click)="trackPoiAction('email')">
           <button mat-fab>
             <mat-icon>email</mat-icon>
           </button>
@@ -56,7 +56,7 @@
         </a>
       </div>
       <div *ngIf="labels['website']">
-        <a [href]="labels['website']" class="location-button" target="_blank">
+        <a [href]="labels['website']" class="location-button" target="_blank" (click)="trackPoiAction('website')">
           <button mat-fab>
             <mat-icon>public</mat-icon>
           </button>
@@ -71,12 +71,12 @@
     </div>
     <div class="details">
       <div class="details__link" *ngIf="osmlink">
-        <a [href]="osmlink" target="_blank">
+        <a [href]="osmlink" target="_blank" (click)="trackPoiAction('edit')">
           <mat-icon>edit</mat-icon>
           Eintrag bearbeiten</a>
       </div>
       <div class="details__link" *ngIf="permalink">
-        <a [href]="permalink" target="_blank">
+        <a [href]="permalink" target="_blank"  (click)="trackPoiAction('osm-link')">
           <mat-icon>link</mat-icon>
           {{permalink}}</a>
       </div>

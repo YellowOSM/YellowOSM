@@ -7,5 +7,7 @@ export const environment = {
   // Wikimedia
   tileServerURL: '//maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
   apiBaseUrl: 'https://www.yellowosm.com/api',
-  shortLinkBaseUrl: 'https://yosm.at'
+  shortLinkBaseUrl: 'https://yosm.at',
+  matomoBaseUrl: '//matomo.yosm.at/',
+  matomoWebsiteId: 1
 };

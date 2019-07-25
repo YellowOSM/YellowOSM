@@ -28,6 +28,8 @@ import {LocationDetailComponent} from '../location-detail/location-detail.compon
 import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppSettings} from '../app.settings';
+import {MatomoService} from '../matomo.service';
+
 
 @Component({
   selector: 'app-yellowmap',
@@ -71,7 +73,8 @@ export class YellowmapComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private matomoService: MatomoService
   ) {
   }
 
@@ -248,6 +251,7 @@ export class YellowmapComponent implements OnInit {
       });
 
       if (clickedFeature.feat) {
+        this.matomoService.trackPoiOpenFromMap(clickedFeature.feat);
         this.selectedFeature = clickedFeature.feat;
         const PADDING = 50;
         const center = this.map.getView().getCenter();
@@ -293,6 +297,8 @@ export class YellowmapComponent implements OnInit {
       this.searchFormControl.setValue(urlSearchTerm);
       this.searchElasticSearch();
     }
+
+    this.matomoService.trackPageView('Map');
   }
 
   public updateUrl() {
@@ -370,6 +376,11 @@ export class YellowmapComponent implements OnInit {
     const topLeft = toLonLat(getTopLeft(extent));
     const bottomRight = toLonLat(getBottomRight(extent));
 
+    if (clearResults) {
+      // this search is user-triggered
+      this.matomoService.trackSearch(this.searchFormControl.value);
+    }
+
     this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight).then((result) => {
       if (result !== null && result.hits.total > 0) {
         console.log(result['hits']['hits']);
@@ -430,6 +441,7 @@ export class YellowmapComponent implements OnInit {
   }
 
   public getLocation() {
+    this.matomoService.trackGeoLocation();
     this.geoLocation.setTracking(true);
     this.geoLocationLoading = true;
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -521,6 +533,7 @@ export class YellowmapComponent implements OnInit {
   }
 
   selectFeature($event: any) {
+    this.matomoService.trackPoiOpenFromList($event.event);
     this.selectedFeature = $event.event;
     this.esLayer.getSource().refresh();
   }
