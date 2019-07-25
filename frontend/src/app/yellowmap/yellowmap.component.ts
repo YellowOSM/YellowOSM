@@ -8,7 +8,7 @@ import OlXYZ from 'ol/source/XYZ';
 import OlTileLayer from 'ol/layer/Tile';
 import OlView from 'ol/View';
 import Geolocation from 'ol/Geolocation.js';
-import {Vector as VectorLayer} from 'ol/layer';
+import {Vector as VectorLayer, Heatmap as HeatmapLayer} from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import {GeoJSON} from 'ol/format';
 import {fromLonLat, toLonLat} from 'ol/proj';
@@ -46,6 +46,8 @@ export class YellowmapComponent implements OnInit {
   map: OlMap;
   source: OlXYZ;
   esLayer: VectorLayer;
+  heatmapLayer: HeatmapLayer;
+  showHeatmapLayer: Boolean = false;
   view: OlView;
   esSearchResult = [];
   esSource: VectorSource;
@@ -174,6 +176,17 @@ export class YellowmapComponent implements OnInit {
       strategy: bboxStrategy
     });
 
+    this.heatmapLayer = new HeatmapLayer({
+      source: this.esSource,
+      blur: 12,
+      radius: 12
+    });
+    this.heatmapLayer.setVisible(this.showHeatmapLayer);
+
+    this.esSource.on('addfeature', function (event) {
+      event.feature.set('weight', 2);
+    });
+
     this.geoLocation = new Geolocation({
       trackingOptions: {
         enableHighAccuracy: true
@@ -224,6 +237,7 @@ export class YellowmapComponent implements OnInit {
         layer,
         geoLayer,
         this.esLayer,
+        this.heatmapLayer,
       ],
       controls: [],
       view: this.view
@@ -536,5 +550,11 @@ export class YellowmapComponent implements OnInit {
     this.matomoService.trackPoiOpenFromList($event.event);
     this.selectedFeature = $event.event;
     this.esLayer.getSource().refresh();
+  }
+
+  toogleShowHeatmapLayer() {
+    this.showHeatmapLayer = !this.showHeatmapLayer;
+    this.heatmapLayer.setVisible(this.showHeatmapLayer);
+    this.esLayer.setVisible(!this.showHeatmapLayer);
   }
 }

@@ -31,6 +31,9 @@
     <mat-chip [color]="showOnlyOpenedLocations ? 'accent': 'standard'" selected
               (click)="toogleOpenedLocations()">jetzt geöffnet
     </mat-chip>
+    <mat-chip [color]="showHeatmapLayer ? 'accent': 'standard'" selected
+              (click)="toogleShowHeatmapLayer()">Heatmap
+    </mat-chip>
   </mat-chip-list>
 
   <div class="map__wrapper">
