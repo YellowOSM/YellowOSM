@@ -395,7 +395,7 @@ export class YellowmapComponent implements OnInit {
       this.matomoService.trackSearch(this.searchFormControl.value);
     }
 
-    this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight).then((result) => {
+    this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight, this.showHeatmapLayer ? 1000 : 200).then((result) => {
       if (result !== null && result.hits.total > 0) {
         console.log(result['hits']['hits']);
         this.esSearchResult = result['hits']['hits'];

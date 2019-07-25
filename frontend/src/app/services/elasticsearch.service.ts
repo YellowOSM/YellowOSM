@@ -16,13 +16,13 @@ export class ElasticsearchService {
 
   private client: Client;
 
-  private static getCommonFullTextQueryBody(userQuery: string) {
+  private static getCommonFullTextQueryBody(userQuery: string, size: number = 200) {
     return {
       index: environment.elasticSearchIndex,
       type: '_doc',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
-        'size': 200,
+        'size': size,
         'query': {
           'bool': {
             'should': [
@@ -72,8 +72,8 @@ export class ElasticsearchService {
     });
   }
 
-  public fullTextBoundingBoxSearch(userQuery: string, topLeft: any, bottomRight: any) {
-    const esQuery = ElasticsearchService.getCommonFullTextQueryBody(userQuery);
+  public fullTextBoundingBoxSearch(userQuery: string, topLeft: any, bottomRight: any, size: number = 200) {
+    const esQuery = ElasticsearchService.getCommonFullTextQueryBody(userQuery, size);
     esQuery.body.query.bool['filter'] = {
       'geo_bounding_box': {
         'location': {
