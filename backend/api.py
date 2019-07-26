@@ -2,7 +2,9 @@ import time
 import json
 import logging
 import os
+import urllib.parse
 
+import requests
 import responder
 from dotenv import load_dotenv
 
@@ -14,8 +16,16 @@ log.setLevel('DEBUG')
 load_dotenv()
 SHORT_URL_REDIRECT_URL = os.getenv("SHORT_URL_REDIRECT_URL")
 DEFAULT_ZOOM_LEVEL = os.getenv("DEFAULT_ZOOM_LEVEL", default=19)
+DEBUG = os.getenv("DEBUG", default=False)
+ES_URL = os.getenv("ES_URL")
+ES_INDEX = os.getenv("ES_INDEX", default='yosm')
+
+log.debug("debug: " + DEBUG)
+log.debug("short url: " + SHORT_URL_REDIRECT_URL)
 
 api = responder.API(
+    debug=DEBUG,
+    version="0.1b",
     cors=True,
     cors_params={"allow_origins": ["*"], "allow_methods": ["*"], "allow_headers": ["*"]},
 )
@@ -121,5 +131,102 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     resp.headers['Location'] = redir_url
 
 
+@api.route("/api/get_url/{url}")
+async def get_url(req, resp, *, url):
+    if not url.startswith("http"):
+        url = "http://" + url
+    r = requests.get(url)
+    resp.status_code = r.status_code
+    resp.text = "got {}".format(url) + "\n" + r.text
+
+
+@api.route("/api/search/{query}")
+@api.route("/api/search/{query}/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}")
+async def query_elastic_search(req, resp, *,
+    query, top_left_lat, top_left_lon, bottom_right_lat, bottom_right_lon):
+
+    """search elastic search index for 'query'.
+    add top left and bottom right coordinates to limit the results to
+    geo-coordinates
+    """
+    # ES_URL and ES_INDEX from settings env
+    url = ES_URL + "/" + ES_INDEX + "/_search"
+    log.info('es index: ' + ES_INDEX)
+
+    es_filter = None
+    if top_left_lat:
+        es_filter = {
+                        "geo_bounding_box": {
+                          "location": {
+                            "top_left": {
+                              "lat": float(top_left_lat),
+                              "lon": float(top_left_lon)
+                            },
+                            "bottom_right": {
+                              "lat": float(bottom_right_lat),
+                              "lon": float(bottom_right_lon)
+                            }
+                        }
+                      }
+                    }
+
+    es_query = json.dumps(
+        {
+        "size": 300,
+        "query": {
+          "bool": {
+            "should": [
+              {
+                "query_string":
+                  {
+                    "query": urllib.parse.unquote(query.strip()) + "*",
+                    "default_operator": "AND",
+                    "fields": [
+                        'labels.name^5',
+                        'description^50',
+                        #   // 'labels.website^3',
+                        #   // 'labels.contact_website',
+                        #   // 'labels.addr_street',
+                        'labels.addr_city',
+                        'labels.amenity',
+                        'labels.craft',
+                        'labels.emergency',
+                        'labels.healthcare',
+                        'labels.healthcare_speciality',
+                        'labels.leisure',
+                        'labels.shop',
+                        'labels.sport',
+                        'labels.tourism',
+                        'labels.vending'
+                    ]
+                  }
+              }
+              ],
+              "minimum_should_match": 1,
+              "filter":  es_filter
+          }
+        }
+      }
+    )
+
+    log.info(url)
+    log.info(es_query)
+    r = requests.get(url, data=es_query, headers={'Content-Type': 'application/json'})
+
+    log.info("status code: " + str(r.status_code))
+    log.info(r.text[:200])
+
+    resp.status_code = r.status_code
+
+    result = []
+    for hit in json.loads(r.text)['hits']['hits']:
+        loc = {'location': {'lat': hit['_source']['location'][1],
+                            'lon': hit['_source']['location'][0]}}
+        result.append({**hit['_source']['labels'], **loc})
+
+    log.info(result)
+    resp.media = result
+
+
 if __name__ == '__main__':
-    api.run()
+    api.run(debug=DEBUG)
