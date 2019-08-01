@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # pbffile="/tmp/austria-current.osm.pbf"
-WORKOSM_DIR="/tmp/osmosis/"
+WORKOSM_DIR="/root/osmosis_workdir/"
 
 export PGHOST=127.0.0.1
 export PGPORT=5432
