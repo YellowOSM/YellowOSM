@@ -144,7 +144,6 @@ node,way   wifi                text  linear
 node,way   internet_access     text  linear
 node,way   diet:vegan          text  linear
 node,way   diet:vegetarian     text  linear
-node,way   takeaway            text  linear
 node,way   wikipedia           text  linear
 node,way   wikidata            text  linear
 node,way   collection_times    text  linear

@@ -76,10 +76,12 @@ labels = [ # order important!
     "internet_access",
     "diet_vegan",
     "diet_vegetarian",
-    "takeaway",
     "wikipedia",
     "wikidata",
     "collection_times",
+    "place",
+    "takeaway",
+    "delivery"
 ]
 
 translated_info = {
@@ -313,6 +315,9 @@ yosm_types = {
     },
     'office': {
         'type': 'office',
+    }
+    'place': {
+        'type': 'place',
     }
 }
 

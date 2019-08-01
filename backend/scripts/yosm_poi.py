@@ -52,7 +52,6 @@ class YOSM_POI():
                         continue
 
                     if self.label_dict[osmtype] in yosm_types[osmtype] and \
-                        self.label_dict[osmtype] in yosm_types[osmtype] and \
                         'type' in yosm_types[osmtype][self.label_dict[osmtype]]:
 
                         # print("label_dict: " + label_dict[osmtype]) # hotel, pharmacy

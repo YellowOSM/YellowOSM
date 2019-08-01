@@ -245,12 +245,21 @@ export_emergency = { "key": "emergency",
                             "defibrillator",
                             ]
                }
+export_place = { "key": "place",
+                    "values":
+                       [
+                       "city",
+                       "town",
+                       "village",
+                       ]
+                 }
 
 classes_to_export = [
     export_amenity,
     export_leisure, # leave this in here, even if it's also a special_access_classes element
     export_atm,
     export_healthcare,
+    export_city,
     ]
 any_classes = [export_shop, export_tourism, export_craft, export_office]
 special_access_classes = [export_leisure,]
