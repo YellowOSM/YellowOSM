@@ -259,7 +259,7 @@ classes_to_export = [
     export_leisure, # leave this in here, even if it's also a special_access_classes element
     export_atm,
     export_healthcare,
-    export_city,
+    export_place,
     ]
 any_classes = [export_shop, export_tourism, export_craft, export_office]
 special_access_classes = [export_leisure,]
