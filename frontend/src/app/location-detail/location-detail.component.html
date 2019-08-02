@@ -37,6 +37,15 @@
       <li *ngIf="labels['address']">{{ labels['address'] }}</li>
     </ul>
     <div class="location-buttons">
+      <div>
+        <a [href]="'https://map.project-osrm.org/?loc=' + latLonStr + '&hl=de'" class="location-button" (click)="trackPoiAction('navigate')">
+          <button mat-fab>
+            <mat-icon>navigation</mat-icon>
+          </button>
+          <div class="label--mobile">Route</div>
+          <a class="label--desktop">Route</a>
+        </a>
+      </div>
       <div *ngIf="labels['phone']">
         <a [href]="'tel:' + labels['phone']" class="location-button" (click)="trackPoiAction('phone')">
           <button mat-fab>

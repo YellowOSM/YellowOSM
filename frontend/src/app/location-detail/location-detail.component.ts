@@ -36,6 +36,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   locationType = '';
   locationSubType = '';
   labels: object = {};
+  latLonStr = '';
   opening_hours = '';
   open_now = undefined;
   open_next = undefined;
@@ -70,6 +71,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     this.locationSubType = this.selectedFeature.values_.locationSubType;
     this.labels = this.selectedFeature.values_.labels;
     const lonLat = toLonLat(this.selectedFeature.getGeometry().getCoordinates());
+    this.latLonStr = lonLat[1] + '%2C' + lonLat[0];
     this.permalink = this.getPermalink(lonLat);
     this.osmlink = this.getOsmLink();
     this.parseOpeningHours();
