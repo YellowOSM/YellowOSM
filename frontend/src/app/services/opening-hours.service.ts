@@ -7,31 +7,43 @@ import * as opening_hours from 'opening_hours';
 export class OpeningHoursService {
 
   DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  today = new Date()
+  tomorrow = new Date(this.today.getTime() + (24 * 60 * 60 * 1000));
 
   constructor() {
   }
 
-  getOpenNow(hours_string: string) {
+  getOpenNow(hours_string: string, country_code="at") {
     if (!hours_string) {
       return false;
     }
-    const oh = new opening_hours(hours_string, null, {'locale': 'de'});
-    // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
+    const nominatim_object =  {
+      "address": {
+        "country_code": country_code
+      }
+    };
+    const oh = new opening_hours(hours_string, nominatim_object, {'locale': 'de'});
+    // TODO: pass correct country code
     return oh.getState();
   }
 
-  getOpenNowAndNext(hours_string: string) {
+  getOpenNowAndNext(hours_string: string, country_code="at") {
     if (!hours_string) {
       return {
         open_now: undefined,
         open_next: undefined
       };
     }
-    const oh = new opening_hours(hours_string, null);
-    // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
+    const nominatim_object =  {
+      "address": {
+        "country_code": country_code
+      }
+    };
+    const oh = new opening_hours(hours_string, nominatim_object);
+    // TODO: pass correct country code
 
     const open_next = oh.getNextChange();
-    const open_next_text = this.DAYS[open_next.getDay()] + ', ' + this.addZero(open_next.getHours()) + ':' +
+    const open_next_text = this.getNextOpenDay(open_next) + this.addZero(open_next.getHours()) + ':' +
       this.addZero(open_next.getMinutes());
 
     return {
@@ -51,6 +63,22 @@ export class OpeningHoursService {
         .replace('PH', 'Feiertag')
         .replace(',', ', ')
     };
+  }
+
+  private getNextOpenDay(open_next) {
+    if (this.isSameDay(open_next, this.today)) {
+      return 'heute um ';
+    }
+    if (this.isSameDay(open_next, this.tomorrow)) {
+      return 'morgen um ';
+    }
+    return this.DAYS[open_next.getDay()] + ', ';
+  }
+
+  private isSameDay(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
   }
 
   private addZero(i) {
