@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 import responder
 from dotenv import load_dotenv
+import geoip2.database
 
 from lib.geo58 import Geo58
 
@@ -143,10 +144,19 @@ async def get_url(req, resp, *, url):
 @api.route("/api/locate_ip")
 async def locate_user_ip(req, resp):
     log.info("client: " + str(req._starlette.client[0]))
+    geoip = geoip2.database.Reader('./lib/geoip/GeoLite2-City.mmdb')
+
     client = str(req._starlette.client[0])
     forw_for = req.headers['x-forwarded-for'] if 'x-forwarded-for' in req.headers else client
     remote_client = forw_for.split(",")[0]
-    resp.media = {"ip": str(remote_client)}
+    try:
+        geoip_resp = geoip.city(remote_client)
+        lat, lon = geoip_resp.location.latitude, geoip_resp.location.longitude
+    except geoip2.errors.AddressNotFoundError:
+        lat, lon = 47.07070, 15.43950
+    geoip.close()
+
+    resp.media = {"ip": str(remote_client), "lat": lat, "lon": lon}
     return resp.media
 
 @api.route("/api/search/{query}")
