@@ -139,7 +139,7 @@ async def get_url(req, resp, *, url):
     resp.status_code = r.status_code
     resp.text = "got {}".format(url) + "\n" + r.text
 
-import q
+# import q
 @api.route("/api/locate_ip")
 async def locate_user_ip(req, resp):
     log.info("client: " + str(req._starlette.client[0]))
