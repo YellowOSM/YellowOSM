@@ -139,6 +139,11 @@ async def get_url(req, resp, *, url):
     resp.status_code = r.status_code
     resp.text = "got {}".format(url) + "\n" + r.text
 
+@api.route("/api/locate_ip")
+async def locate_user_ip(req, resp):
+    log.info("client: " + str(req._starlette.client[0]))
+    resp.media = {"ip": str(req._starlette.client[0])}
+    return resp.media
 
 @api.route("/api/search/{query}")
 @api.route("/api/search/{query}/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}")
