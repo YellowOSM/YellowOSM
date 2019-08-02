@@ -139,12 +139,14 @@ async def get_url(req, resp, *, url):
     resp.status_code = r.status_code
     resp.text = "got {}".format(url) + "\n" + r.text
 
-# import q
+
 @api.route("/api/locate_ip")
 async def locate_user_ip(req, resp):
     log.info("client: " + str(req._starlette.client[0]))
-    resp.media = {"ip": str(req._starlette.client[0]), **req.headers}
-    # q.d()
+    client = str(req._starlette.client[0])
+    forw_for = req.headers['x-forwarded-for'] if 'x-forwarded-for' in req.headers else client
+    remote_client = forw_for.split(",")[0]
+    resp.media = {"ip": str(remote_client)}
     return resp.media
 
 @api.route("/api/search/{query}")
