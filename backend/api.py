@@ -38,20 +38,6 @@ def hello_world(req, resp):
     resp.text = "Hello World!"
 
 
-@api.route("/api/hello/{user}")
-@api.route("/api/hello/{user}/json")
-def hello_json(req, resp, *, user):
-    user = user.strip("/")
-    resp.media = {"hello": user}
-
-
-@api.route("/api/error")
-def error(req, resp):
-    resp.headers['X-Answer'] = '42'
-    resp.status_code = 415
-    resp.text = "ooops"
-
-
 @api.route("/api/expensive-task")
 async def handle_task(req, resp):
     @api.background.task
@@ -143,6 +129,11 @@ async def get_url(req, resp, *, url):
 
 @api.route("/api/locate_ip")
 async def locate_user_ip(req, resp):
+    resp.media = _locate_user_ip(req)
+    return resp.media
+
+
+def _locate_user_ip(req):
     log.info("client: " + str(req._starlette.client[0]))
     geoip = geoip2.database.Reader('./lib/geoip/GeoLite2-City.mmdb')
 
@@ -156,8 +147,19 @@ async def locate_user_ip(req, resp):
         lat, lon = 47.07070, 15.43950
     geoip.close()
 
-    resp.media = {"ip": str(remote_client), "lat": lat, "lon": lon}
-    return resp.media
+    data = {"ip": str(remote_client), "lat": lat, "lon": lon}
+    return data
+
+
+@api.route("/api/forward_located_ip")
+async def locate_user_ip(req, resp):
+    data = _locate_user_ip(req)
+
+    redir_url = SHORT_URL_REDIRECT_URL.format(zoom=13, x=data['lat'], y=data['lon'])
+    log.debug("redirect to --> %s", redir_url)
+    resp.status_code = 302
+    resp.headers['Location'] = redir_url
+
 
 @api.route("/api/search/{query}")
 @api.route("/api/search/{query}/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}")
