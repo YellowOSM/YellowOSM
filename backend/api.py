@@ -143,13 +143,12 @@ def _locate_user_ip(req):
     try:
         geoip_resp = geoip.city(remote_client)
         lat, lon = geoip_resp.location.latitude, geoip_resp.location.longitude
+        # redirect users outside of DACH to Graz
+        if geoip_resp.country.iso_code not in ["AT", "DE", "CH", "LI"]:
+            lat, lon = 47.07070, 15.43950
     except geoip2.errors.AddressNotFoundError:
         lat, lon = 47.07070, 15.43950
     geoip.close()
-
-    # redirect users outside of DACH to Graz
-    if geoip_resp.country.iso_code not in ["AT", "DE", "CH"]:
-        lat, lon = 47.07070, 15.43950
 
     data = {"ip": str(remote_client), "lat": lat, "lon": lon}
     return data
