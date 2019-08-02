@@ -147,11 +147,15 @@ def _locate_user_ip(req):
         lat, lon = 47.07070, 15.43950
     geoip.close()
 
+    # redirect users outside of DACH to Graz
+    if geoip_resp.country.iso_code not in ["AT", "DE", "CH"]:
+        lat, lon = 47.07070, 15.43950
+
     data = {"ip": str(remote_client), "lat": lat, "lon": lon}
     return data
 
 
-@api.route("/api/forward_located_ip")
+@api.route("/api/forward_ip")
 async def locate_user_ip(req, resp):
     data = _locate_user_ip(req)
 
