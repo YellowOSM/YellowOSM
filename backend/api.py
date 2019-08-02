@@ -127,12 +127,6 @@ async def get_url(req, resp, *, url):
     resp.text = "got {}".format(url) + "\n" + r.text
 
 
-@api.route("/api/locate_ip")
-async def locate_user_ip(req, resp):
-    resp.media = _locate_user_ip(req)
-    return resp.media
-
-
 def _locate_user_ip(req):
     log.info("client: " + str(req._starlette.client[0]))
     geoip = geoip2.database.Reader('./lib/geoip/GeoLite2-City.mmdb')
