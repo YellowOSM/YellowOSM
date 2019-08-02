@@ -38,6 +38,9 @@
 
   <div class="map__wrapper">
     <div id="map" class="map" #mapElement></div>
+    <button mat-mini-fab (click)="switchLayers()" class="map__layers-button">
+      <mat-icon aria-label="Kartendarstellung umschalten">layers</mat-icon>
+    </button>
     <button mat-fab (click)="getLocation()" class="map__location-button">
       <mat-icon aria-label="Position finden">gps_fixed</mat-icon>
     </button>
@@ -48,8 +51,7 @@
         in OSM ansehen
       </a>
     </div>
-    <div class="map__link map__contrib-link">
-      © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors
+    <div class="map__link map__contrib-link" [innerHTML]="activeMapAttribution">
     </div>
   </div>
 </div>

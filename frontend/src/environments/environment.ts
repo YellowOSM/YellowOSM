@@ -10,8 +10,11 @@ export const environment = {
   // no label standard tile
   // tileServerURL: '//tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png',
 
-  // Wikimedia
-  tileServerURL: '//maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+  tileServerURLs: [
+    {'label': 'Wikimedia', 'url': '//maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'attribution': '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'},
+    {'label': 'HOT', 'url': '//a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', 'attribution': '© TEST 1 <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'},
+    {'label': 'schwarz/weiß', 'url': '//a.tile.stamen.com/toner/{z}/{x}/{y}.png', 'attribution': '© TEST 2 <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'},
+  ],
 
   // bergfex (not sure if ok to use)
   // tileServerURL: '//maps.bergfex.at/osm/512px/{z}/{x}/{y}.jpg',

@@ -44,8 +44,11 @@ export class YellowmapComponent implements OnInit {
   filteredOptions: Observable<string[]>;
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
   map: OlMap;
-  source: OlXYZ;
   esLayer: VectorLayer;
+  allLayers = [];
+  osmLayers = [];
+  activeLayerIdx = 0;
+  activeMapAttribution = '';
   heatmapLayer: HeatmapLayer;
   showHeatmapLayer: Boolean = false;
   view: OlView;
@@ -86,12 +89,19 @@ export class YellowmapComponent implements OnInit {
       map(value => this._filterAutocomplete(value))
     );
 
-    this.source = new OlXYZ({
-      url: environment.tileServerURL,
-    });
-
-    const layer = new OlTileLayer({
-      source: this.source
+    environment.tileServerURLs.forEach((result, idx) => {
+      const layer = new OlTileLayer({
+        source: new OlXYZ({
+          url: result['url'],
+        })
+      });
+      this.osmLayers.push({layer: layer, label: result['label'], attribution: result['attribution']});
+      this.allLayers.push(layer);
+      if (idx) {
+        layer.setVisible(false);
+      } else {
+        this.activeMapAttribution = result['attribution']
+      }
     });
 
     this.view = new OlView({
@@ -175,6 +185,7 @@ export class YellowmapComponent implements OnInit {
       },
       strategy: bboxStrategy
     });
+    this.allLayers.push(this.esLayer);
 
     this.heatmapLayer = new HeatmapLayer({
       source: this.esSource,
@@ -182,6 +193,7 @@ export class YellowmapComponent implements OnInit {
       radius: 12
     });
     this.heatmapLayer.setVisible(this.showHeatmapLayer);
+    this.allLayers.push(this.heatmapLayer);
 
     this.esSource.on('addfeature', function (event) {
       event.feature.set('weight', 2);
@@ -230,15 +242,11 @@ export class YellowmapComponent implements OnInit {
         features: [accuracyFeature, positionFeature]
       })
     });
+    this.allLayers.push(geoLayer);
 
     this.map = new OlMap({
       target: 'map',
-      layers: [
-        layer,
-        geoLayer,
-        this.esLayer,
-        this.heatmapLayer,
-      ],
+      layers: this.allLayers,
       controls: [],
       view: this.view
     });
@@ -556,5 +564,23 @@ export class YellowmapComponent implements OnInit {
     this.showHeatmapLayer = !this.showHeatmapLayer;
     this.heatmapLayer.setVisible(this.showHeatmapLayer);
     this.esLayer.setVisible(!this.showHeatmapLayer);
+  }
+
+  switchLayers() {
+    this.matomoService.trackMapAction('layerSwitch');
+    this.activeLayerIdx = (this.activeLayerIdx + 1) % this.osmLayers.length;
+    this.osmLayers.forEach((layer, idx) => {
+      if (idx == this.activeLayerIdx) {
+        layer['layer'].setVisible(true);
+        this.activeMapAttribution = layer['attribution']
+        this.snackBar.open('Karte: ' + layer['label'], 'okay', {
+          duration: 1500,
+          verticalPosition: 'top',
+          panelClass: 'layer-switch-notification'
+        });
+      } else {
+        layer['layer'].setVisible(false);
+      }
+    })
   }
 }

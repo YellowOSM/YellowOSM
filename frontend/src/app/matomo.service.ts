@@ -41,6 +41,14 @@ export class MatomoService {
     )
   }
 
+  trackMapAction(actionType: string) {
+    this.matomoTracker.trackEvent(
+      'map',
+      'action',
+      actionType
+    )
+  }
+
   trackGeoLocation() {
     this.matomoTracker.trackEvent(
       'map',
