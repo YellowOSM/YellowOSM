@@ -4,6 +4,8 @@ import json
 import csv
 import argparse
 
+import reverse_geocode
+
 from yosm_poi import YOSM_POI
 
 csv.field_size_limit(100000000)
