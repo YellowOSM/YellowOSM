@@ -4,8 +4,6 @@ import json
 import csv
 import argparse
 
-import reverse_geocode
-
 from yosm_poi import YOSM_POI
 
 csv.field_size_limit(100000000)
@@ -338,11 +336,20 @@ def convert_line_to_json(line, osm_ids):
 
     if poi.yosm_type:
         if poi.yosm_subtype:
-            json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "subtype": poi.yosm_subtype, "description": poi.desc, "labels": poi.label_dict}) + "\n"
+            json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], \
+                "country_code": poi.country_code, "country": poi.country, \
+                "type": poi.yosm_type, "subtype": poi.yosm_subtype, \
+                "description": poi.desc, "labels": poi.label_dict}) + "\n"
         else:
-            json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "type": poi.yosm_type, "description": poi.desc, "labels": poi.label_dict}) + "\n"
+            json_line += json.dumps({"name": poi.name, \
+                "country_code": poi.country_code, "country": poi.country, \
+                "location": [poi.lon,poi.lat], "type": poi.yosm_type, \
+                "description": poi.desc, "labels": poi.label_dict}) + "\n"
     else:
-        json_line += json.dumps({"name": poi.name, "location": [poi.lon,poi.lat], "description": poi.desc, "labels": poi.label_dict}) + "\n"
+        json_line += json.dumps({"name": poi.name, \
+            "country_code": poi.country_code, "country": poi.country, \
+            "location": [poi.lon,poi.lat], \
+            "description": poi.desc, "labels": poi.label_dict}) + "\n"
 
     return json_line
 

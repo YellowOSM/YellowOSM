@@ -1,5 +1,8 @@
 """YOSM_POI YellowOSM POI class to hold and maniputlate OSM data"""
+import reverse_geocode
+
 from csv_labels import labels, translated_info, yosm_types, cuisine_replacements, healthcare_replacements, vending_replacements
+
 
 class YOSM_POI():
     def __init__(self, csv):
@@ -9,9 +12,13 @@ class YOSM_POI():
         self.lon = None
         self.yosm_type = None
         self.yosm_subtype = None
+        self.country = None
+        self.country_code = None
         self.label_dict = {}
         self._load_csv(csv)
         self._translate_poi()
+        self._estimate_and_set_country(self.lat, self.lon)
+
 
     def _load_csv(self, line):
         self.name = line[0]
@@ -245,3 +252,11 @@ class YOSM_POI():
             else:
                 str_temp.append(s.replace("_"," ").title())
         return(", ".join(str_temp))
+
+        
+    def _estimate_and_set_country(self, lat, lon):
+        """Estimate the country a POI is in and set it as property"""
+        data = reverse_geocode.search([(float(lat), float(lon))])
+        self.country = data[0]['country']
+        # print(data)
+        self.country_code = data[0]['country_code']
