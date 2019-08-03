@@ -80,6 +80,12 @@ export class LocationListComponent implements OnChanges, OnInit {
     }
   }
 
+  onPanToParent(event: any): void {
+    // propagate pan event to list container
+    console.log('onPanToParent');
+    this.onPan(event);
+  }
+
   emitSelectFeature(feature) {
     this.selectFeature.emit({event: feature});
   }

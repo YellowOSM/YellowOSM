@@ -4,7 +4,9 @@
      (scroll)="onScroll($event)"
 >
   <div *ngFor="let feature of scrollFeatures" class="location__list-detail"
-       (click)="emitSelectFeature(feature)">
+       (click)="emitSelectFeature(feature)"
+       (panmove)="onPanToParent($event)"
+    >
     <h1>{{ feature.values_.labels['name'] }}</h1>
     <div class="clear"></div>
     <div class="location__properties">
