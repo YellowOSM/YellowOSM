@@ -17,10 +17,10 @@
   &::before {
     content: "";
     display: block;
-    width: 40px;
-    margin: -10px auto 5px auto;
+    width: 45px;
+    margin: -8px auto;
     height: 3px;
-    border: 1px solid #ddd;
+    border: 1px solid $color-gray;
     background-color: #fff;
     border-radius: 10px;
 
@@ -50,6 +50,7 @@
 
 .location-drag-icons {
   float: right;
+  padding-top: 5px;
 
   mat-icon {
     font-size: 32px;
