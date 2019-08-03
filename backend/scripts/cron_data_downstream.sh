@@ -12,7 +12,7 @@ cd osm2pgsql
 bash ./cron_import_pbf.sh          >> $logfile 2>&1
 date >> $logfile 2>&1
 cd ..
-python3 ./export_osm_to_elasticsearch.py --split  >> $logfile 2>&1
+pipenv run python3 ./export_osm_to_elasticsearch.py --split  >> $logfile 2>&1
 date >> $logfile 2>&1
 # fail with dev index first :)
 bash ./elasticsearch_data_import.sh yosm_dev >> $logfile 2>&1
