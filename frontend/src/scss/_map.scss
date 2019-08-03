@@ -18,7 +18,7 @@
 .map__link {
   position: absolute;
   bottom: 0;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
   font-size: 12px;
   padding: 1px 5px;
 }
@@ -47,4 +47,50 @@
 
 .layer-switch-notification {
   margin-right: 100px !important;
+}
+
+.panels-hide-toggler {
+  display: none;
+  position: absolute;
+  left: 400px;
+  top: 110px;
+  z-index: 999;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  width: 25px;
+  height: 40px;
+  font-size: 35px;
+  cursor: pointer;
+  transition: left 0.25s ease-in-out;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+
+  &.deactivated {
+    display: none;
+  }
+
+  &.hidden {
+    left: 0;
+
+    mat-icon.hidden {
+      display: block;
+    }
+
+    mat-icon.visible {
+      display: none;
+    }
+  }
+
+  mat-icon.hidden {
+    display: none;
+  }
+
+  mat-icon.visible {
+    display: block;
+  }
 }

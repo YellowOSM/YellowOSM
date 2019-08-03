@@ -56,10 +56,24 @@
   </div>
 </div>
 
-<app-location-list [features]="features" [selectedFeature]="selectedFeature"
-                   (selectFeature)="selectFeature($event)"
+<div
+  [class]="getPanelsHideToggleClasses()"
+  (click)="toggleHidePanels()"
+>
+  <mat-icon class="hidden">chevron_right</mat-icon>
+  <mat-icon class="visible">chevron_left</mat-icon>
+</div>
+
+<app-location-list
+  [features]="features"
+  [selectedFeature]="selectedFeature"
+  (selectFeature)="selectFeature($event)"
+  [hidePanels]="hidePanels"
 ></app-location-list>
 
-<app-location-detail [selectedFeature]="selectedFeature" (closeFeature)="closeFeature($event)"
+<app-location-detail
+  [selectedFeature]="selectedFeature"
+  [hidePanels]="hidePanels"
+  (closeFeature)="closeFeature($event)"
 ></app-location-detail>
 

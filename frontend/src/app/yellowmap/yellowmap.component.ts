@@ -64,6 +64,7 @@ export class YellowmapComponent implements OnInit {
   mapElement: ElementRef;
   @ViewChild('toolbarElement', {read: ElementRef, static: true})
   toolbarElement: ElementRef;
+  hidePanels = false;
 
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
@@ -582,5 +583,20 @@ export class YellowmapComponent implements OnInit {
         layer['layer'].setVisible(false);
       }
     })
+  }
+
+  toggleHidePanels() {
+    this.hidePanels = !this.hidePanels;
+  }
+
+  getPanelsHideToggleClasses() {
+    let classNames = 'panels-hide-toggler mat-elevation-z3';
+    if (!this.features || !this.features.length) {
+      return classNames + ' deactivated';
+    }
+    if (!this.hidePanels) {
+      return classNames;
+    }
+    return classNames + ' hidden'
   }
 }

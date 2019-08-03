@@ -24,6 +24,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   ];
 
   @Input() selectedFeature: Feature = null;
+  @Input() hidePanels;
   @Output() closeFeature = new EventEmitter<string>();
 
   BOTTOM_OFFSET = 100;
@@ -151,10 +152,20 @@ export class LocationDetailComponent implements OnInit, OnChanges {
 
     event.preventDefault();
     this.topPos = Math.max(this.BOTTOM_OFFSET, this.topStartPos + event.deltaY);
-    this.topPos = Math.min(window.innerHeight - this.BOTTOM_OFFSET, this.topPos);
+    this.topPos = Math.min(window.innerHeight - AppSettings.MIN_BOTTOM_OFFSET, this.topStartPos + event.deltaY);
   }
 
   trackPoiAction(actionType: string) {
     this.matomoService.trackPoiAction(actionType);
+  }
+
+  getClasses() {
+    let className = 'location__detail';
+    if (!this.hidePanels && this.selectedFeature) {
+      className += ' visible';
+    } else {
+      className += ' hidden';
+    }
+    return className;
   }
 }

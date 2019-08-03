@@ -1,12 +1,16 @@
-<div [class]="getClasses()" *ngIf="features && features.length > 0 && !selectedFeature" [style.top.px]="topPos"
-     (panstart)="onPanStart($event)"
-     (panmove)="onPan($event)"
-     (scroll)="onScroll($event)"
+<div
+  [class]="getClasses()"
+  [style.top.px]="topPos"
+  (panstart)="onPanStart($event)"
+  (panmove)="onPan($event)"
+  (scroll)="onScroll($event)"
 >
-  <div *ngFor="let feature of scrollFeatures" class="location__list-detail"
-       (click)="emitSelectFeature(feature)"
-       (panmove)="onPanToParent($event)"
-    >
+  <div
+    class="location__list-detail"
+    *ngFor="let feature of scrollFeatures"
+    (click)="emitSelectFeature(feature)"
+    (panmove)="onPanToParent($event)"
+  >
     <h1>{{ feature.values_.labels['name'] }}</h1>
     <div class="clear"></div>
     <div class="location__properties">

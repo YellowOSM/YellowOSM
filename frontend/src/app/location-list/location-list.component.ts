@@ -11,6 +11,7 @@ import {OpeningHoursService} from '../services/opening-hours.service';
 export class LocationListComponent implements OnChanges, OnInit {
   @Input() selectedFeature: Feature = null;
   @Input() features: Feature[] = [];
+  @Input() hidePanels;
   @Output() selectFeature = new EventEmitter();
 
   INITIAL_BOTTOM_OFFSET = 250;
@@ -40,7 +41,7 @@ export class LocationListComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.features && this.features.length > 0) {
-      this.scrollFeatures = this.features.slice(0, (window.innerWidth < 768) ? this.LOAD_OFFSET_ITEMS : this.LOAD_OFFSET_ITEMS + 15);
+      this.scrollFeatures = this.features.slice(0, (window.innerWidth < AppSettings.BREAKPOINT_DESKTOP) ? this.LOAD_OFFSET_ITEMS : this.LOAD_OFFSET_ITEMS + 15);
       this.scrollFeatures.forEach((feature) => {
         feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
       });
@@ -53,7 +54,18 @@ export class LocationListComponent implements OnChanges, OnInit {
   }
 
   public getClasses() {
-    return this.scrolling ? 'location__list scrolling' : 'location__list';
+    let className = 'location__list';
+    if (!this.hidePanels && this.features && this.features.length > 0) {
+      if (this.scrolling) {
+        className += ' scrolling';
+      }
+      if (this.selectedFeature && window.innerWidth < AppSettings.BREAKPOINT_DESKTOP) {
+        className += ' hidden';
+      }
+    } else {
+      className += ' hidden';
+    }
+    return className;
   }
 
   onPanStart(event: any): void {

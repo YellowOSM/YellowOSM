@@ -1,5 +1,8 @@
-<div class="location__detail" *ngIf="selectedFeature" [style.top.px]="topPos"
-     (panstart)="onPanStart($event)" (panmove)="onPan($event)">
+<div
+  [class]=getClasses()
+  [style.top.px]="topPos"
+  (panstart)="onPanStart($event)"
+  (panmove)="onPan($event)">
   <div class="location-drag-icons">
     <mat-icon class="location__icon--mobile" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
     <mat-icon class="location__icon--desktop" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
@@ -38,7 +41,8 @@
     </ul>
     <div class="location-buttons">
       <div>
-        <a [href]="'https://map.project-osrm.org/?loc=' + latLonStr + '&hl=de'" class="location-button" (click)="trackPoiAction('navigate')">
+        <a [href]="'https://map.project-osrm.org/?loc=' + latLonStr + '&hl=de'" class="location-button"
+           (click)="trackPoiAction('navigate')">
           <button mat-fab>
             <mat-icon>navigation</mat-icon>
           </button>
@@ -85,7 +89,7 @@
           Eintrag bearbeiten</a>
       </div>
       <div class="details__link" *ngIf="permalink">
-        <a [href]="permalink" target="_blank"  (click)="trackPoiAction('osm-link')">
+        <a [href]="permalink" target="_blank" (click)="trackPoiAction('osm-link')">
           <mat-icon>link</mat-icon>
           {{permalink}}</a>
       </div>
