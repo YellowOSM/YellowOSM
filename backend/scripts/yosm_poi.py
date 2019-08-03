@@ -187,6 +187,10 @@ class YOSM_POI():
             city = self.label_dict['addr_city']
         else:
             city = ""
+        # if 'addr_country' in self.label_dict:
+        #     country = self.label_dict['addr_country']
+        # else:
+        #     country = ""
 
         # unit is optional
         self.label_dict['address'] = (street or place) + \
@@ -253,10 +257,9 @@ class YOSM_POI():
                 str_temp.append(s.replace("_"," ").title())
         return(", ".join(str_temp))
 
-        
+
     def _estimate_and_set_country(self, lat, lon):
         """Estimate the country a POI is in and set it as property"""
-        data = reverse_geocode.search([(float(lat), float(lon))])
-        self.country = data[0]['country']
-        # print(data)
-        self.country_code = data[0]['country_code']
+        if 'addr_country' not in self.label_dict:
+            data = reverse_geocode.search([(float(lat), float(lon))])
+            self.label_dict['addr_country'] = data[0]['country_code']

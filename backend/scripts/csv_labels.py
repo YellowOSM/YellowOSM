@@ -19,6 +19,7 @@ labels = [ # order important!
     "addr_housename",
     "addr_housenumber",
     "addr_postcode",
+    "addr_country",
     "addr_unit",
     "addr_interpolation",
     "opening_hours",
