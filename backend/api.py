@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import urllib.parse
+import sys
 
 import requests
 import responder
@@ -11,18 +12,19 @@ import geoip2.database
 
 from lib.geo58 import Geo58
 
-log = logging.getLogger(__name__)
-log.setLevel('DEBUG')
+logger = logging.getLogger("api")
+
+
+# logger.setLevel(logging.DEBUG)
+# with no handlers:
+logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
 load_dotenv()
+DEBUG = os.getenv("DEBUG", default=False)
 SHORT_URL_REDIRECT_URL = os.getenv("SHORT_URL_REDIRECT_URL")
 DEFAULT_ZOOM_LEVEL = os.getenv("DEFAULT_ZOOM_LEVEL", default=19)
-DEBUG = os.getenv("DEBUG", default=False)
 ES_URL = os.getenv("ES_URL")
 ES_INDEX = os.getenv("ES_INDEX", default='yosm')
-
-log.debug("debug: " + DEBUG)
-log.debug("short url: " + SHORT_URL_REDIRECT_URL)
 
 api = responder.API(
     debug=DEBUG,
@@ -30,6 +32,13 @@ api = responder.API(
     cors=True,
     cors_params={"allow_origins": ["*"], "allow_methods": ["*"], "allow_headers": ["*"]},
 )
+
+
+logger.info("debug: " + DEBUG)
+if DEBUG:
+    logger.setLevel('DEBUG')
+logger.debug("short url: " + SHORT_URL_REDIRECT_URL)
+
 
 
 @api.route("/api/")
@@ -65,7 +74,7 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
     try:
         g58 = Geo58(zoom=zoom, lat=x, lon=y.strip(' /'))
     except Geo58.Geo58Exception as ex:
-        log.debug("Error: coords_to_geo58: Not Acceptable: coordinates invalid. [%s]", ex)
+        logger.debug("Error: coords_to_geo58: Not Acceptable: coordinates invalid. [%s]", ex)
         resp.status_code = 406
         resp.text = "Error: Not Acceptable: coordinates invalid. [{}]".format(ex)
         return
@@ -76,7 +85,7 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     try:
         g58 = Geo58(g58=geo58_str)
     except Geo58.Geo58Exception as ex:
-        log.debug("Error: geo58_to_coords: invalid short code: %s", ex)
+        logger.debug("Error: geo58_to_coords: invalid short code: %s", ex)
         resp.status_code = 400
         resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
         return
@@ -88,7 +97,7 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
 async def convertGeo58ToCoordsEmpty(req, resp):
     """redirect to map without coords"""
     redir_url = '/'.join(SHORT_URL_REDIRECT_URL.split('/')[:-3])
-    log.debug("redirect to --> %s", redir_url)
+    logger.debug("redirect to --> %s", redir_url)
     resp.status_code = 301
     resp.headers['Location'] = redir_url
 
@@ -102,18 +111,18 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     try:
         g58 = Geo58(g58=geo58)
     except Geo58.Geo58Exception as ex:
-        log.debug("redirect_geo58: invalid short code: %s", ex)
+        logger.debug("redirect_geo58: invalid short code: %s", ex)
         resp.status_code = 400
         resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
         return
     zoom, x, y = g58.get_coordinates()
     zoom = DEFAULT_ZOOM_LEVEL if zoom == 20 else zoom
     if not SHORT_URL_REDIRECT_URL:
-        log.error("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
+        logger.error("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
         raise ValueError("ERROR: no short url redirect url found! (add SHORT_URL_REDIRECT_URL to env)")
-    log.debug((SHORT_URL_REDIRECT_URL, zoom, x, y, appendix))
+    logger.debug((SHORT_URL_REDIRECT_URL, zoom, x, y, appendix))
     redir_url = SHORT_URL_REDIRECT_URL.format(zoom=zoom, x=x, y=y) + appendix
-    log.debug("redirect to --> %s", redir_url)
+    logger.debug("redirect to --> %s", redir_url)
     resp.status_code = 302
     resp.headers['Location'] = redir_url
 
@@ -128,7 +137,7 @@ async def get_url(req, resp, *, url):
 
 
 def _locate_user_ip(req):
-    log.info("client: " + str(req._starlette.client[0]))
+    logger.info("client: " + str(req._starlette.client[0]))
     geoip = geoip2.database.Reader('./lib/geoip/GeoLite2-City.mmdb')
 
     client = str(req._starlette.client[0])
@@ -153,7 +162,7 @@ async def locate_user_ip(req, resp):
     data = _locate_user_ip(req)
 
     redir_url = SHORT_URL_REDIRECT_URL.format(zoom=13, x=data['lat'], y=data['lon'])
-    log.debug("redirect to --> %s", redir_url)
+    logger.debug("redirect to --> %s", redir_url)
     resp.status_code = 302
     resp.headers['Location'] = redir_url
 
@@ -169,24 +178,30 @@ async def query_elastic_search(req, resp, *,
     """
     # ES_URL and ES_INDEX from settings env
     url = ES_URL + "/" + ES_INDEX + "/_search"
-    log.info('es index: ' + ES_INDEX)
+    logger.info('es index: ' + ES_INDEX)
+
+    logger.info(top_left_lat)
+    if not top_left_lat:
+        logger.info("no bbox given")
+        # DACH region:
+        top_left_lat, top_left_lon = 55.05918,  5.01902
+        bottom_right_lat, bottom_right_lon = 45.98486, 17.25582
 
     es_filter = None
-    if top_left_lat:
-        es_filter = {
-                        "geo_bounding_box": {
-                          "location": {
-                            "top_left": {
-                              "lat": float(top_left_lat),
-                              "lon": float(top_left_lon)
-                            },
-                            "bottom_right": {
-                              "lat": float(bottom_right_lat),
-                              "lon": float(bottom_right_lon)
-                            }
+    es_filter = {
+                    "geo_bounding_box": {
+                      "location": {
+                        "top_left": {
+                          "lat": float(top_left_lat),
+                          "lon": float(top_left_lon)
+                        },
+                        "bottom_right": {
+                          "lat": float(bottom_right_lat),
+                          "lon": float(bottom_right_lon)
                         }
-                      }
                     }
+                  }
+                }
 
     es_query = json.dumps(
         {
@@ -227,12 +242,12 @@ async def query_elastic_search(req, resp, *,
       }
     )
 
-    log.info(url)
-    log.info(es_query)
+    logger.info(url)
+    logger.info(es_query)
     r = requests.get(url, data=es_query, headers={'Content-Type': 'application/json'})
 
-    log.info("status code: " + str(r.status_code))
-    log.info(r.text[:200])
+    logger.info("status code: " + str(r.status_code))
+    logger.info(r.text[:200])
 
     resp.status_code = r.status_code
 
@@ -242,7 +257,7 @@ async def query_elastic_search(req, resp, *,
                             'lon': hit['_source']['location'][0]}}
         result.append({**hit['_source']['labels'], **loc})
 
-    log.info(result)
+    logger.info(result)
     resp.media = result
 
 
