@@ -23,7 +23,6 @@ export class OpeningHoursService {
       }
     };
     const oh = new opening_hours(hours_string, nominatim_object, {'locale': 'de'});
-    // TODO: pass correct country code
     return oh.getState();
   }
 
@@ -40,8 +39,6 @@ export class OpeningHoursService {
       }
     };
     const oh = new opening_hours(hours_string, nominatim_object);
-    // TODO: pass correct country code
-
     const open_next = oh.getNextChange();
     const open_next_text = this.getNextOpenDay(open_next) + this.addZero(open_next.getHours()) + ':' +
       this.addZero(open_next.getMinutes());

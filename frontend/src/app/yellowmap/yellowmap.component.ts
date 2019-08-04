@@ -37,7 +37,6 @@ import {MatomoService} from '../matomo.service';
   styleUrls: ['./yellowmap.component.scss']
 })
 export class YellowmapComponent implements OnInit {
-  DEBUG = Boolean(false && environment.localDevEnv);
   features = [];
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
@@ -121,8 +120,10 @@ export class YellowmapComponent implements OnInit {
         that.esSearchResult.forEach(result => {
           if (that.showOnlyOpenedLocations) {
             try {
-              const oh = new opening_hours(result['_source']['labels']['opening_hours'], null);
-              // TODO: pass nominatim object instead of null, or set default location to Austria or the viewport
+              const oh = new opening_hours(
+                result['_source']['labels']['opening_hours'],
+                result['_source']['labels']['addr_country']
+              );
               if (!oh.getState()) {
                 return;
               }
@@ -146,7 +147,7 @@ export class YellowmapComponent implements OnInit {
             featurething.values_.labels.osm_id === that.selectedFeature.values_.labels.osm_id) {
             that.selectedFeature = featurething;
           }
-          if ((this.openFirstFeature || this.DEBUG) && !this.selectedFeature) {
+          if ((this.openFirstFeature) && !this.selectedFeature) {
             this.selectedFeature = featurething;
             this.openFirstFeature = false;
           }
@@ -305,12 +306,6 @@ export class YellowmapComponent implements OnInit {
     this.map.once('moveend', (evt) => {
       this.openNode();
     });
-
-    // DEBUG
-    if (this.DEBUG) {
-      this.searchFormControl.setValue('tribeka');
-      this.searchElasticSearch();
-    }
 
     const urlSearchTerm = this.route.snapshot.paramMap.get('q');
     if (urlSearchTerm) {
