@@ -96,10 +96,13 @@
 }
 
 .spinner-wrapper {
+  z-index: 99999;
+  position: absolute;
+  left: calc(50% - 50px);
+  top: 150px;
+  display: none;
+  
   &.active {
-    z-index: 99999;
-    position: absolute;
-    left: calc(50% - 50px);
-    top: 150px;
+    display: block;
   }
 }
