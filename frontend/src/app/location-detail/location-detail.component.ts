@@ -123,7 +123,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   private parseOpeningHours() {
     const hours = this.opening_hours_service.getOpenNowAndNext(this.selectedFeature.values_.labels['opening_hours'], this.selectedFeature.values_.labels['addr_country']);
     this.open_now = hours['open_now'];
-    this.open_next = hours['open_ next'];
+    this.open_next = hours['open_next'];
     this.opening_hours_pretty = hours['open_pretty'];
     this.opening_hours = this.selectedFeature.values_.labels['opening_hours'];
   }
@@ -151,6 +151,10 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     }
 
     event.preventDefault();
+    if (event.deltaY < 0 && this.topPos <= AppSettings.MIN_TOP_OFFSET) {
+      return;
+    }
+    
     this.topPos = Math.max(this.BOTTOM_OFFSET, this.topStartPos + event.deltaY);
     this.topPos = Math.min(window.innerHeight - AppSettings.MIN_BOTTOM_OFFSET, this.topStartPos + event.deltaY);
   }

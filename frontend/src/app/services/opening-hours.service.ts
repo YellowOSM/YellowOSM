@@ -42,6 +42,7 @@ export class OpeningHoursService {
     const open_next = oh.getNextChange();
     const open_next_text = this.getNextOpenDay(open_next) + this.addZero(open_next.getHours()) + ':' +
       this.addZero(open_next.getMinutes());
+    console.log(open_next_text);
 
     return {
       open_now: oh.getState(),
