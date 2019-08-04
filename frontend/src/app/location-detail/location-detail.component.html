@@ -4,15 +4,15 @@
   (panstart)="onPanStart($event)"
   (panmove)="onPan($event)">
   <div class="location-drag-icons">
-    <mat-icon class="location__icon--mobile" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
-    <mat-icon class="location__icon--desktop" *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
+    <mat-icon *ngIf="selectedFeature" (click)="emitCloseFeature()">close</mat-icon>
   </div>
 
   <div class="location-detail" *ngIf="selectedFeature">
     <h1>{{ labels['name'] }}</h1>
     <div class="clear"></div>
     <div class="location__properties">
-      <div *ngIf="labels['wifi']">
+<!--      <div *ngIf="labels['wifi']">-->
+      <div >
         <mat-icon>wifi</mat-icon>
       </div>
       <div *ngIf="labels['smoking'] == 'yes'">
@@ -42,7 +42,7 @@
     <div class="location-buttons">
       <div>
         <a [href]="'https://map.project-osrm.org/?loc=' + latLonStr + '&hl=de'" class="location-button"
-           (click)="trackPoiAction('navigate')">
+           target="_blank" (click)="trackPoiAction('navigate')">
           <button mat-fab>
             <mat-icon>navigation</mat-icon>
           </button>

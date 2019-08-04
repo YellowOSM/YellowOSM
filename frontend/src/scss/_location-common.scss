@@ -40,7 +40,8 @@
     top: 64px;
     width: 400px;
     left: 0;
-    padding: 30px;    height: calc(100% - 64px);
+    padding: 0 15px 0 20px;
+    height: calc(100% - 64px);
     box-shadow: 3px 0px 3px -2px rgba(0, 0, 0, 0.2), 3px 0px 4px 0px rgba(0, 0, 0, 0.14), 1px 0px 8px 0px rgba(0, 0, 0, 0.12);
 
     &.hidden {
@@ -62,29 +63,15 @@
 
 .location-drag-icons {
   float: right;
-  padding-top: 5px;
+  padding-top: 20px;
 
   mat-icon {
     font-size: 32px;
-    margin-bottom: 20px;
     margin-top: -5px;
     margin-right: 8px;
+    margin-bottom: 20px;
     color: #777;
     cursor: pointer;
-
-    &.location__icon--mobile {
-      @media (min-width: 768px) {
-        display: none;
-      }
-    }
-
-    &.location__icon--desktop {
-      display: none;
-
-      @media (min-width: 768px) {
-        display: block;
-      }
-    }
   }
 }
 
@@ -171,6 +158,7 @@
 .location__properties {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   width: 100px;
   float: right;
   margin-top: 2px;

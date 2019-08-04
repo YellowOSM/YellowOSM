@@ -89,7 +89,6 @@ export class LocationListComponent implements OnChanges, OnInit {
 
     event.preventDefault();
     if (event.deltaY < 0 && this.topPos < (window.innerHeight - this.features.length * this.DETAIL_ELEMENT_HEIGHT  - 15)) {
-      console.log('onPan: returning, for ' + this.features.length + ' features');
       return;
     }
 
@@ -109,12 +108,7 @@ export class LocationListComponent implements OnChanges, OnInit {
   }
 
   private appendScrollFeatures() {
-    console.log('appending scroll features...');
     if (this.scrollFeatures.length >= this.features.length) {
-      console.log('no more new scroll features to append!');
-      console.log(this.itemOffset);
-      console.log(this.scrollFeatures.length);
-      console.log(this.features.length);
       return;
     }
     const newFeatures = this.features.slice(this.itemOffset, this.itemOffset + this.LOAD_OFFSET_ITEMS);
@@ -126,9 +120,8 @@ export class LocationListComponent implements OnChanges, OnInit {
   }
 
   onScroll($event) {
-    // if (($event.srcElement.scrollTop) > (this.scrollOffset + this.DETAIL_ELEMENT_HEIGHT * this.LOAD_OFFSET_ITEMS)) {
-    //   this.appendScrollFeatures();
-      // this.scrollOffset += this.DETAIL_ELEMENT_HEIGHT * this.LOAD_OFFSET_ITEMS;
-    // }
+    if (($event.target.scrollTop + window.innerHeight) > (this.scrollFeatures.length * this.DETAIL_ELEMENT_HEIGHT)) {
+      this.appendScrollFeatures();
+    }
   }
 }
