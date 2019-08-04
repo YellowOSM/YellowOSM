@@ -65,6 +65,7 @@ export class YellowmapComponent implements OnInit {
   @ViewChild('toolbarElement', {read: ElementRef, static: true})
   toolbarElement: ElementRef;
   hidePanels = false;
+  searchInProgress = false;
 
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
@@ -400,6 +401,7 @@ export class YellowmapComponent implements OnInit {
       this.matomoService.trackSearch(this.searchFormControl.value);
     }
 
+    this.searchInProgress = true;
     this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight, this.showHeatmapLayer ? 1000 : 200).then((result) => {
       if (result !== null && result.hits.total > 0) {
         console.log(result['hits']['hits']);
@@ -416,8 +418,10 @@ export class YellowmapComponent implements OnInit {
     }, error => {
       this.clearSearch();
       console.error('Server is down', error);
+      this.searchInProgress = false;
     }).then(() => {
       this.cd.detectChanges();
+      this.searchInProgress = false;
     });
   }
 

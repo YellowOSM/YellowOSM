@@ -123,7 +123,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   private parseOpeningHours() {
     const hours = this.opening_hours_service.getOpenNowAndNext(this.selectedFeature.values_.labels['opening_hours']);
     this.open_now = hours['open_now'];
-    this.open_next = hours['open_next'];
+    this.open_next = hours['open_ next'];
     this.opening_hours_pretty = hours['open_pretty'];
     this.opening_hours = this.selectedFeature.values_.labels['opening_hours'];
   }

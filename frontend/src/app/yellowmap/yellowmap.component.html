@@ -36,6 +36,10 @@
     </mat-chip>
   </mat-chip-list>
 
+  <div [class]="searchInProgress ? 'spinner-wrapper active' : 'spinner-wrapper'">
+    <mat-spinner></mat-spinner>
+  </div>
+
   <div class="map__wrapper">
     <div id="map" class="map" #mapElement></div>
     <button mat-mini-fab (click)="switchLayers()" class="map__layers-button">

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import {MatProgressSpinnerModule} from '@angular/material';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatAutocompleteModule,
     MatButtonModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     MatCardModule,
@@ -29,6 +31,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatAutocompleteModule,
     MatButtonModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule
   ]
 })
 export class MaterialModule {

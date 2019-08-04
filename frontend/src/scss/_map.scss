@@ -94,3 +94,12 @@
     display: block;
   }
 }
+
+.spinner-wrapper {
+  &.active {
+    z-index: 99999;
+    position: absolute;
+    left: calc(50% - 50px);
+    top: 150px;
+  }
+}
