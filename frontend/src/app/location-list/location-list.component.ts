@@ -18,12 +18,10 @@ export class LocationListComponent implements OnChanges, OnInit {
   topStartPos = 0;
   topPos = 0;
 
-  LOAD_OFFSET_PIXEL = 400;
-  LOAD_OFFSET_ITEMS = 5;
+  DETAIL_ELEMENT_HEIGHT = 105; // height of .location__list-detail + margin (30px)
+  LOAD_OFFSET_ITEMS = 15;
   scrollFeatures = [];
-  itemOffset = 5;
-  scrollOffset = this.topPos;
-
+  itemOffset = this.LOAD_OFFSET_ITEMS;
   scrolling = false;
 
   constructor(
@@ -32,16 +30,25 @@ export class LocationListComponent implements OnChanges, OnInit {
   }
 
   ngOnInit() {
+    this.resetPanelStatus();
+  }
+
+  public resetPanelStatus() {
     if (window.innerWidth >= AppSettings.BREAKPOINT_DESKTOP) {
       this.topPos = AppSettings.MIN_TOP_OFFSET;
     } else {
       this.topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
     }
+    this.itemOffset = this.LOAD_OFFSET_ITEMS;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes.features && changes.features.currentValue.length == 0) {
+      this.resetPanelStatus();
+    }
     if (this.features && this.features.length > 0) {
-      this.scrollFeatures = this.features.slice(0, (window.innerWidth < AppSettings.BREAKPOINT_DESKTOP) ? this.LOAD_OFFSET_ITEMS : this.LOAD_OFFSET_ITEMS + 15);
+      this.itemOffset = this.LOAD_OFFSET_ITEMS;
+      this.scrollFeatures = this.features.slice(0, this.LOAD_OFFSET_ITEMS);
       this.scrollFeatures.forEach((feature) => {
         feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
       });
@@ -81,20 +88,19 @@ export class LocationListComponent implements OnChanges, OnInit {
     }
 
     event.preventDefault();
-    if (event.deltaY < 0 && this.topPos < (window.innerHeight - this.features.length * (this.LOAD_OFFSET_PIXEL / this.LOAD_OFFSET_ITEMS))) {
+    if (event.deltaY < 0 && this.topPos < (window.innerHeight - this.features.length * this.DETAIL_ELEMENT_HEIGHT  - 15)) {
+      console.log('onPan: returning, for ' + this.features.length + ' features');
       return;
     }
 
     this.topPos = Math.min(window.innerHeight - AppSettings.MIN_BOTTOM_OFFSET, this.topStartPos + event.deltaY);
-    if (this.topPos < (this.scrollOffset - this.LOAD_OFFSET_PIXEL)) {
+    if (event.deltaY < 0 && this.topPos < (window.innerHeight - this.scrollFeatures.length * this.DETAIL_ELEMENT_HEIGHT)) {
       this.appendScrollFeatures();
-      this.scrollOffset -= this.LOAD_OFFSET_PIXEL;
     }
   }
 
   onPanToParent(event: any): void {
     // propagate pan event to list container
-    console.log('onPanToParent');
     this.onPan(event);
   }
 
@@ -103,8 +109,16 @@ export class LocationListComponent implements OnChanges, OnInit {
   }
 
   private appendScrollFeatures() {
-    this.itemOffset += this.LOAD_OFFSET_ITEMS;
+    console.log('appending scroll features...');
+    if (this.scrollFeatures.length >= this.features.length) {
+      console.log('no more new scroll features to append!');
+      console.log(this.itemOffset);
+      console.log(this.scrollFeatures.length);
+      console.log(this.features.length);
+      return;
+    }
     const newFeatures = this.features.slice(this.itemOffset, this.itemOffset + this.LOAD_OFFSET_ITEMS);
+    this.itemOffset += this.LOAD_OFFSET_ITEMS;
     newFeatures.forEach((feature) => {
       feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
     });
@@ -112,9 +126,9 @@ export class LocationListComponent implements OnChanges, OnInit {
   }
 
   onScroll($event) {
-    if (($event.srcElement.scrollTop) > (this.scrollOffset + this.LOAD_OFFSET_PIXEL)) {
-      this.appendScrollFeatures();
-      this.scrollOffset += this.LOAD_OFFSET_PIXEL;
-    }
+    // if (($event.srcElement.scrollTop) > (this.scrollOffset + this.DETAIL_ELEMENT_HEIGHT * this.LOAD_OFFSET_ITEMS)) {
+    //   this.appendScrollFeatures();
+      // this.scrollOffset += this.DETAIL_ELEMENT_HEIGHT * this.LOAD_OFFSET_ITEMS;
+    // }
   }
 }

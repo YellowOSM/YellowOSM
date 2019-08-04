@@ -7,11 +7,11 @@
 >
   <div
     class="location__list-detail"
-    *ngFor="let feature of scrollFeatures"
+    *ngFor="let feature of scrollFeatures; let i = index"
     (click)="emitSelectFeature(feature)"
     (panmove)="onPanToParent($event)"
   >
-    <h1>{{ feature.values_.labels['name'] }}</h1>
+    <h1> {{ i }} {{ feature.values_.labels['name'] }}</h1>
     <div class="clear"></div>
     <div class="location__properties">
       <div *ngIf="feature.values_.labels['wifi']">

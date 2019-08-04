@@ -28,7 +28,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   @Output() closeFeature = new EventEmitter<string>();
 
   BOTTOM_OFFSET = 100;
-  INITIAL_BOTTOM_OFFSET = 250;
+  INITIAL_BOTTOM_OFFSET = 350;
   topStartPos = 0;
   topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
 

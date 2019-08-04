@@ -301,10 +301,6 @@ export class YellowmapComponent implements OnInit {
       this.searchElasticSearch(false, false);
     });
 
-    this.view.on('change:resolution', (evt) => {
-      this.searchElasticSearch(false, false);
-    });
-
     this.map.once('moveend', (evt) => {
       this.openNode();
     });
