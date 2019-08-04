@@ -19,7 +19,7 @@ export class OpeningHoursService {
     }
     const nominatim_object =  {
       "address": {
-        "country_code": country_code
+        "country_code": country_code.toLowerCase()
       }
     };
     const oh = new opening_hours(hours_string, nominatim_object, {'locale': 'de'});
@@ -36,7 +36,7 @@ export class OpeningHoursService {
     }
     const nominatim_object =  {
       "address": {
-        "country_code": country_code
+        "country_code": country_code.toLowerCase()
       }
     };
     const oh = new opening_hours(hours_string, nominatim_object);

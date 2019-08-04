@@ -28,7 +28,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   @Output() closeFeature = new EventEmitter<string>();
 
   BOTTOM_OFFSET = 100;
-  INITIAL_BOTTOM_OFFSET = 350;
+  INITIAL_BOTTOM_OFFSET = 400;
   topStartPos = 0;
   topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
 
@@ -121,7 +121,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   }
 
   private parseOpeningHours() {
-    const hours = this.opening_hours_service.getOpenNowAndNext(this.selectedFeature.values_.labels['opening_hours']);
+    const hours = this.opening_hours_service.getOpenNowAndNext(this.selectedFeature.values_.labels['opening_hours'], this.selectedFeature.values_.labels['addr_country']);
     this.open_now = hours['open_now'];
     this.open_next = hours['open_ next'];
     this.opening_hours_pretty = hours['open_pretty'];

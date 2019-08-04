@@ -50,14 +50,14 @@ export class LocationListComponent implements OnChanges, OnInit {
       this.itemOffset = this.LOAD_OFFSET_ITEMS;
       this.scrollFeatures = this.features.slice(0, this.LOAD_OFFSET_ITEMS);
       this.scrollFeatures.forEach((feature) => {
-        feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
+        feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours'], feature.values_.labels['addr_country']);
       });
       this.itemOffset = this.LOAD_OFFSET_ITEMS;
     }
   }
 
-  public getOpenNow(hours_string) {
-    return this.opening_hours_service.getOpenNow(hours_string);
+  public getOpenNow(hours_string, country_code) {
+    return this.opening_hours_service.getOpenNow(hours_string, country_code);
   }
 
   public getClasses() {
@@ -114,7 +114,7 @@ export class LocationListComponent implements OnChanges, OnInit {
     const newFeatures = this.features.slice(this.itemOffset, this.itemOffset + this.LOAD_OFFSET_ITEMS);
     this.itemOffset += this.LOAD_OFFSET_ITEMS;
     newFeatures.forEach((feature) => {
-      feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours']);
+      feature.open_now = this.getOpenNow(feature.values_.labels['opening_hours'], feature.values_.labels['addr_country']);
     });
     this.scrollFeatures = this.scrollFeatures.concat(newFeatures);
   }
