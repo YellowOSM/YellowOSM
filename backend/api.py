@@ -127,13 +127,94 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     resp.headers['Location'] = redir_url
 
 
-@api.route("/api/get_url/{url}")
-async def get_url(req, resp, *, url):
-    if not url.startswith("http"):
-        url = "http://" + url
-    r = requests.get(url)
+@api.route("/api/get_vcard/{osm_id}")
+async def get_vcard(req, resp, *, osm_id):
+    url = ES_URL + "/" + ES_INDEX + "/_search"
+    es_query = json.dumps(
+        {
+        "size": 1,
+        "query": {
+          "bool": {
+            "should": [
+              {
+                "query_string":
+                  {
+                    "query": osm_id,
+                    "fields": [
+                        'labels.osm_id',
+                    ]
+                  }
+              }
+              ],
+              "minimum_should_match": 1
+          }
+        }
+      }
+    )
+    try:
+        r = requests.get(url, data=es_query, headers={'Content-Type': 'application/json'})
+    except (ConnectionError, requests.exceptions.ConnectionError) as ex:
+        resp.text = "error: could not connect to database."
+        resp.status_code = 504
+        return
+    if json.loads(r.text)['hits']['total'] == 0:
+        resp.status_code = 404
+        resp.text = "error: no contact data found."
+        return
+
     resp.status_code = r.status_code
-    resp.text = "got {}".format(url) + "\n" + r.text
+    data = json.loads(r.text)['hits']['hits'][0]['_source']
+    # compose vcard
+    begin = "BEGIN:VCARD"
+    end = "END:VCARD"
+    name = data['name']
+    lon, lat = data['location']
+    contact_email =     data['labels'].get('contact_email', "")
+    contact_fax =       data['labels'].get('fax', "")
+    contact_phone =     data['labels'].get('phone', "").replace(" ", "")
+    contact_website =   data['labels'].get('website', "")
+    addr_street =       data['labels'].get('addr_street', "")
+    addr_housenumber =  data['labels'].get('addr_housenumber', "")
+    addr_postcode =     data['labels'].get('addr_postcode', "")
+    addr_city =         data['labels'].get('addr_city', "")
+    addr_country =      data['labels'].get('addr_country', "")
+
+    version = "VERSION:3.0"
+    # version = "VERSION:4.0"
+
+    n = f"N:{name};;;;"
+    fn = f"FN:{name}"
+    # profile = "PROFILE:VCARD"
+    # TODO if address incomplete omit address
+    address = f"ADR;TYPE=WORK:;;{addr_street} {addr_housenumber};{addr_city};;{addr_postcode};{addr_country}"
+    # v3
+    label = f"LABEL;TYPE=WORK:{addr_street} {addr_housenumber},\n{addr_postcode}{addr_city}\n{addr_country}"
+    email = f"EMAIL:{contact_email}"
+    # v3
+    geo = f"GEO:{lat},{lon}"
+    # v4
+    # geo = f"GEO:geo: {lat}\,{lon}"
+    # v3
+    phone = f"TEL;TYPE=WORK,voice;VALUE=tel:{contact_phone}"
+    # v4
+    # phone = f"TEL;TYPE=work,voice;VALUE=uri:tel:\"{contact_phone}\""
+    # logger.debug(contact_phone)
+    # v3
+    fax = f"TEL;TYPE=WORK FAX;VALUE=tel:{contact_fax}"
+    # v4
+    # fax = f"TEL;TYPE=WORK FAX;VALUE=uri:tel:{contact_fax}"
+    url = f"URL:{contact_website}"
+    source = f"SOURCE:https://yellowosm.com/api/get_vcard/{osm_id}"
+
+    # resp.headers = {'Content-Type': 'text/vcard',\
+    #     "Content-disposition": "inline; filename=" + name.replace(" ","_")+"_"+str(osm_id)+"_2.vcard"}
+    # resp.text = f"{begin}\n{version}\n{n}\n{fn}\n{address}\n\
+    #     {email}\n{geo}\n{phone}\n{fax}\n{url}\n{source}\n{end}"
+
+    resp.headers = {'Content-Type': 'text/vcard',\
+        "Content-disposition": "attachment; filename=\"" + name.replace(" ","_")+"_"+str(osm_id)+".vcard\""}
+    resp.text = f"{begin}\n{version}\n{n}\n{fn}\n{address}\n{geo}\n{phone}\n{fax}\n"+\
+                f"{url}\n{email}\n{source}\n{end}"
 
 
 def _locate_user_ip(req):
