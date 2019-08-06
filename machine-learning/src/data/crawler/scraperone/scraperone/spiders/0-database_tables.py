@@ -12,6 +12,7 @@ class Website(Base):
     # Notice that each column is also a normal Python instance attribute.
     url = Column(String(500), nullable=False, primary_key=True)
     html = Column(Text(16000000), nullable=False)
+    emails = relationship('Email')
 
 
 class Poi(Base):
@@ -22,6 +23,12 @@ class Poi(Base):
     website = relationship(Website)
     email = Column(String(200), nullable=True)
     phone = Column(String(100), nullable=True)
+
+
+class Email(Base):
+    __tablename__ = 'email'
+    id = Column(Integer, primary_key=True)
+    website_url = Column(String(500), ForeignKey('website.url'))
 
 
 # Create all tables in the engine. This is equivalent to "Create Table"
