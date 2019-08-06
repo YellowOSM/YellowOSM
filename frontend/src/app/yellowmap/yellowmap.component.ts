@@ -309,6 +309,7 @@ export class YellowmapComponent implements OnInit {
       });
 
       if (clickedFeature.feat) {
+        this.hidePanels = false;
         this.matomoService.trackPoiOpenFromMap(clickedFeature.feat);
         this.selectedFeature = clickedFeature.feat;
         const PADDING = 50;
@@ -409,6 +410,7 @@ export class YellowmapComponent implements OnInit {
       this.clearSearch();
       this.closeAutocomplete();
       this.hideKeyboard();
+      this.hidePanels = false;
     }
 
     if (this.autocomplete.activeOption) {
