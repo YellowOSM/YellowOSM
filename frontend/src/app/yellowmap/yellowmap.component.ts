@@ -22,8 +22,6 @@ import Feature from 'ol/Feature';
 import * as opening_hours from 'opening_hours';
 
 import {ElasticsearchService} from '../services/elasticsearch.service';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
 import {LocationDetailComponent} from '../location-detail/location-detail.component';
 import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -44,6 +42,7 @@ export class YellowmapComponent implements OnInit {
   options: string[];
   BASIC_OPTIONS = [
     'Restaurant',
+    'Gasthaus',
     'Cafe',
     'Arzt',
     'Zahnarzt',
@@ -97,10 +96,6 @@ export class YellowmapComponent implements OnInit {
     private snackBar: MatSnackBar,
     private matomoService: MatomoService
   ) {
-  }
-
-  public getFilteredBasicOptions(val) {
-    return this.BASIC_OPTIONS.slice().filter(o => o.toLowerCase().startsWith(val.toLowerCase()));
   }
 
   ngOnInit() {
@@ -350,6 +345,10 @@ export class YellowmapComponent implements OnInit {
     this.matomoService.trackPageView('Map');
   }
 
+  public getFilteredBasicOptions(val) {
+    return this.BASIC_OPTIONS.slice().filter(o => o.toLowerCase().startsWith(val.toLowerCase()));
+  }
+
   public updateUrl() {
     const center = toLonLat(this.view.getCenter());
     let zoom = this.view.getZoom();
@@ -432,7 +431,12 @@ export class YellowmapComponent implements OnInit {
     }
 
     this.searchInProgress = true;
-    this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight, this.showHeatmapLayer ? 1000 : 200).then((result) => {
+    this.es.fullTextBoundingBoxSearch(
+      this.searchFormControl.value,
+      topLeft,
+      bottomRight,
+      this.showHeatmapLayer ? 1000 : 200
+    ).then((result) => {
       if (result !== null && result.hits.total.value > 0) {
         console.log(result['hits']['hits']);
         this.esSearchResult = result['hits']['hits'];
@@ -457,8 +461,11 @@ export class YellowmapComponent implements OnInit {
 
   private findClosestResult() {
     const center = toLonLat(this.view.getCenter());
-    this.es.fullTextClosestSearch(this.searchFormControl.value, center).then((closestResults) => {
-      if (closestResults !== null && closestResults.hits.total > 0) {
+    this.es.fullTextClosestSearch(
+      this.searchFormControl.value,
+      center
+    ).then((closestResults) => {
+      if (closestResults !== null && closestResults.hits.total.value > 0) {
         console.log(closestResults['hits']['hits']);
         this.esSearchResult = closestResults['hits']['hits'];
         this.openFirstFeature = true;
@@ -542,7 +549,7 @@ export class YellowmapComponent implements OnInit {
       urlPropertyValue.propertyValue,
       center)
       .then((result) => {
-        if (result !== null && result.hits.total > 0) {
+        if (result !== null && result.hits.total.value > 0) {
           const node = result['hits']['hits'][0];
           const featurething = new Feature({
             name: node['_source']['name'],
