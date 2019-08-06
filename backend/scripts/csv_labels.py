@@ -314,12 +314,24 @@ yosm_types = {
         'museum': '',
         'information': '',
     },
+    'place': {
+        'type': 'place',
+        'city': {
+            'type': 'place',
+            'label': '',
+        },
+        'village': {
+            'type': 'place',
+            'label': '',
+        },
+        'town': {
+            'type': 'place',
+            'label': '',
+        },
+    }
     'office': {
         'type': 'office',
     },
-    'place': {
-        'type': 'place',
-    }
 }
 
 cuisine_replacements = {

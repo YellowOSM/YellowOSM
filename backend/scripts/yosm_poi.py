@@ -54,7 +54,7 @@ class YOSM_POI():
                 if osmtype in self.label_dict:
                     # print("="*75)
                     # print(label_dict[osmtype])
-                    if osmtype.lower() in ["office", "place"]:
+                    if osmtype.lower() in ["office"]:
                         self.yosm_subtype = None
                         continue
 
