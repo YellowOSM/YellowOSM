@@ -64,9 +64,11 @@ class YellowosmSpider(scrapy.Spider):
         return set(p.osm_id for p in pois)
 
     def start_requests(self):
-        """return iterable of requests (scrapy.Request(url,...))
+        """
+        return iterable of requests (scrapy.Request(url,...))
         called only once
-        default generates list from start_urls"""
+        default generates list from start_urls
+        """
         targets = []
         for jsona_file_name in [
             TARGETSJSON_WITHOUT_EMAIL
@@ -75,9 +77,12 @@ class YellowosmSpider(scrapy.Spider):
                 for line in infile.readlines():
                     targets.append(json.loads(line))
 
+        print('restricting targets to 100')
+        targets = targets[:100]
+
         print(len(targets))
 
-        for target in tqdm(targets[10000:25000]):
+        for target in tqdm(targets):
             self.logger.debug(target)
             target = target['labels']
             if target['osm_id'] in self.db_poi_osm_ids:
