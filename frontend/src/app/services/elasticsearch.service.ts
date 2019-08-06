@@ -72,20 +72,36 @@ export class ElasticsearchService {
     const esQuery = {
       index: environment.elasticSearchIndex,
       type: '_doc',
-      _source: ["labels.name", "labels.osm_id"],
+      _source: ["labels.name", "labels.osm_id", "labels.addr_city", "type"],
       body: {
-        "size": 10,
+        "size": 15,
         "query": {
           "function_score": {
             "query": {
-              "multi_match": {
-                "query": userQuery,
-                "type": "bool_prefix",
-                "fields": [
-                  "labels.name",
-                  "labels.name._2gram",
-                  "labels.name._3gram"
-                ]
+              "bool": {
+                "should": [
+                  {
+                    "match": {
+                      "labels.name": {
+                        "boost": 10000,
+                        "query": userQuery
+                      }
+                    }
+                  },
+                  {
+                    "multi_match": {
+                      "query": userQuery,
+                      "type": "bool_prefix",
+                      "fields": [
+                        "labels.name",
+                        "labels.name._2gram",
+                        "labels.name._3gram"
+                      ],
+                      "fuzziness": 1
+                    }
+                  }
+                ],
+                'minimum_should_match': 1,
               }
             },
             "functions": [

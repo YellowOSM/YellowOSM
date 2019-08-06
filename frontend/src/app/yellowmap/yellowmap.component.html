@@ -27,8 +27,7 @@
       [value]="option['label']"
       (click)="searchViaAutocomplete(option)"
     >
-      <mat-icon *ngIf="option.hasOwnProperty('osm_id')">place</mat-icon>
-      <mat-icon *ngIf="!option.hasOwnProperty('osm_id')">search</mat-icon>
+      <mat-icon>{{ getAutocompleteIcon(option) }}</mat-icon>
       <div class="yosm-option">
         {{option['label']}}
       </div>

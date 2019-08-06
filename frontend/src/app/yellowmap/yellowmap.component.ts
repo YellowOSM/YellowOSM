@@ -27,8 +27,6 @@ import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppSettings} from '../app.settings';
 import {MatomoService} from '../matomo.service';
-import {optimize} from '@angular-devkit/schematics/src/tree/static';
-
 
 @Component({
   selector: 'app-yellowmap',
@@ -98,6 +96,7 @@ export class YellowmapComponent implements OnInit {
             if (hits[i]._source.labels.name) {
               options.push({
                 label: hits[i]._source.labels.name,
+                poi_type: hits[i]._source['type'],
                 osm_id: hits[i]._source.labels.osm_id
               });
             }
@@ -338,6 +337,16 @@ export class YellowmapComponent implements OnInit {
 
   public getFilteredBasicOptions(val) {
     return this.BASIC_OPTIONS.slice().filter(o => o.label.toLowerCase().startsWith(val.toLowerCase()));
+  }
+
+  public getAutocompleteIcon(option) {
+    if (option.hasOwnProperty('osm_id')) {
+      if (option.hasOwnProperty('poi_type') && option.poi_type === 'place') {
+        return 'location_city';
+      }
+      return 'place';
+    }
+    return 'search';
   }
 
   public updateUrl() {
