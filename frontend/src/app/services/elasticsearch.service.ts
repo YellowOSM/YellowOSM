@@ -74,29 +74,33 @@ export class ElasticsearchService {
       type: '_doc',
       _source: ["labels.name", "labels.osm_id"],
       body: {
-        'size': 5,
-        "sort": [
-          {
-            "_geo_distance": {
-              'location': {
-                'lat': center[1],
-                'lon': center[0]
-              },
-              "order": "asc",
-              "unit": "km",
-              "mode": "min",
-              "distance_type": "plane"
-            }
-          }
-        ],
+        "size": 10,
         "query": {
-          "multi_match": {
-            "query": userQuery,
-            "type": "bool_prefix",
-            "fields": [
-              "labels.name",
-              "labels.name._2gram",
-              "labels.name._3gram"
+          "function_score": {
+            "query": {
+              "multi_match": {
+                "query": userQuery,
+                "type": "bool_prefix",
+                "fields": [
+                  "labels.name",
+                  "labels.name._2gram",
+                  "labels.name._3gram"
+                ]
+              }
+            },
+            "functions": [
+              {
+                "gauss": {
+                  "location": {
+                    "origin": {
+                      "lat": center[1],
+                      "lon": center[0]
+                    },
+                    "offset": "2km",
+                    "scale": "3km"
+                  }
+                }
+              }
             ]
           }
         }
