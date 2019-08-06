@@ -27,6 +27,7 @@ import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppSettings} from '../app.settings';
 import {MatomoService} from '../matomo.service';
+import {optimize} from '@angular-devkit/schematics/src/tree/static';
 
 
 @Component({
@@ -38,24 +39,9 @@ export class YellowmapComponent implements OnInit {
   features = [];
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
-  filteredOptions: string[];
-  options: string[];
-  BASIC_OPTIONS = [
-    'Restaurant',
-    'Gasthaus',
-    'Cafe',
-    'Arzt',
-    'Zahnarzt',
-    'Apotheke',
-    'Bankomat',
-    'Geldautomat',
-    'Tankstelle',
-    'Post',
-    'Friseur',
-    'Supermarkt',
-    'Bäckerei',
-    'Hotel'
-  ];
+  filteredOptions: [];
+  options: [];
+  BASIC_OPTIONS;
   map: OlMap;
   esLayer: VectorLayer;
   allLayers = [];
@@ -99,6 +85,8 @@ export class YellowmapComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.BASIC_OPTIONS = this.compileBasicOptions();
+
     this.searchFormControl.valueChanges.subscribe(val => {
       this.es.getAutocompleteSuggestions(val, toLonLat(this.view.getCenter())).then((results) => {
         if (!val) {
@@ -108,7 +96,10 @@ export class YellowmapComponent implements OnInit {
           const hits = results.hits.hits;
           for (let i = 0; i < hits.length; i++) {
             if (hits[i]._source.labels.name) {
-              options.push(hits[i]._source.labels.name)
+              options.push({
+                label: hits[i]._source.labels.name,
+                osm_id: hits[i]._source.labels.osm_id
+              });
             }
           }
           this.filteredOptions = options;
@@ -346,7 +337,7 @@ export class YellowmapComponent implements OnInit {
   }
 
   public getFilteredBasicOptions(val) {
-    return this.BASIC_OPTIONS.slice().filter(o => o.toLowerCase().startsWith(val.toLowerCase()));
+    return this.BASIC_OPTIONS.slice().filter(o => o.label.toLowerCase().startsWith(val.toLowerCase()));
   }
 
   public updateUrl() {
@@ -604,7 +595,7 @@ export class YellowmapComponent implements OnInit {
     this.osmLayers.forEach((layer, idx) => {
       if (idx == this.activeLayerIdx) {
         layer['layer'].setVisible(true);
-        this.activeMapAttribution = layer['attribution']
+        this.activeMapAttribution = layer['attribution'];
         this.snackBar.open('Karte: ' + layer['label'], 'okay', {
           duration: 1500,
           verticalPosition: 'top',
@@ -629,5 +620,61 @@ export class YellowmapComponent implements OnInit {
       return classNames;
     }
     return classNames + ' hidden'
+  }
+
+  private compileBasicOptions() {
+    const options =
+      [
+        'Restaurant',
+        'Gasthaus',
+        'Cafe',
+        'Arzt',
+        'Zahnarzt',
+        'Apotheke',
+        'Bankomat',
+        'Geldautomat',
+        'Tankstelle',
+        'Post',
+        'Friseur',
+        'Supermarkt',
+        'Bäckerei',
+        'Hotel'
+      ];
+
+    let optionsAsObjects = [];
+    for (let i = 0; i < options.length; i++) {
+      optionsAsObjects.push({
+        label: options[i]
+      });
+    }
+    return optionsAsObjects;
+  }
+
+  searchViaAutocomplete(option) {
+    if (option.hasOwnProperty('osm_id')) {
+      this.es.searchByOsmId(option.osm_id).then((result) => {
+        if (result !== null && result.hits.total.value > 0) {
+          console.log(result['hits']['hits']);
+          this.clearSearch();
+          this.openFirstFeature = true;
+          this.hidePanels = false;
+          const coords = fromLonLat(result.hits.hits[0]._source.location);
+          this.map.getView().animate({center: coords});
+          this.esSearchResult = result['hits']['hits'];
+        } else {
+          console.log('empty result for search');
+          this.esSearchResult = [];
+        }
+      }, error => {
+        this.clearSearch();
+        console.error('Server is down', error);
+        this.searchInProgress = false;
+      }).then(() => {
+        this.cd.detectChanges();
+        this.searchInProgress = false;
+      });
+    } else {
+      this.searchElasticSearch();
+    }
   }
 }

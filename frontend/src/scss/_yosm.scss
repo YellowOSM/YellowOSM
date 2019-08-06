@@ -84,6 +84,22 @@ a {
   z-index: 1000;
 }
 
+.yosm__autocomplete-option {
+  .mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    top: 13px;
+    left: 20px;
+  }
+}
+
+.yosm-option {
+  display: block;
+  margin-left: 37px;
+}
+
 .mat-snack-bar-handset .mat-snack-bar-container {
   margin-top: 70px !important;
 }

@@ -160,7 +160,7 @@ export class ElasticsearchService {
       body: {
         'query': {
           'match': {
-            'osm_id': osmId
+            'labels.osm_id': osmId
           },
         }
       }

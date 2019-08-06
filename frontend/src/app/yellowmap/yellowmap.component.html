@@ -21,9 +21,17 @@
 
   <div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
 
-  <mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3">
-    <mat-option *ngFor="let option of filteredOptions" [value]="option" (click)="searchElasticSearch()">
-      {{option}}
+  <mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3 yosm__autocomplete-option">
+    <mat-option
+      *ngFor="let option of filteredOptions"
+      [value]="option['label']"
+      (click)="searchViaAutocomplete(option)"
+    >
+      <mat-icon *ngIf="option.hasOwnProperty('osm_id')">place</mat-icon>
+      <mat-icon *ngIf="!option.hasOwnProperty('osm_id')">search</mat-icon>
+      <div class="yosm-option">
+        {{option['label']}}
+      </div>
     </mat-option>
   </mat-autocomplete>
 
