@@ -10,8 +10,9 @@
 BASE_URL='https://es.yosm.at'
 INDEX="yosm_dev" # default to dev index
 JSONFILES='/tmp/osm_es_export_???.json'
-OUTFILE=/dev/null
-OUTFILE=/tmp/esimport.log
+OUTDEVNULL=1 # log file uploads to /dev/null
+# OUTDEVNULL=0 # log file uploads to /var/log/ES_import....log
+OUTFILEBASE=/var/log/ES_import
 if [[ $1 == '--help' ]]; then
   echo "usage: ${0} --help | [--device eth0 | --local] [--no-delete] [yosm|yosm_dev] [--files es_*.json]"
   exit
@@ -54,15 +55,15 @@ fi
 echo "> $CURL \"${BASE_URL}/_cat/indices?v\""
 $CURL "${BASE_URL}/_cat/indices?v"
 
-if [[ DELETE_INDEX == 1 ]]; then
 
-  $CURL -XPUT "${BASE_URL}/${INDEX}/_settings" -H 'Content-Type: application/json' -d'
+$CURL -XPUT "${BASE_URL}/${INDEX}/_settings" -H 'Content-Type: application/json' -d'
 {
   "index": {
     "blocks.read_only": false
   }
 }
 '
+if [[ $DELETE_INDEX == '1' ]]; then
   echo "deleting index ${INDEX}"
   # delete index
   $CURL -X DELETE "${BASE_URL}/${INDEX}?pretty"
@@ -94,7 +95,13 @@ echo "uploading data to index '$INDEX'..."
 for JSONFILE in ${JSONFILES}; do
   # load data set
   echo $JSONFILE
-  time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o $OUTFILE
+  if [[ $OUTDEVNULL == '1' ]]; then
+    OUTFILE=/dev/null
+  else
+    OUTFILE=${OUTFILEBASE}_$(basename $JSONFILE).log
+  fi
+  echo "logging to $OUTFILE"
+  time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o ${OUTFILE}
   # catch a breath
   sleep 2
 done
