@@ -66,11 +66,12 @@ $CURL -X DELETE "${BASE_URL}/${INDEX}?pretty"
 $CURL -X PUT "${BASE_URL}/${INDEX}?pretty" -H 'Content-Type: application/json' -d'
 {
     "mappings": {
-        "_doc": {
-            "properties": {
-                "location": {
-                    "type": "geo_point"
-                }
+        "properties": {
+            "location": {
+                "type": "geo_point"
+            },
+            "labels.name": {
+                "type": "search_as_you_type"
             }
         }
     }
