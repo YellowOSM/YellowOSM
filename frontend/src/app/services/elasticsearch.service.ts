@@ -16,49 +16,6 @@ export class ElasticsearchService {
 
   private client: Client;
 
-  private static getCommonFullTextQueryBody(userQuery: string, size: number = 200) {
-    return {
-      index: environment.elasticSearchIndex,
-      type: '_doc',
-      filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
-      body: {
-        'size': size,
-        'query': {
-          'bool': {
-            'should': [
-              {
-                'query_string':
-                  {
-                    'query': userQuery.trim() + '*',
-                    'default_operator': 'AND',
-                    'fields': [
-                      'labels.name^5',
-                      'description^50',
-                      // 'labels.website^3',
-                      // 'labels.contact_website',
-                      // 'labels.addr_street',
-                      'labels.addr_city',
-                      'labels.amenity',
-                      'labels.craft',
-                      'labels.emergency',
-                      'labels.healthcare',
-                      'labels.healthcare_speciality',
-                      'labels.leisure',
-                      'labels.shop',
-                      'labels.sport',
-                      'labels.tourism',
-                      'labels.vending'
-                    ]
-                  }
-              }
-            ],
-            'minimum_should_match': 1,
-          }
-        }
-      }
-    };
-  }
-
   private _connect() {
     this.client = new elasticsearch.Client({
       host: environment.elasticSearchBaseUrl,
@@ -109,6 +66,86 @@ export class ElasticsearchService {
       }
     ];
     return this.client.search(esQuery);
+  }
+
+  public getAutocompleteSuggestions(userQuery: string, center: any) {
+    const esQuery = {
+      index: environment.elasticSearchIndex,
+      type: '_doc',
+      _source: ["labels.name", "labels.osm_id"],
+      body: {
+        'size': 5,
+        "sort": [
+          {
+            "_geo_distance": {
+              'location': {
+                'lat': center[1],
+                'lon': center[0]
+              },
+              "order": "asc",
+              "unit": "km",
+              "mode": "min",
+              "distance_type": "plane"
+            }
+          }
+        ],
+        "query": {
+          "multi_match": {
+            "query": userQuery,
+            "type": "bool_prefix",
+            "fields": [
+              "labels.name",
+              "labels.name._2gram",
+              "labels.name._3gram"
+            ]
+          }
+        }
+      }
+    };
+    return this.client.search(esQuery);
+  }
+
+  private static getCommonFullTextQueryBody(userQuery: string, size: number = 200) {
+    return {
+      index: environment.elasticSearchIndex,
+      type: '_doc',
+      filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
+      body: {
+        'size': size,
+        'query': {
+          'bool': {
+            'should': [
+              {
+                'query_string':
+                  {
+                    'query': userQuery.trim() + '*',
+                    'default_operator': 'AND',
+                    'fields': [
+                      'labels.name^5',
+                      'description^50',
+                      // 'labels.website^3',
+                      // 'labels.contact_website',
+                      // 'labels.addr_street',
+                      'labels.addr_city',
+                      'labels.amenity',
+                      'labels.craft',
+                      'labels.emergency',
+                      'labels.healthcare',
+                      'labels.healthcare_speciality',
+                      'labels.leisure',
+                      'labels.shop',
+                      'labels.sport',
+                      'labels.tourism',
+                      'labels.vending'
+                    ]
+                  }
+              }
+            ],
+            'minimum_should_match': 1,
+          }
+        }
+      }
+    };
   }
 
   public searchByOsmId(osmId: string): any {

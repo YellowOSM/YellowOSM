@@ -5,8 +5,9 @@
 export const environment = {
   production: false,
   localDevEnv: true,
-  elasticSearchBaseUrl: 'https://es.yosm.at',
-  elasticSearchIndex: 'yosm_dev',
+  // elasticSearchBaseUrl: 'https://es.yosm.at',
+  elasticSearchBaseUrl: 'http://localhost:9200',
+  elasticSearchIndex: 'yosm',
   // no label standard tile
   // tileServerURL: '//tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png',
 

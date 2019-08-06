@@ -22,7 +22,7 @@
   <div class="yosm__autocomplete-wrapper" matAutocompleteOrigin #origin="matAutocompleteOrigin"></div>
 
   <mat-autocomplete #auto="matAutocomplete" panelWidth="100%" class="mat-elevation-z3">
-    <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="searchElasticSearch()">
+    <mat-option *ngFor="let option of filteredOptions" [value]="option" (click)="searchElasticSearch()">
       {{option}}
     </mat-option>
   </mat-autocomplete>

@@ -40,7 +40,7 @@ export class YellowmapComponent implements OnInit {
   features = [];
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
-  filteredOptions: Observable<string[]>;
+  filteredOptions: string[];
   options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
   map: OlMap;
   esLayer: VectorLayer;
@@ -85,10 +85,26 @@ export class YellowmapComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.filteredOptions = this.searchFormControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterAutocomplete(value))
-    );
+    this.searchFormControl.valueChanges.subscribe(val => {
+      this.es.getAutocompleteSuggestions(val, toLonLat(this.view.getCenter())).then((results) => {
+        if (!val) {
+          this.filteredOptions = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
+        } else {
+          let options = [
+            // 'nach "' + val + '" suchen'
+          ];
+          const hits = results.hits.hits;
+          for (let i = 0; i < hits.length; i++) {
+            if (hits[i]._source.labels.name) {
+              options.push(hits[i]._source.labels.name)
+            }
+          }
+          this.filteredOptions = options;
+        }
+      }, error => {
+        console.error('Server is down', error);
+      });
+    });
 
     environment.tileServerURLs.forEach((result, idx) => {
       const layer = new OlTileLayer({
@@ -264,7 +280,7 @@ export class YellowmapComponent implements OnInit {
       };
 
       this.searchInput.nativeElement.blur();
-      const clickedFeature = { feat: null, dist: Infinity };
+      const clickedFeature = {feat: null, dist: Infinity};
 
       /* See if we clicked on a feature. If yes, take closest */
       this.map.forEachFeatureAtPixel(event.pixel, (feature) => {
@@ -398,7 +414,7 @@ export class YellowmapComponent implements OnInit {
 
     this.searchInProgress = true;
     this.es.fullTextBoundingBoxSearch(this.searchFormControl.value, topLeft, bottomRight, this.showHeatmapLayer ? 1000 : 200).then((result) => {
-      if (result !== null && result.hits.total > 0) {
+      if (result !== null && result.hits.total.value > 0) {
         console.log(result['hits']['hits']);
         this.esSearchResult = result['hits']['hits'];
         this.esLayer.getSource().clear();
@@ -526,12 +542,6 @@ export class YellowmapComponent implements OnInit {
   private addAndSelectFeature(featurething) {
     this.esLayer.getSource().addFeature(featurething);
     this.selectedFeature = featurething;
-  }
-
-  private _filterAutocomplete(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 
   public removeSearchText() {
