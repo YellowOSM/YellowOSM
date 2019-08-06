@@ -82,10 +82,16 @@
 .location-buttons {
   clear: both;
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: center;
   max-width: 500px;
   margin: 0 auto;
   padding: 15px 0;
+
+  .label--mobile {
+    text-align: center;
+  }
+
 
   .label--desktop {
     display: none;
@@ -106,6 +112,16 @@
       overflow: hidden;
       text-overflow: ellipsis;
       width: 250px;
+    }
+  }
+
+  > div {
+    width: 33%;
+    margin: 10px 0;
+
+    @media (min-width: 768px) {
+      width: 100%;
+      margin: 0;
     }
   }
 

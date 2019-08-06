@@ -76,6 +76,16 @@
           <a class="label--desktop">{{ labels['website'] }}</a>
         </a>
       </div>
+      <div *ngIf="labels['osm_id']">
+        <a [href]="'https://yellowosm.com/api/get_vcard/' + labels['osm_id']" class="location-button" target="_blank"
+           (click)="trackPoiAction('vcf')">
+          <button mat-fab>
+            <mat-icon>contact_phone</mat-icon>
+          </button>
+          <div class="label--mobile">Kontakt</div>
+          <a class="label--desktop">zu Kontakten hinzufügen</a>
+        </a>
+      </div>
     </div>
     <div class="details__hours" *ngIf="opening_hours_pretty">
       <span>Öffnungszeiten</span>
