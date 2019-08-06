@@ -41,7 +41,22 @@ export class YellowmapComponent implements OnInit {
   selectedFeature: Feature = null;
   searchFormControl = new FormControl();
   filteredOptions: string[];
-  options: string[] = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
+  options: string[];
+  BASIC_OPTIONS = [
+    'Restaurant',
+    'Cafe',
+    'Arzt',
+    'Zahnarzt',
+    'Apotheke',
+    'Bankomat',
+    'Geldautomat',
+    'Tankstelle',
+    'Post',
+    'Friseur',
+    'Supermarkt',
+    'Bäckerei',
+    'Hotel'
+  ];
   map: OlMap;
   esLayer: VectorLayer;
   allLayers = [];
@@ -84,15 +99,17 @@ export class YellowmapComponent implements OnInit {
   ) {
   }
 
+  public getFilteredBasicOptions(val) {
+    return this.BASIC_OPTIONS.slice().filter(o => o.toLowerCase().startsWith(val.toLowerCase()));
+  }
+
   ngOnInit() {
     this.searchFormControl.valueChanges.subscribe(val => {
       this.es.getAutocompleteSuggestions(val, toLonLat(this.view.getCenter())).then((results) => {
         if (!val) {
-          this.filteredOptions = ['Restaurant', 'Bankomat', 'Apotheke', 'Supermarkt', 'Bar', 'Friseur', 'Pub', 'Cafe', 'Bäckerei'];
+          this.filteredOptions = this.BASIC_OPTIONS;
         } else {
-          let options = [
-            // 'nach "' + val + '" suchen'
-          ];
+          let options = this.getFilteredBasicOptions(val);
           const hits = results.hits.hits;
           for (let i = 0; i < hits.length; i++) {
             if (hits[i]._source.labels.name) {
