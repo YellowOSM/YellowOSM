@@ -97,6 +97,9 @@ a {
 .yosm__filters {
   z-index: 990;
   margin-top: 60px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 210px;
 
   @media (min-width: 768px) {
     margin-top: 70px;
