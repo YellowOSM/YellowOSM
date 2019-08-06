@@ -10,12 +10,14 @@
 BASE_URL='https://es.yosm.at'
 INDEX="yosm_dev" # default to dev index
 JSONFILES='/tmp/osm_es_export_???.json'
-
+OUTFILE=/dev/null
+OUTFILE=/tmp/esimport.log
 if [[ $1 == '--help' ]]; then
-  echo "usage: ${0} --help | [--device eth0 | --local] [yosm|yosm_dev] [--files es_*.json]"
+  echo "usage: ${0} --help | [--device eth0 | --local] [--no-delete] [yosm|yosm_dev] [--files es_*.json]"
   exit
 fi
 
+DELETE_INDEX=1
 DEVICE='eth0'
 if [[ $1 == '--device' ]]; then
   DEVICE=$2
@@ -43,21 +45,30 @@ if [[ $1 == '--file' ]]; then
   echo "deprecated flag. aborting..."
   exit -2
 fi
+if [[ $1 == '--no-delete' ]]; then
+  echo "NOT deleting index ${INDEX}"
+  DELETE_INDEX=0
+  shift
+fi
 
 echo "> $CURL \"${BASE_URL}/_cat/indices?v\""
 $CURL "${BASE_URL}/_cat/indices?v"
 
-$CURL -XPUT "${BASE_URL}/${INDEX}/_settings" -H 'Content-Type: application/json' -d'
+if [[ DELETE_INDEX == 1 ]]; then
+
+  $CURL -XPUT "${BASE_URL}/${INDEX}/_settings" -H 'Content-Type: application/json' -d'
 {
   "index": {
     "blocks.read_only": false
   }
 }
 '
+  echo "deleting index ${INDEX}"
+  # delete index
+  $CURL -X DELETE "${BASE_URL}/${INDEX}?pretty"
 
-# delete index
-$CURL -X DELETE "${BASE_URL}/${INDEX}?pretty"
-
+  # let ES catch a breath
+  sleep 2
 # create index
 # curl -X PUT "${BASE_URL}/${INDEX}?pretty"
 
@@ -77,12 +88,15 @@ $CURL -X PUT "${BASE_URL}/${INDEX}?pretty" -H 'Content-Type: application/json' -
     }
 }
 '
+fi # end DELETE_INDEX
 
 echo "uploading data to index '$INDEX'..."
 for JSONFILE in ${JSONFILES}; do
   # load data set
   echo $JSONFILE
-  time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o /dev/null
+  time $CURL -s -H "Content-Type: application/json" -XPOST "${BASE_URL}/${INDEX}/_doc/_bulk?pretty&refresh" --data-binary "@${JSONFILE}" -o $OUTFILE
+  # catch a breath
+  sleep 2
 done
 echo "done"
 

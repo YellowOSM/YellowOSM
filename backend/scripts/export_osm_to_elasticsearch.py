@@ -27,7 +27,7 @@ EXPORT_FILE = "/tmp/dump.osm"
 EXPORT_ES_FILE = "/tmp/osm_es_export.json"
 # if export is split, those are the files with SPLIT_SIZE elements per file...
 EXPORT_ES_SPLIT_FILE = "/tmp/osm_es_export_{:03d}.json"
-SPLIT_SIZE = 200_000
+SPLIT_SIZE = 150_000
 # SPLIT_SIZE = 400
 
 # also export polygons

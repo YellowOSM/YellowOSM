@@ -1,7 +1,7 @@
 #!/bin/bash
 logfile=/var/log/yosm_downstream.log
 # backend_scripts=/root/docker-compose/responder/scripts
-backend_scripts=/root/yosm_scripts/
+backend_scripts=/root/backend/scripts/
 
 set -e
 date >> $logfile 2>&1
