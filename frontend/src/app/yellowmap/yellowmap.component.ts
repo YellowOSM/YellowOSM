@@ -63,6 +63,7 @@ export class YellowmapComponent implements OnInit {
   toolbarElement: ElementRef;
   hidePanels = false;
   searchInProgress = false;
+  movingToSingleResult = false;
 
   previousUrlParams = {
     zoom: +this.route.snapshot.paramMap.get('zoom'),
@@ -140,7 +141,11 @@ export class YellowmapComponent implements OnInit {
             try {
               const oh = new opening_hours(
                 result['_source']['labels']['opening_hours'],
-                result['_source']['labels']['addr_country']
+                {
+                  "address": {
+                    "country_code": result['_source']['labels']['addr_country'].toLowerCase()
+                  }
+                }
               );
               if (!oh.getState()) {
                 return;
@@ -319,6 +324,9 @@ export class YellowmapComponent implements OnInit {
     });
 
     this.map.on('moveend', (evt) => {
+      if (this.movingToSingleResult) {
+        return;
+      }
       this.searchElasticSearch(false, false);
     });
 
@@ -405,6 +413,8 @@ export class YellowmapComponent implements OnInit {
   }
 
   public searchElasticSearch(clearResults = true, moveToClosestResult = true) {
+    this.movingToSingleResult = false;
+
     if (clearResults) {
       this.clearSearch();
       this.closeAutocomplete();
@@ -660,9 +670,11 @@ export class YellowmapComponent implements OnInit {
   }
 
   searchViaAutocomplete(option) {
+    this.hideKeyboard();
     if (option.hasOwnProperty('osm_id')) {
       this.es.searchByOsmId(option.osm_id).then((result) => {
         if (result !== null && result.hits.total.value > 0) {
+          this.movingToSingleResult = true;
           console.log(result['hits']['hits']);
           this.clearSearch();
           this.openFirstFeature = true;
@@ -670,6 +682,7 @@ export class YellowmapComponent implements OnInit {
           const coords = fromLonLat(result.hits.hits[0]._source.location);
           this.map.getView().animate({center: coords});
           this.esSearchResult = result['hits']['hits'];
+          this.movingToSingleResult = false;
         } else {
           console.log('empty result for search');
           this.esSearchResult = [];

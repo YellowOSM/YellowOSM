@@ -36,7 +36,7 @@
         <span *ngIf="feature.open_now === true"> ⋅ </span>
         <span class="location-open" *ngIf="feature.open_now === true">jetzt geöffnet</span>
       </li>
-      <li *ngIf="feature.values_.labels['address']">{{ feature.values_.labels['address'] }}</li>
+      <li *ngIf="feature.values_.labels['address']">{{ getListAddress(feature.values_.labels) }}</li>
     </ul>
   </div>
 </div>

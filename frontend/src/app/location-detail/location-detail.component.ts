@@ -29,6 +29,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
 
   BOTTOM_OFFSET = 100;
   INITIAL_BOTTOM_OFFSET = 400;
+  MIN_TOP_OFFSET = -200;
   topStartPos = 0;
   topPos = window.innerHeight - this.INITIAL_BOTTOM_OFFSET;
 
@@ -151,7 +152,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     }
 
     event.preventDefault();
-    if (event.deltaY < 0 && this.topPos <= AppSettings.MIN_TOP_OFFSET) {
+    if (event.deltaY < 0 && this.topPos <= this.MIN_TOP_OFFSET) {
       return;
     }
     

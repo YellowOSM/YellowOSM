@@ -1,5 +1,9 @@
 .location__detail {
   @include pull-up-card;
+
+  @media (min-width: 768px) {
+    overflow-y: auto;
+  }
 }
 
 .location-detail__main {
@@ -7,7 +11,6 @@
   list-style-type: none;
   font-size: 16px;
   color: $color-gray;
-  width: calc(100% - 100px);
 
   li {
     display: block;

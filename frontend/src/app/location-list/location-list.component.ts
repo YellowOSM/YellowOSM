@@ -124,4 +124,23 @@ export class LocationListComponent implements OnChanges, OnInit {
       this.appendScrollFeatures();
     }
   }
+
+  getListAddress(label) {
+    let address = '';
+    if (label.hasOwnProperty('addr_street')) {
+      address = label['addr_street'];
+    } else if (label.hasOwnProperty('addr_place')) {
+      address = label['addr_place'];
+    }
+    if (label.hasOwnProperty('addr_housenumber')) {
+      address += ' ' + label['addr_housenumber'];
+    }
+    if (label.hasOwnProperty('addr_unit')) {
+      address += ' ' + label['addr_unit'];
+    }
+    if (label.hasOwnProperty('addr_city')) {
+      address += ', ' + label['addr_city'];
+    }
+    return address;
+  }
 }
