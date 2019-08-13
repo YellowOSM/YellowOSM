@@ -20,4 +20,4 @@ bash ./elasticsearch_data_import.sh yosm_dev >> $logfile 2>&1
 date >> $logfile 2>&1
 bash ./elasticsearch_data_import.sh yosm     >> $logfile 2>&1
 date >> $logfile 2>&1
-echo "Done updating index!!" $logfile 2>&1
+echo "\nDone updating index!!\n\n" >> $logfile 2>&1
