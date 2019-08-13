@@ -328,7 +328,7 @@ yosm_types = {
             'type': 'place',
             'label': '',
         },
-    }
+    },
     'office': {
         'type': 'office',
     },
