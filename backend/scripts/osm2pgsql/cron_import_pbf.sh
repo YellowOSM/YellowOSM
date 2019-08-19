@@ -75,7 +75,7 @@ else
   # cd ~/src/openstreetmap-carto
   # HOSTNAME=localhost # set it to the actual ip address or host name
   osmosis --read-replication-interval workingDirectory=${WORKOSM_DIR} --simplify-change --write-xml-change - | \
-  osm2pgsql --append -s -C $RAM_CACHE -G --number-processes 8 --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
+  osm2pgsql --append -s -C $RAM_CACHE -G --number-processes 8 --style ${WORKOSM_DIR}/yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
   # osm2pgsql --append -s -C 300 -G --hstore --style yosm.style -r xml -d gis -H $PGHOST -U $PGUSER -
 
 fi
