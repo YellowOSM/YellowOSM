@@ -16,7 +16,7 @@ build_frontend:
     - ng build --configuration test --base-href /map/
     - ls -R dist
     - cd dist
-    - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:9}/g"
+    - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html frontend/map/index.html frontend/map/*.js | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:8}/g"
   artifacts:
     paths:
       - frontend/dist/
@@ -44,7 +44,7 @@ build_frontend_prod:
     - ng build --prod --base-href /map/
     - ls -R dist
     - cd dist
-    - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:9}/g"
+    - egrep -lRZe '%YOSM-COMMIT%' frontend/index.html frontend/map/index.html frontend/map/*.js | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:8}/g"
   artifacts:
     paths:
       - frontend/dist/
