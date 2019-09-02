@@ -699,4 +699,24 @@ export class YellowmapComponent implements OnInit {
       this.searchElasticSearch();
     }
   }
+
+  showDebugOuput($event) {
+    if ($event.tapCount == 7) {
+      this.es.getIndexTimeStamp()
+        .then((result) => {
+          console.log(environment.elasticSearchIndex);
+          console.log(result);
+          // debugger;
+          let creation_date = result[environment.elasticSearchIndex]['settings']['index']['creation_date'];
+          creation_date = new Date(parseInt(creation_date, 10)).toLocaleString("de-DE");
+          const message = 'Commit #' + environment.gitCommitHash + ', Index ' +
+            environment.elasticSearchIndex + ', (erstellt: ' + creation_date + ')';
+          this.snackBar.open(message, 'okay', {
+            verticalPosition: 'top'
+          });
+      }, error => {
+        console.error('Server is down', error);
+      })
+    }
+  }
 }

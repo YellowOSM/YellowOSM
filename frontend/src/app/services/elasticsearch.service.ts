@@ -223,4 +223,10 @@ export class ElasticsearchService {
       }
     });
   }
+
+  public getIndexTimeStamp() {
+    return this.client.indices.get({
+      index: environment.elasticSearchIndex
+    });
+  }
 }

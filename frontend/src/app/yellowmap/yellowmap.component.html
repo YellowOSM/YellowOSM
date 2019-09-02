@@ -13,7 +13,7 @@
       <div class="search__button">
         <mat-icon *ngIf="searchFormControl.value" (click)="removeSearchText()" class="search__clear">close</mat-icon>
         <button type="submit">
-          <mat-icon (click)="searchElasticSearch()">search</mat-icon>
+          <mat-icon (click)="searchElasticSearch()" (tap)="showDebugOuput($event)">search</mat-icon>
         </button>
       </div>
     </mat-toolbar>
@@ -49,7 +49,7 @@
 
   <div class="map__wrapper">
     <div id="map" class="map" #mapElement></div>
-    <button mat-mini-fab (click)="switchLayers()" class="map__layers-button">
+    <button mat-mini-fab (tap)="switchLayers()" class="map__layers-button">
       <mat-icon aria-label="Kartendarstellung umschalten">layers</mat-icon>
     </button>
     <button mat-fab (click)="getLocation()" class="map__location-button">
