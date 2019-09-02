@@ -16,5 +16,6 @@ export const environment = {
   apiBaseUrl: 'https://www.yellowosm.com/api',
   shortLinkBaseUrl: 'https://yosm.at',
   matomoBaseUrl: '//matomo.yosm.at/',
-  matomoWebsiteId: 1
+  matomoWebsiteId: 1,
+  gitCommitHash: '%YOSM-COMMIT%'
 };
