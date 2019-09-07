@@ -445,7 +445,7 @@ export class YellowmapComponent implements OnInit {
       this.searchFormControl.value,
       topLeft,
       bottomRight,
-      this.showHeatmapLayer ? 1000 : 200
+      this.showHeatmapLayer ? 1000 : environment.max_search_results
     ).then((result) => {
       if (result !== null && result.hits.total.value > 0) {
         console.log(result['hits']['hits']);
