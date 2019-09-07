@@ -17,5 +17,6 @@ export const environment = {
   shortLinkBaseUrl: 'https://yosm.at',
   matomoBaseUrl: '//matomo.yosm.at/',
   matomoWebsiteId: 1,
-  gitCommitHash: '%YOSM-COMMIT%'
+  gitCommitHash: '%YOSM-COMMIT%',
+  max_search_results: 300
 };

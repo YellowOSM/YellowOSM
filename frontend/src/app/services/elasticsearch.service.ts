@@ -29,7 +29,7 @@ export class ElasticsearchService {
     });
   }
 
-  public fullTextBoundingBoxSearch(userQuery: string, topLeft: any, bottomRight: any, size: number = 200) {
+  public fullTextBoundingBoxSearch(userQuery: string, topLeft: any, bottomRight: any, size: number = environment.max_search_results) {
     const esQuery = ElasticsearchService.getCommonFullTextQueryBody(userQuery, size);
     esQuery.body.query.bool['filter'] = {
       'geo_bounding_box': {
@@ -125,7 +125,7 @@ export class ElasticsearchService {
     return this.client.search(esQuery);
   }
 
-  private static getCommonFullTextQueryBody(userQuery: string, size: number = 200) {
+  private static getCommonFullTextQueryBody(userQuery: string, size: number = environment.max_search_results) {
     return {
       index: environment.elasticSearchIndex,
       type: '_doc',
