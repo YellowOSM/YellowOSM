@@ -253,6 +253,31 @@ export_place = { "key": "place",
                        "village",
                        ]
                  }
+export_industrial = { "key": "industrial",
+                 "values":
+                     [
+                    "sawmill",
+                    "scrap_yard",
+                    "slaughterhouse",
+                    "warehouse",
+                    "steelmaking",
+                    "oil_mill",
+                    "oil",
+                    "mine",
+                    "machine_shop",
+                    "heating_station",
+                    "grinding_mill",
+                    "furniture",
+                    "factory",
+                    "distributor",
+                    "depot",
+                    "brickyard",
+                    "brewery",
+                    "bakery",
+                    "aluminium_smelting",
+                    "port",
+                    ]
+                }
 
 classes_to_export = [
     export_amenity,
@@ -260,8 +285,13 @@ classes_to_export = [
     export_atm,
     export_healthcare,
     export_place,
+    export_industrial,
     ]
+
+# get all keys, with any value
 any_classes = [export_shop, export_tourism, export_craft, export_office]
+
+# only when payment is needed, e.g. pools
 special_access_classes = [export_leisure,]
 
 if query_db:

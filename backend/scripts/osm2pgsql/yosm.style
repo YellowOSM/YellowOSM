@@ -149,9 +149,16 @@ node,way   wikipedia           text  linear
 node,way   wikidata            text  linear
 node,way   collection_times    text  linear
 node,way   place               text  linear
+node,way   stars               text  linear
 # place:   city, town, village
 node,way   takeaway            text  linear
 node,way   delivery            text  linear
+node,way   industrial          text  linear
+node,way   payment:cash        text  linear
+node,way   payment:coins       text  linear
+node,way   payment:credit_cards  text  linear
+node,way   payment:notes       text  linear
+node,way   payment:bitcoin     text  linear
 
 
 # Area tags

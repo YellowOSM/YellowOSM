@@ -81,8 +81,15 @@ labels = [ # order important!
     "wikidata",
     "collection_times",
     "place",
+    "stars",
     "takeaway",
-    "delivery"
+    "delivery",
+    "industrial",
+    "payment:cash",
+    "payment:coins",
+    "payment:credit_cards",
+    "payment:notes",
+    "payment:bitcoin",
 ]
 
 translated_info = {
@@ -332,6 +339,13 @@ yosm_types = {
     'office': {
         'type': 'office',
     },
+    # 'industrial': {
+    #     'type': 'unknown', # fallback type
+    #     'brewery': {
+    #         'type': 'industrial',
+    #         'label': 'Brauerei',
+    #     },
+    # },
 }
 
 cuisine_replacements = {
