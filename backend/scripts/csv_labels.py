@@ -339,13 +339,27 @@ yosm_types = {
     'office': {
         'type': 'office',
     },
-    # 'industrial': {
-    #     'type': 'unknown', # fallback type
-    #     'brewery': {
-    #         'type': 'industrial',
-    #         'label': 'Brauerei',
-    #     },
-    # },
+    'industrial': {
+        'type': 'industry', # for all industrial
+        'bakery': '',
+        'brewery': '',
+        'brickyard': '',
+        'depot': '',
+        'factory': '',
+        'gas': '',
+        'grinding_mill': '',
+        'machine_shop': '',
+        'oil': '',
+        'port': '',
+        'sawmill': '',
+        'scrap_yard': '',
+        'shipyard': '',
+        'slaughterhouse': '',
+        'timber': '',
+        'warehouse': '',
+        'wellsite': '',
+        'well_cluster': '',
+    },
 }
 
 cuisine_replacements = {

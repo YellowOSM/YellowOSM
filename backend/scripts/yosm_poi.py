@@ -142,8 +142,15 @@ class YOSM_POI():
             self.label_dict['phone'] = self.label_dict['contact_mobile']
             del self.label_dict['contact_mobile']
 
-        # contact_fax is the same
-        # contact_email is the same
+        # contact_fax is the same, but get fax if contact_fax is missing
+        if not 'contact_fax' in self.label_dict and 'fax' in self.label_dict:
+            self.label_dict['contact_fax'] = self.label_dict['fax']
+            del self.label_dict['fax']
+
+        # contact_email is the same, but get email if contact_email is missing
+        if not 'contact_email' in self.label_dict and 'email' in self.label_dict:
+            self.label_dict['contact_email'] = self.label_dict['email']
+            del self.label_dict['email']
 
         # leave website the same
         # just overwrite if contact_website present
