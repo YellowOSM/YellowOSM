@@ -156,7 +156,8 @@ export class ElasticsearchService {
                       'labels.shop',
                       'labels.sport',
                       'labels.tourism',
-                      'labels.vending'
+                      'labels.vending',
+                      'labels.industrial'
                     ]
                   }
               }

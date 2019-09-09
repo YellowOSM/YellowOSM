@@ -126,6 +126,7 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     resp.status_code = 302
     resp.headers['Location'] = redir_url
 
+
 async def get_poi_info(req, resp, osm_id):
     url = ES_URL + "/" + ES_INDEX + "/_search"
     es_query = json.dumps(
