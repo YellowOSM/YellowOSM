@@ -94,8 +94,8 @@ labels = [ # order important!
 
 translated_info = {
     "atm": ["Bankomat", "Geldautomat"],
-    "restaurant": ["Gasthaus", "Wirtshaus"],
-    "pub": ["Gasthaus", "Wirtshaus"],
+    "restaurant": ["Restaurant", "Gasthaus", "Wirtshaus", "osm:restaurant"],
+    "pub": ["Restaurant", "Gasthaus", "Wirtshaus"],
     "bar": ["Bar","Beisl"],
     "fuel": ["Tankstelle"],
     "toilets": ["Toilette","Klo","Häuschen"],
@@ -113,7 +113,7 @@ translated_info = {
     "supermarket": ["Supermarkt"],
     "playground": ["Spielplatz",],
     "drinking_water": ["Trinkasser","Wasser",],
-    "fast_food": ["Fast Food","Imbiss",],
+    "fast_food": ["Restaurant", "Fast Food","Imbiss",],
     "bakery": ["Bäckerei","Bäcker","Brot",],
     "optician": ["Optiker","Brillen"],
     "perfumery": ["Parfümerie",],
