@@ -18,6 +18,7 @@ class YOSM_POI():
         self._load_csv(csv)
         self._translate_poi()
         self._estimate_and_set_country(self.lat, self.lon)
+        self._cleanup_labels()
 
 
     def _load_csv(self, line):
@@ -270,3 +271,9 @@ class YOSM_POI():
         if 'addr_country' not in self.label_dict:
             data = reverse_geocode.search([(float(lat), float(lon))])
             self.label_dict['addr_country'] = data[0]['country_code']
+
+    def _cleanup_labels(self):
+        """Remove labels that are not needed"""
+        blacklist = ["building"]
+        for bad_label in blacklist:
+            self.label_dict.pop(bad_label, None)
