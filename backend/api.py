@@ -28,7 +28,7 @@ ES_INDEX = os.getenv("ES_INDEX", default='yosm')
 
 api = responder.API(
     debug=DEBUG,
-    version="0.1b",
+    version="0.2b",
     cors=True,
     cors_params={"allow_origins": ["*"], "allow_methods": ["*"], "allow_headers": ["*"]},
 )
@@ -126,9 +126,7 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
     resp.status_code = 302
     resp.headers['Location'] = redir_url
 
-
-@api.route("/api/get_vcard/{osm_id}")
-async def get_vcard(req, resp, *, osm_id):
+async def get_poi_info(req, resp, osm_id):
     url = ES_URL + "/" + ES_INDEX + "/_search"
     es_query = json.dumps(
         {
@@ -156,13 +154,20 @@ async def get_vcard(req, resp, *, osm_id):
     except (ConnectionError, requests.exceptions.ConnectionError) as ex:
         resp.text = "error: could not connect to database."
         resp.status_code = 504
-        return
-    if json.loads(r.text)['hits']['total'] == 0:
+    if json.loads(r.text)['hits']['total']['value'] == 0:
         resp.status_code = 404
-        resp.text = "error: no contact data found."
-        return
+        resp.text = "error: no data found."
+    return (r, resp)
 
-    resp.status_code = r.status_code
+@api.route("/api/get_vcard/{osm_id}")
+async def get_vcard(req, resp, *, osm_id):
+    r, resp = await get_poi_info(req, resp, osm_id)
+
+    if resp.status_code == 504 or resp.status_code == 404:
+        return
+    else:
+        resp.status_code = r.status_code
+
     data = json.loads(r.text)['hits']['hits'][0]['_source']
     # compose vcard
     begin = "BEGIN:VCARD"
@@ -170,7 +175,7 @@ async def get_vcard(req, resp, *, osm_id):
     name = data['name']
     lon, lat = data['location']
     contact_email =     data['labels'].get('contact_email', "")
-    contact_fax =       data['labels'].get('fax', "")
+    contact_fax =       data['labels'].get('contact_fax', "")
     contact_phone =     data['labels'].get('phone', "").replace(" ", "")
     contact_website =   data['labels'].get('website', "")
     addr_street =       data['labels'].get('addr_street', "")
@@ -215,6 +220,26 @@ async def get_vcard(req, resp, *, osm_id):
         "Content-disposition": "attachment; filename=\"" + name.replace(" ","_")+"_"+str(osm_id)+".vcard\""}
     resp.text = f"{begin}\n{version}\n{n}\n{fn}\n{address}\n{geo}\n{phone}\n{fax}\n"+\
                 f"{url}\n{email}\n{source}\n{end}"
+
+@api.route("/api/get_json/{osm_id}")
+async def get_json(req, resp, *, osm_id):
+    r, resp = await get_poi_info(req, resp, osm_id)
+
+    # logger.info(r.status_code)
+    # logger.info(r.text)
+    # logger.info(resp.status_code)
+    # logger.info(resp.text)
+
+    if resp.status_code == 504 or resp.status_code == 404:
+        return
+    else:
+        resp.status_code = r.status_code
+
+    data = json.loads(r.text)['hits']['hits'][0]['_source']
+    if int(req.params.get('pretty', ['0'])[0]) == 1:
+        resp.text = json.dumps(data, indent=4, sort_keys=True)
+    else:
+        resp.media = data
 
 
 def _locate_user_ip(req):
