@@ -77,7 +77,7 @@
         </a>
       </div>
       <div *ngIf="labels['osm_id']">
-        <a [href]="'https://yellowosm.com/api/get_vcard/' + labels['osm_id']" class="location-button" target="_blank"
+        <a [href]="apiBaseUrl + '/get_vcard/' + labels['osm_id']" class="location-button" target="_blank"
            (click)="trackPoiAction('vcf')">
           <button mat-fab>
             <mat-icon>contact_phone</mat-icon>
@@ -92,17 +92,18 @@
       <div [innerHTML]="opening_hours_pretty"></div>
     </div>
     <div class="details">
-      <div class="details__link" *ngIf="osmlink">
-        <a [href]="osmlink" target="_blank" (click)="trackPoiAction('edit')">
-          <mat-icon>edit</mat-icon>
-          Eintrag bearbeiten</a>
-      </div>
       <div class="details__link" *ngIf="permalink">
         <a [href]="permalink" target="_blank" (click)="trackPoiAction('osm-link')">
-          <mat-icon>link</mat-icon>
-          {{permalink}}</a>
+          <mat-icon>link</mat-icon>{{permalink}}</a>
+      </div>
+      <div class="details__link" *ngIf="osmlink">
+        <a [href]="osmlink" target="_blank" (click)="trackPoiAction('edit')">
+          <mat-icon>edit</mat-icon>Eintrag bearbeiten</a>
+      </div>
+      <div class="details__link" *ngIf="osmlink">
+        <a [href]="apiBaseUrl + '/get_json/' + labels['osm_id'] + '?pretty=1'" target="_blank" (click)="trackPoiAction('get-json')">
+          <mat-icon>data_usage</mat-icon>Rohdaten ansehen</a>
       </div>
     </div>
   </div>
 </div>
-

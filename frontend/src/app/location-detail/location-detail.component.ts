@@ -43,6 +43,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
   open_now = undefined;
   open_next = undefined;
   opening_hours_pretty = undefined;
+  apiBaseUrl = undefined;
 
   constructor(
     private geo58service: Geo58Service,
@@ -77,6 +78,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     this.permalink = this.getPermalink(lonLat);
     this.osmlink = this.getOsmLink();
     this.parseOpeningHours();
+    this.apiBaseUrl = environment.apiBaseUrl;
   }
 
   private getPermalink(lonLat: object) {
@@ -155,7 +157,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     if (event.deltaY < 0 && this.topPos <= this.MIN_TOP_OFFSET) {
       return;
     }
-    
+
     this.topPos = Math.max(this.BOTTOM_OFFSET, this.topStartPos + event.deltaY);
     this.topPos = Math.min(window.innerHeight - AppSettings.MIN_BOTTOM_OFFSET, this.topStartPos + event.deltaY);
   }
