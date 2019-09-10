@@ -2,6 +2,7 @@
 order derives from `backend/scripts/osm2pgsql/yosm.style`, but also from the
 queries in `backend/scripts/export_osm_to_elasticsearch.py`
 """
+from collections import OrderedDict
 
 # get an INCOMPLETE list of labels from the DB:
 # the DB queries will add additional elements
@@ -158,7 +159,9 @@ translated_info = {
     # "": ["",],
 }
 
-yosm_types = {
+# order is important
+# if a POI has multiple matches the first will be used.
+yosm_types = OrderedDict({
     'amenity': {
         'type': 'unknown', # fallback type
         'restaurant': {
@@ -275,6 +278,10 @@ yosm_types = {
             'type': 'shop',
             'label': 'Lebensmittelgeschäft',
         },
+        'mall': {
+            'type': 'shop',
+            'label': 'Einkaufszentrum',
+        },
     },
     'craft': {
         'type': 'craftsman', # for all of class craft that don't have type
@@ -373,7 +380,7 @@ yosm_types = {
         'supermarket': '',
         'warehouse': '',
     },
-}
+})
 
 cuisine_replacements = {
     'vegetarian': 'vegetarisch',

@@ -20,7 +20,7 @@ class YOSM_POI():
             return
         self._translate_poi()
         self._estimate_and_set_country(self.lat, self.lon)
-        self._cleanup_labels()
+        # self._cleanup_labels()
 
 
     def _load_csv(self, line):
@@ -49,6 +49,7 @@ class YOSM_POI():
 
         for typus in ['amenity','leisure','shop', 'craft', 'tourism']:
             if typus in self.label_dict and self.label_dict[typus] in translated_info:
+
                 self.desc += " " + " ".join(translated_info[self.label_dict[typus]])
             # if self.label_dict[subtype]
 
@@ -86,6 +87,9 @@ class YOSM_POI():
                     else:
                         self.yosm_subtype = " ".join(yosm_types[osmtype][self.label_dict[osmtype]]['label'].capitalize().split('_'))
                         # print("yosm_subtype: " + yosm_subtype)
+
+                    # stop type search after first hit
+                    break
 
         except KeyError as ex:
             print(self.label_dict)
