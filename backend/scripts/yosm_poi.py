@@ -16,9 +16,11 @@ class YOSM_POI():
         self.country_code = None
         self.label_dict = {}
         self._load_csv(csv)
+        if self._filter_and_tag_poi():
+            return
         self._translate_poi()
         self._estimate_and_set_country(self.lat, self.lon)
-        # self._cleanup_labels()
+        self._cleanup_labels()
 
 
     def _load_csv(self, line):
@@ -277,3 +279,12 @@ class YOSM_POI():
         blacklist = ["building"]
         for bad_label in blacklist:
             self.label_dict.pop(bad_label, None)
+
+    def _filter_and_tag_poi(self):
+        # clean up building type:
+        # building of commercial use should have at least a name to be in the index
+        if 'building' == self.yosm_type:
+            if self.name.lower() in yosm_types['building']:
+                self.label_dict['dont_import'] = True
+                return True
+        return False

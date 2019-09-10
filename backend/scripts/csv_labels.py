@@ -361,7 +361,7 @@ yosm_types = {
         'well_cluster': '',
     },
     'building': {
-        'type': 'industry',
+        'type': 'building',
         'commercial': '',
         'factory': '',
         'hotel': '',

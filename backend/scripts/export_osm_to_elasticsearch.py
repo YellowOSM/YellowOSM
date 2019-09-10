@@ -283,7 +283,20 @@ export_industrial = { "key": "industrial",
                     "well_cluster",
                     ]
                 }
-
+export_building = {'key': 'building',
+                'values': [
+                'commercial',
+                'factory',
+                'hotel',
+                'industrial',
+                'kiosk',
+                'manufacture',
+                'retail',
+                'shop',
+                'supermarket',
+                'warehouse',
+                ]
+            }
 classes_to_export = [
     export_amenity,
     export_leisure, # leave this in here, even if it's also a special_access_classes element
@@ -291,9 +304,11 @@ classes_to_export = [
     export_healthcare,
     export_place,
     export_industrial,
+    export_building,
     ]
 
 # get all keys, with any value
+# any_classes = []
 any_classes = [export_shop, export_tourism, export_craft, export_office]
 
 # only when payment is needed, e.g. pools
@@ -363,6 +378,9 @@ def convert_line_to_json(line, osm_ids):
         osm_ids[line[5]] = True
 
     poi = YOSM_POI(line)
+
+    if poi.label_dict.get('dont_import', None):
+        return None
 
     # build elastic search import file:
     json_line = json.dumps({"index": {}}) + "\n"
