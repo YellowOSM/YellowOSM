@@ -14,7 +14,7 @@ OUTDEVNULL=1 # log file uploads to /dev/null
 # OUTDEVNULL=0 # log file uploads to /var/log/ES_import....log
 OUTFILEBASE=/var/log/ES_import
 if [[ $1 == '--help' ]]; then
-  echo "usage: ${0} --help | [--device eth0 | --local] [--no-delete] [yosm|yosm_dev] [--files es_*.json]"
+  echo "usage: ${0} --help | [--device eth0 | --local] [--no-delete] [yosm|yosm_dev] [--files \"es_*.json\"]"
   exit
 fi
 
