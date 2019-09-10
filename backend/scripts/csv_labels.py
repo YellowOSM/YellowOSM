@@ -360,6 +360,19 @@ yosm_types = {
         'wellsite': '',
         'well_cluster': '',
     },
+    'building': {
+        'type': 'industry',
+        'commercial': '',
+        'factory': '',
+        'hotel': '',
+        'industrial': '',
+        'kiosk': '',
+        'manufacture': '',
+        'retail': '',
+        'shop': '',
+        'supermarket': '',
+        'warehouse': '',
+    },
 }
 
 cuisine_replacements = {
