@@ -20,7 +20,7 @@ class YOSM_POI():
             return
         self._translate_poi()
         self._estimate_and_set_country(self.lat, self.lon)
-        # self._cleanup_labels()
+        self._cleanup_labels()
 
 
     def _load_csv(self, line):
