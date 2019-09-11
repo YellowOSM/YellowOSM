@@ -14,7 +14,9 @@ build_frontend:
     - cd frontend
     - npm install
     - egrep -lRZe '%YOSM-COMMIT%' src/environments/environment*.ts | xargs -0 -l sed -i -e "s/%YOSM-COMMIT%/${CI_COMMIT_SHA:0:8}/g"
-    - ng build --configuration test --base-href /map/
+    - mv src/environments/environment.test.ts src/environments/environment.prod.ts
+    # - ng build --configuration test --base-href /map/
+    - ng build --prod --base-href /map/
     - ls -R dist
     - cd dist
   artifacts:
