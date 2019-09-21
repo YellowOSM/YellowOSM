@@ -5,7 +5,8 @@ import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {path: ':zoom/:lat/:lon', component: YellowmapComponent},
-  {path: '', redirectTo: '/15/47.0707/15.4395', pathMatch: 'full'},
+  {path: '', redirectTo: '/15/49.4129/8.6941', pathMatch: 'full'}, // Heidelberg
+  // {path: '', redirectTo: '/15/47.0707/15.4395', pathMatch: 'full'}, // Graz
   {path: '**', component: PageNotFoundComponent}
 ];
 
