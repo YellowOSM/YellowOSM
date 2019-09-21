@@ -160,6 +160,33 @@ deploy_static_page:
 
 ##################### Production ##############################
 
+deploy_prod_static_page:
+  stage: deploy
+  image: node:latest
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    ## DON'T use protected variables for this!!
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ping -c 1 toddvm5.klienux.at
+    - ls -lha
+  script:
+    - ssh root@toddvm5.klienux.at 'mkdir -p /srv/html_prod/'
+    - scp -r static/* root@toddvm5.klienux.at:/srv/html_prod/
+    - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
+  only:
+    refs:
+      - production
+    changes:
+      - static/**/*
+  environment:
+    name: prod
+    url: https://www.yellowosm.com
+    
 deploy_prod_backend:
   stage: deploy
   image: python:3.7-stretch
@@ -185,7 +212,10 @@ deploy_prod_backend:
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder_prod/; docker-compose build yosm-prod-backend; docker-compose up --detach yosm-prod-backend;'
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
-    - production
+    refs:
+      - production
+    changes:
+      - backend/**/*
   environment:
     name: prod
     url: https://www.yellowosm.com
@@ -215,7 +245,7 @@ deploy_prod_frontend:
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
     refs:
-      - master
+      - production
     changes:
       - frontend/**/*
   environment:
