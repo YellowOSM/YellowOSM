@@ -214,7 +214,10 @@ deploy_prod_frontend:
     - ssh root@toddvm5.klienux.at 'mv /srv/html_prod /srv/html_prod_old; mv /srv/html_prod_new /srv/html_prod; rm -r /srv/html_prod_old'
     - ssh root@toddvm5.klienux.at cat yellowosm_success.txt
   only:
-    - production
+    refs:
+      - master
+    changes:
+      - frontend/**/*
   environment:
     name: prod
     url: https://www.yellowosm.com
