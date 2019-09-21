@@ -249,7 +249,7 @@ def _locate_user_ip(req):
 
     # redirect users outside of DACH to
     # fallback_lat, fallback_lon = 47.07070, 15.43950 # Graz
-    fallback_lat, fallback_lon = 47.07070, 15.43950 # Heidelberg
+    fallback_lat, fallback_lon = 49.4129, 8.6941 # Heidelberg
 
     client = str(req._starlette.client[0])
     forw_for = req.headers['x-forwarded-for'] if 'x-forwarded-for' in req.headers else client
