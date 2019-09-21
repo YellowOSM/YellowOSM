@@ -247,17 +247,20 @@ def _locate_user_ip(req):
     logger.info("client: " + str(req._starlette.client[0]))
     geoip = geoip2.database.Reader('./lib/geoip/GeoLite2-City.mmdb')
 
+    # redirect users outside of DACH to
+    # fallback_lat, fallback_lon = 47.07070, 15.43950 # Graz
+    fallback_lat, fallback_lon = 47.07070, 15.43950 # Heidelberg
+
     client = str(req._starlette.client[0])
     forw_for = req.headers['x-forwarded-for'] if 'x-forwarded-for' in req.headers else client
     remote_client = forw_for.split(",")[0]
     try:
         geoip_resp = geoip.city(remote_client)
         lat, lon = geoip_resp.location.latitude, geoip_resp.location.longitude
-        # redirect users outside of DACH to Graz
         if geoip_resp.country.iso_code not in ["AT", "DE", "CH", "LI"]:
-            lat, lon = 47.07070, 15.43950
+            lat, lon = fallback_lat, fallback_lon
     except geoip2.errors.AddressNotFoundError:
-        lat, lon = 47.07070, 15.43950
+        lat, lon = fallback_lat, fallback_lon
     geoip.close()
 
     data = {"ip": str(remote_client), "lat": lat, "lon": lon}
