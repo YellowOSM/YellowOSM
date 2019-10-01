@@ -3,18 +3,20 @@ import logging
 import sys
 
 log = logging.getLogger(__name__)
-log.setLevel('DEBUG')
+log.setLevel("DEBUG")
 
 LOG_TO_CONSOLE = False
 if LOG_TO_CONSOLE:
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     ch.setFormatter(formatter)
     log.addHandler(ch)
 
 
-class Geo58():
+class Geo58:
     """Geo58 class to hold and convert geo-coordinates in z/x/y format and
     base58 encoded short strings."""
 
@@ -22,6 +24,7 @@ class Geo58():
 
     class Geo58Exception(ValueError):
         """Values out of range"""
+
         pass
 
     def __init__(self, zoom=20, lat=None, lon=None, x=None, y=None, g58=None):
@@ -39,12 +42,14 @@ class Geo58():
 
         if (not self._zoom or not self._lat or not self._lon) and self._geo58:
             self._zoom, self._lat, self._lon = self._geo58ToCoords(self._geo58)
-            # log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
+            # log.debug("{} {} {}, geo58: {}"
+            # .format(self._zoom, self._lat, self._lon, self._geo58))
             self._validate_coords(self._zoom, self._lat, self._lon)
 
         log.debug("_init: {} {} {}".format(self._zoom, self._lat, self._lon))
-        log.debug("{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58))
-
+        log.debug(
+            "{} {} {}, geo58: {}".format(self._zoom, self._lat, self._lon, self._geo58)
+        )
 
     def get_geo58(self):
         """Return base58 geo string (geo58)"""
@@ -83,14 +88,18 @@ class Geo58():
         y (lon) can be between 180.00000 and -180.00000
         """
         log.debug("validate: {} {} {}".format(zoom, x, y))
-        x = int(float(x)*100000)
-        y = int(float(y)*100000)
-        zoom = int(float(zoom) + 0.5) # round to closest full int
+        x = int(float(x) * 100000)
+        y = int(float(y) * 100000)
+        zoom = int(float(zoom) + 0.5)  # round to closest full int
         if x < -9000000 or x > 9000000:
-            raise Geo58.Geo58Exception("lat (x) is out of range {} {} {}".format(zoom, x, y))
+            raise Geo58.Geo58Exception(
+                "lat (x) is out of range {} {} {}".format(zoom, x, y)
+            )
         if y < -18000000 or y > 18000000:
-            raise Geo58.Geo58Exception("lon (y) is out of range {} {} {}".format(zoom, x, y))
-        if zoom < 5 or zoom > 20: # 4bit - 20 is no-zoom given
+            raise Geo58.Geo58Exception(
+                "lon (y) is out of range {} {} {}".format(zoom, x, y)
+            )
+        if zoom < 5 or zoom > 20:  # 4bit - 20 is no-zoom given
             raise Geo58.Geo58Exception("zoom is out of range (5-20)")
         log.debug("valid: {} {} {}".format(zoom, x, y))
 
@@ -98,17 +107,17 @@ class Geo58():
         """Converts coordinates and zoom to one integer.
         """
         log.debug("_convertCoordsToInt: {} {} {}".format(z, x, y))
-        self._validate_coords(z,x,y)
+        self._validate_coords(z, x, y)
 
         # x is mapped from -90 to +90 -> 0 to 180
         # y is mapped from -180 to 180 -> 0 to 360
-        x = int( (float(x) + 90 ) * 100_000)
-        y = int( (float(y) + 180) * 100_000)
+        x = int((float(x) + 90) * 100_000)
+        y = int((float(y) + 180) * 100_000)
 
         merged_coords = self._bin_merge_x_y(x, y)
 
-        z = int(float(z) + 0.5) # round to closest full int
-        z = (z - 20) * -1 # zoom 20 = b0x0
+        z = int(float(z) + 0.5)  # round to closest full int
+        z = (z - 20) * -1  # zoom 20 = b0x0
 
         # coord = z << 51 | x << 26 | y #25 bits
         coord = z << 51 | merged_coords
@@ -116,17 +125,16 @@ class Geo58():
         return coord
 
     def _convertIntToCoords(self, i):
-        zoom = (i & (15 << 25+26)) >> (51)
-        x, y = self._bin_unmerge_x_y(i & 0x7ffffffffffff)
+        zoom = (i & (15 << 25 + 26)) >> (51)
+        x, y = self._bin_unmerge_x_y(i & 0x7FFFFFFFFFFFF)
         # x = (i & (2**25-1 << 26)) >> (26) # 2**24-1 << 25
         # y =  i & (2**26-1) # 67108863 # 2**25-1
-        x = float(x- 9000000)/100000
-        y = float(y-18000000)/100000
-        z = (zoom *-1 + 20)
+        x = float(x - 9000000) / 100000
+        y = float(y - 18000000) / 100000
+        z = zoom * -1 + 20
         z = int(z)
         log.debug("_convertIntToCoords: {} {} {}".format(z, x, y))
-        return (z,x,y)
-
+        return (z, x, y)
 
     def _bin_merge_x_y(self, x, y):
         """merge two integers (x: 25 bit, y: 26 bit) on binary level so that
@@ -139,13 +147,13 @@ class Geo58():
         a = 0
         b = 0
         mask = 0x1
-        for s in range(1,26):
+        for s in range(1, 26):
             # print("s: {}, mask: {}".format(s, hex(mask)))
-            a |= ((x & mask) << s)
+            a |= (x & mask) << s
             mask = mask << 1
         mask = 0x1
-        for s in range(0,27):
-            b |= ((y & mask) << s)
+        for s in range(0, 27):
+            b |= (y & mask) << s
             mask = mask << 1
         i = a | b
         log.debug("binary merged int: {}".format(i))
@@ -156,17 +164,21 @@ class Geo58():
         a = 0
         b = 0
         mask = 0x2
-        for s in range(1,27):
+        for s in range(1, 27):
             # print("i: {}, a: {}, s: {}, mask: {}".format(i, a, s, hex(mask)))
-            a |= ((i & mask) >> s)
+            a |= (i & mask) >> s
             mask = mask << 2
 
         mask = 0x1
-        for s in range(0,27):
+        for s in range(0, 27):
             # print("i: {}, b: {}, s: {}, mask: {}".format(i, b, s, hex(mask)))
-            b |= ((i & mask) >> s)
+            b |= (i & mask) >> s
             mask = mask << 2
-        log.debug("binary reverted coords: {},{}, {},{}".format(a,b,a-9000000,b-18000000))
+        log.debug(
+            "binary reverted coords: {},{}, {},{}".format(
+                a, b, a - 9000000, b - 18000000
+            )
+        )
         return (int(a), int(b))
 
     def _coordsToGeo58(self, zoom, x, y):
@@ -175,25 +187,27 @@ class Geo58():
 
     def _geo58ToCoords(self, g58):
         i = self._base582int(g58)
-        z,x,y = self._convertIntToCoords(i)
+        z, x, y = self._convertIntToCoords(i)
         log.debug("_get58ToCoords: {} {} {}".format(z, x, y))
-        return (z,x,y)
+        return (z, x, y)
+
+
 # end Geo58 class
 
 
-def test(lat=0.0,lon=0.0,zoom=5,coords=None):
-    log.debug("---"*20)
+def test(lat=0.0, lon=0.0, zoom=5, coords=None):
+    log.debug("---" * 20)
     if not coords:
-        log.debug("="*10+"> {}, {}, {}".format(lat,lon,zoom))
-        g58 = Geo58(lat=lat,lon=lon,zoom=zoom)
+        log.debug("=" * 10 + "> {}, {}, {}".format(lat, lon, zoom))
+        g58 = Geo58(lat=lat, lon=lon, zoom=zoom)
     else:
-        log.debug("="*10+"> {}, {}, {}".format(coords[0],coords[1],coords[2]))
-        g58 = Geo58(lat=coords[0],lon=coords[1],zoom=coords[2])
+        log.debug("=" * 10 + "> {}, {}, {}".format(coords[0], coords[1], coords[2]))
+        g58 = Geo58(lat=coords[0], lon=coords[1], zoom=coords[2])
 
     # g58 = Geo58(lat=45.07071,lon=15.43951,zoom=5)
     # print(hex(g58._int))
     # print(g58._lat, g58._lon)
-    log.debug("="*10+"> "+Geo58(g58=g58._geo58)._geo58)
+    log.debug("=" * 10 + "> " + Geo58(g58=g58._geo58)._geo58)
 
 
 def main():
@@ -242,9 +256,10 @@ def main():
     g58 = Geo58(x=47.07070, y=15.43950)
     g58 = Geo58(x=47.07068, y=15.44130)
     g58 = Geo58(x=47.07068, y=15.44117)
-    g58 = Geo58(g58='4dHEin8gh')
+    g58 = Geo58(g58="4dHEin8gh")
     g58 = Geo58(x=47.07068, y=15.44130, zoom=19)
     g58 = Geo58(x=47.07068, y=15.44117, zoom=19)
+
 
 # if __name__ == "__main__":
 #     main()
