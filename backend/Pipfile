@@ -10,6 +10,8 @@ geoip2 = "*"
 reverse-geocode = "*"
 
 [dev-packages]
+flake8 = "*"
+black = "*"
 
 [requires]
 python_version = "3.7"
