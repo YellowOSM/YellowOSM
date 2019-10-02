@@ -8,6 +8,7 @@ responder = "*"
 python-dotenv = "*"
 geoip2 = "*"
 reverse-geocode = "*"
+tox = "*"
 
 [dev-packages]
 flake8 = "*"

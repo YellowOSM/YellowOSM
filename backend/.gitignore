@@ -3,3 +3,6 @@
 .env_dev
 __pycache__
 *.pyc
+.tox
+.vscode
+.cache

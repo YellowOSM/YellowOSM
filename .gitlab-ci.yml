@@ -1,4 +1,5 @@
 stages:
+  - test
   - build
   - deploy
 
@@ -59,6 +60,24 @@ build_frontend_prod:
   environment:
     name: prod
     url: https://www.yellowosm.com
+
+test_backend:
+  stage: test
+  image: python:3.7-stretch
+  before_script:
+    - pip3 install pipenv
+  script:
+    - ls -R backend
+    - cd backend/
+    - pipenv run tox -e py37
+  only:
+    refs:
+      - master
+    changes:
+      - backend/**/*
+  environment:
+    name: dev
+    url: https://dev.yosm.at
 
 deploy_backend:
   stage: deploy
