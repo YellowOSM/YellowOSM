@@ -202,10 +202,10 @@ async def get_vcard(req, resp, *, osm_id):
         f"{addr_city};;{addr_postcode};{addr_country}"
     )
     # v3
-    label = (
-        f"LABEL;TYPE=WORK:{addr_street} {addr_housenumber},\n"
-        f"{addr_postcode}{addr_city}\n{addr_country}"
-    )
+    # label = (
+    #     f"LABEL;TYPE=WORK:{addr_street} {addr_housenumber},\n"
+    #     f"{addr_postcode}{addr_city}\n{addr_country}"
+    # )
     email = f"EMAIL:{contact_email}"
     # v3
     geo = f"GEO:{lat},{lon}"
@@ -232,7 +232,7 @@ async def get_vcard(req, resp, *, osm_id):
         + '.vcard"',
     }
     resp.text = (
-        f"{begin}\n{version}\n{n}\n{fn}\n{address}\n{label}\n{geo}\n{phone}\n{fax}\n"
+        f"{begin}\n{version}\n{n}\n{fn}\n{address}\n{geo}\n{phone}\n{fax}\n"
         + f"{url}\n{email}\n{source}\n{end}"
     )
 
