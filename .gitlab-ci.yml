@@ -69,6 +69,7 @@ test_backend:
   script:
     - ls -R backend
     - cd backend/
+    - pipenv install
     - pipenv run tox -e py37
   only:
     refs:
