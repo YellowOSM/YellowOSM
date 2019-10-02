@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cc4bba57e8a61e0f0d0e86d1ca450363238a65aba12602e42471bca2326f1e43"
+            "sha256": "2d71b850cb49d4b1dec20c05b8ee3d722f6b3caa0c41894c23c2cc907a518f20"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -93,23 +93,26 @@
         },
         "graphene": {
             "hashes": [
-                "sha256:6a8ead70a220e7a961dd23ce0c4a9f3e79cab3de6de192520502d557d128d072",
-                "sha256:f69d6671884297530ecfd569cdae21f8730ad68f5f5dc09322ac424ba326b591"
+                "sha256:09165f03e1591b76bf57b133482db9be6dac72c74b0a628d3c93182af9c5a896",
+                "sha256:2cbe6d4ef15cfc7b7805e0760a0e5b80747161ce1b0f990dfdc0d2cf497c12f9"
             ],
-            "version": "==3.0.dev20190817210753"
+            "index": "pypi",
+            "version": "==2.1.8"
         },
         "graphql-core": {
             "hashes": [
-                "sha256:55d4b60ac1f7932bce4f1e74468c3111b0b4ed95e6f383587218fd54f427d1c1",
-                "sha256:fc8a0d8b0156eac4506190fdb0ad7d6137ce38c3b2f1af77fb2d5148c722094f"
+                "sha256:1488f2a5c2272dc9ba66e3042a6d1c30cea0db4c80bd1e911c6791ad6187d91b",
+                "sha256:da64c472d720da4537a2e8de8ba859210b62841bd47a9be65ca35177f62fe0e4"
             ],
-            "version": "==3.0.0b1"
+            "version": "==2.2.1"
         },
         "graphql-relay": {
             "hashes": [
-                "sha256:0f6aee750bf64f8cf6f83f76428d78426f12f7666ee7ba8e6b12ff7b8422cd39"
+                "sha256:0e94201af4089e1f81f07d7bd8f84799768e39d70fa1ea16d1df505b46cc6335",
+                "sha256:75aa0758971e252964cb94068a4decd472d2a8295229f02189e3cbca1f10dbb5",
+                "sha256:7fa74661246e826ef939ee92e768f698df167a7617361ab399901eaebf80dce6"
             ],
-            "version": "==3.0.0a1"
+            "version": "==2.0.0"
         },
         "graphql-server-core": {
             "hashes": [
@@ -341,6 +344,13 @@
                 "sha256:df4eba676077cefb86450c8f60121b9ae04b94f65f85b69f3f731af0516b7b18"
             ],
             "version": "==1.3.2"
+        },
+        "rx": {
+            "hashes": [
+                "sha256:13a1d8d9e252625c173dc795471e614eadfe1cf40ffc684e08b8fff0d9748c23",
+                "sha256:7357592bc7e881a95e0c2013b73326f704953301ab551fbc8133a6fadab84105"
+            ],
+            "version": "==1.6.1"
         },
         "scipy": {
             "hashes": [

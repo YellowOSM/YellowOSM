@@ -9,7 +9,7 @@ python-dotenv = "*"
 geoip2 = "*"
 reverse-geocode = "*"
 tox = "*"
-
+graphene = "<=2.1.8"
 [dev-packages]
 flake8 = "*"
 black = "*"
