@@ -2,10 +2,25 @@
 import json
 
 
+def get_es_filter(bounding_box):
+    top_left_lat, top_left_lon, bottom_right_lat, bottom_right_lon = bounding_box
+    return {
+        "geo_bounding_box": {
+            "location": {
+                "top_left": {"lat": float(top_left_lat), "lon": float(top_left_lon)},
+                "bottom_right": {
+                    "lat": float(bottom_right_lat),
+                    "lon": float(bottom_right_lon),
+                },
+            }
+        }
+    }
+
+
 def es_standard_search(query, es_filter):
     return json.dumps(
         {
-            "size": 1000,
+            "size": 10000,
             "query": {
                 "bool": {
                     "should": [
@@ -35,7 +50,7 @@ def es_standard_search(query, es_filter):
                         }
                     ],
                     "minimum_should_match": 1,
-                    # "filter": es_filter,
+                    "filter": es_filter,
                 }
             },
         }
@@ -45,7 +60,7 @@ def es_standard_search(query, es_filter):
 def es_city_search(query, city):
     return json.dumps(
         {
-            "size": 300,
+            "size": 10000,
             "query": {
                 "bool": {
                     "must": [

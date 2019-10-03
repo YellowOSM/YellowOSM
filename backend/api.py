@@ -10,8 +10,16 @@ from dotenv import load_dotenv
 import geoip2.database
 
 from lib.geo58 import Geo58
+
 # import lib.es_queries
-from lib.es_queries import es_standard_search, es_city_search
+from lib.es_queries import es_standard_search, es_city_search, get_es_filter
+
+
+cities_bb_file = "data/cities_bb.json"
+cities_bb = {}
+with open(cities_bb_file) as f:
+    cities_bb = json.loads(f.read())
+
 
 logger = logging.getLogger("api")
 
@@ -321,35 +329,39 @@ async def query_elastic_search(
     # ES_URL and ES_INDEX from settings env
     url = ES_URL + "/" + ES_INDEX + "/_search"
     logger.info("es index: " + ES_INDEX)
-
-    logger.info(f"top_left_lat: {top_left_lat}")
-    if not top_left_lat:
-        logger.debug("no bbox given")
-        # DACH region:
-        top_left_lat, top_left_lon = 55.05918, 5.01902
-        bottom_right_lat, bottom_right_lon = 45.98486, 17.25582
-
     es_filter = None
-    es_filter = {
-        "geo_bounding_box": {
-            "location": {
-                "top_left": {"lat": float(top_left_lat), "lon": float(top_left_lon)},
-                "bottom_right": {
-                    "lat": float(bottom_right_lat),
-                    "lon": float(bottom_right_lon),
-                },
-            }
-        }
-    }
-
+    es_query = None
     query = urllib.parse.unquote(str(query))
 
+    if not top_left_lat:
+        logger.debug("no bbox given .. falling back to DACH")
+        # DACH region:
+        tl_lat, tl_lon = 55.05918, 5.01902
+        br_lat, br_lon = 45.98486, 17.25582
+        es_filter = get_es_filter((tl_lat, tl_lon, br_lat, br_lon))
+    else:
+        tl_lat = float(top_left_lat)
+        tl_lon = float(top_left_lon)
+        br_lat = float(bottom_right_lat)
+        br_lon = float(bottom_right_lon)
+        logger.info(f"top_left_lat: {tl_lat}")
     if city:
         city = urllib.parse.unquote(str(city))
-        logger.debug(f"QUERY: {query} in {city}")
-        es_query = es_city_search(query, city)
-    else:
-        logger.debug(f"QUERY: {query}")
+        if city in cities_bb.keys():
+            tl_lat, tl_lon, br_lat, br_lon = cities_bb[city]["bb"]
+            logger.debug(
+                f"QUERY: {query} in {city} (boundingbox found)"
+                "{}{}{}{}".format(tl_lat, tl_lon, br_lat, br_lon)
+            )
+            es_filter = get_es_filter((tl_lat, tl_lon, br_lat, br_lon))
+            logger.debug(es_filter)
+        else:
+            logger.debug(f"QUERY: {query} in {city} (no bb found)")
+            es_query = es_city_search(query, city)
+
+    logger.debug(f"QUERY: {query}")
+
+    if not es_query:
         es_query = es_standard_search(query, es_filter)
 
     logger.info(url)
@@ -376,8 +388,12 @@ async def query_elastic_search(
         resp.media = {"error": "Not Found"}
         logger.info(f"Nothing found: {query}")
     else:
-        logger.info(result)
         resp.media = result
+
+
+# @api.route("/api/cities_bb")
+# async def query_elastic_search(req, resp):
+#     resp.media = cities_bb
 
 
 if __name__ == "__main__":
