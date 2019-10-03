@@ -11,7 +11,6 @@ import geoip2.database
 
 from lib.geo58 import Geo58
 
-# import lib.es_queries
 from lib.es_queries import es_standard_search, es_city_search, get_es_filter
 
 
@@ -37,7 +36,7 @@ ES_INDEX = os.getenv("ES_INDEX", default="yosm")
 
 api = responder.API(
     debug=DEBUG,
-    version="0.2b",
+    version="0.3b1",
     cors=True,
     cors_params={
         "allow_origins": ["*"],
@@ -50,39 +49,29 @@ api = responder.API(
 logger.info("debug: " + DEBUG)
 if DEBUG:
     logger.setLevel("DEBUG")
+else:
+    logger.setLevel("WARNING")
 logger.debug("short url: " + SHORT_URL_REDIRECT_URL)
 
 
 @api.route("/api/")
 @api.route("/api/hello")
 def hello_world(req, resp):
-    resp.text = "Hello World!"
+    resp.text = (
+        "Hello! You are looking at the backend of YellowOSM.com. It's nice isn't it? "
+        "Do you want to see how we made it? Go to the source code: https://github.com/"
+        "YellowOSM/YellowOSM. \n\n"
+        "We are currently running version {}\n\n"
+        "If you don't know what that means, the interwebz redirected you here by"
+        " mistake.\nMore Information about the project can be found here: "
+        "https://yellowosm.com".format(api.version)
+    )
 
 
-@api.route("/api/expensive-task")
-async def handle_task(req, resp):
-    @api.background.task
-    def process_data(data):
-        """This can take some time"""
-        print("starting background task...")
-        time.sleep(5)
-        print("finished background task...")
-
-    # parse incoming data form-encoded
-    # json and yaml automatically work
-    try:
-        data = await req.media()
-    except json.decoder.JSONDecodeError:
-        data = None
-        pass
-
-    process_data(data)
-
-    resp.media = {"success": True}
-
-
-@api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")
+@api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")  # legacy
+@api.route("/api/geo58/{zoom}/{x}/{y}")
 async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
+    """convert zoom, x, y to a Geo58 string"""
     try:
         g58 = Geo58(zoom=zoom, lat=x, lon=y.strip(" /"))
     except Geo58.Geo58Exception as ex:
@@ -95,7 +84,8 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
     resp.media = {"geo58": g58.get_geo58()}
 
 
-@api.route("/api/geo58_to_coords/{geo58_str}")
+@api.route("/api/geo58_to_coords/{geo58_str}")  # legacy
+@api.route("/api/geo58/{geo58_str}")
 async def convertGeo58ToCoords(req, resp, *, geo58_str):
     try:
         g58 = Geo58(g58=geo58_str)
@@ -119,6 +109,7 @@ async def convertGeo58ToCoordsEmpty(req, resp):
 
 @api.route("/api/redirect_geo58/{geo58_str}")
 async def redirect_geo58(req, resp, *, geo58_str):
+    """redirect Geo58 string to corresponding z/x/y map URL"""
     geo58_str = str(geo58_str)
     index = geo58_str.find(";", 0, 12)
     appendix = "" if index == -1 else str(geo58_str[index:])
@@ -177,6 +168,12 @@ async def get_poi_info(req, resp, osm_id):
 
 @api.route("/api/get_vcard/{osm_id}")
 async def get_vcard(req, resp, *, osm_id):
+    """Get a vcard download for the given `osm_id`
+
+    returns 404 on data not found
+    or 504 on database connection error.
+    """
+
     r, resp = await get_poi_info(req, resp, osm_id)
 
     if resp.status_code == 504 or resp.status_code == 404:
@@ -305,11 +302,11 @@ async def locate_user_ip(req, resp):
 
 
 @api.route("/api/search/{query}")
-@api.route(
-    "/api/search/{top_left_lat}/"
-    "{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}"
-)
 @api.route("/api/search/{city}/{query}")
+@api.route(
+    "/api/search/"
+    "{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}"
+)
 async def query_elastic_search(
     req,
     resp,
@@ -350,8 +347,8 @@ async def query_elastic_search(
         if city.lower() in cities_bb.keys():
             tl_lat, tl_lon, br_lat, br_lon = cities_bb[city.lower()]["bb"]
             logger.debug(
-                f"QUERY: {query} in {city} (boundingbox found)"
-                "{}{}{}{}".format(tl_lat, tl_lon, br_lat, br_lon)
+                f"QUERY: {query} in {city} (boundingbox found: "
+                "({}, {}, {}, {}))".format(tl_lat, tl_lon, br_lat, br_lon)
             )
             es_filter = get_es_filter((tl_lat, tl_lon, br_lat, br_lon))
             logger.debug(es_filter)
@@ -389,11 +386,6 @@ async def query_elastic_search(
         logger.info(f"Nothing found: {query}")
     else:
         resp.media = result
-
-
-# @api.route("/api/cities_bb")
-# async def query_elastic_search(req, resp):
-#     resp.media = cities_bb
 
 
 if __name__ == "__main__":

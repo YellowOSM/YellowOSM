@@ -45,6 +45,7 @@ def es_standard_search(query, es_filter):
                                     "labels.sport",
                                     "labels.tourism",
                                     "labels.vending",
+                                    "labels.cuisine",
                                 ],
                             }
                         }
@@ -85,6 +86,7 @@ def es_city_search(query, city):
                                     "labels.sport",
                                     "labels.tourism",
                                     "labels.vending",
+                                    "labels.cuisine",
                                 ],
                             }
                         },
