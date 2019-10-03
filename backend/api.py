@@ -167,7 +167,7 @@ async def get_poi_info(req, resp, osm_id):
     return (r, resp)
 
 
-@api.route("/api/get_vcard/{osm_id}")
+@api.route("/api/get_vcard/{osm_id}")  # legacy
 @api.route("/api/osmid/{osm_id}.vcard")
 async def get_vcard(req, resp, *, osm_id):
     """Get a vcard download for the given `osm_id`
@@ -200,7 +200,7 @@ async def get_vcard(req, resp, *, osm_id):
     addr_country = data["labels"].get("addr_country", "")
 
     version = "VERSION:3.0"
-    
+
     n = f"N:{name};;;;"
     fn = f"FN:{name}"
     address = (
@@ -237,7 +237,7 @@ async def get_vcard(req, resp, *, osm_id):
     )
 
 
-@api.route("/api/get_json/{osm_id}")
+@api.route("/api/get_json/{osm_id}")  # legacy
 @api.route("/api/osmid/{osm_id}")
 async def get_json(req, resp, *, osm_id):
     r, resp = await get_poi_info(req, resp, osm_id)
@@ -255,6 +255,7 @@ async def get_json(req, resp, *, osm_id):
 
 
 def _locate_user_ip(req):
+    """locate the user's IP"""
     logger.info("client: " + str(req._starlette.client[0]))
     geoip = geoip2.database.Reader("./lib/geoip/GeoLite2-City.mmdb")
 
@@ -282,6 +283,7 @@ def _locate_user_ip(req):
 
 @api.route("/api/forward_ip")
 async def locate_user_ip(req, resp):
+    """forward user based on user IP"""
     data = _locate_user_ip(req)
 
     redir_url = SHORT_URL_REDIRECT_URL.format(zoom=13, x=data["lat"], y=data["lon"])
@@ -311,6 +313,10 @@ async def query_elastic_search(
 ):
 
     """search elastic search index for 'query'.
+
+    use /api/<QUERY> for a global search
+    use /api/<CITY>/<QUERY> for a search in 'CITY'
+    use /api/<CITY>/<QUERY>/<int limit> to limit the number of search results
     add top left and bottom right coordinates to limit the results to
     geo-coordinates
     """
