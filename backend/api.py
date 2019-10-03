@@ -1,4 +1,4 @@
-import time
+# import time
 import json
 import logging
 import os
@@ -30,6 +30,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 load_dotenv()
 DEBUG = os.getenv("DEBUG", default=False)
 SHORT_URL_REDIRECT_URL = os.getenv("SHORT_URL_REDIRECT_URL")
+API_URL = os.getenv("API_URL")
 DEFAULT_ZOOM_LEVEL = os.getenv("DEFAULT_ZOOM_LEVEL", default=19)
 ES_URL = os.getenv("ES_URL")
 ES_INDEX = os.getenv("ES_INDEX", default="yosm")
@@ -183,7 +184,7 @@ async def get_vcard(req, resp, *, osm_id):
 
     data = json.loads(r.text)["hits"]["hits"][0]["_source"]
     # compose vcard
-    begin = "BEGIN:VCARD"
+    begin = "BEGIN:VCARD\n"
     end = "END:VCARD"
     name = data["name"]
     lon, lat = data["location"]
@@ -205,8 +206,12 @@ async def get_vcard(req, resp, *, osm_id):
     # profile = "PROFILE:VCARD"
     # TODO if address incomplete omit address
     address = (
-        f"ADR;TYPE=WORK:;;{addr_street} {addr_housenumber};"
-        f"{addr_city};;{addr_postcode};{addr_country}"
+        (
+            f"ADR;TYPE=WORK:;;{addr_street} {addr_housenumber};"
+            f"{addr_city};;{addr_postcode};{addr_country}\n"
+        )
+        if not data["labels"].get("address_incomplete")
+        else ""
     )
     # v3
     # label = (
@@ -228,7 +233,7 @@ async def get_vcard(req, resp, *, osm_id):
     # v4
     # fax = f"TEL;TYPE=WORK FAX;VALUE=uri:tel:{contact_fax}"
     url = f"URL:{contact_website}"
-    source = f"SOURCE:https://yellowosm.com/api/get_vcard/{osm_id}"
+    source = f"SOURCE:{API_URL}get_vcard/{osm_id}"
 
     resp.headers = {
         "Content-Type": "text/vcard",
@@ -239,7 +244,7 @@ async def get_vcard(req, resp, *, osm_id):
         + '.vcard"',
     }
     resp.text = (
-        f"{begin}\n{version}\n{n}\n{fn}\n{address}\n{geo}\n{phone}\n{fax}\n"
+        f"{begin}{version}\n{n}\n{fn}\n{address}{geo}\n{phone}\n{fax}\n"
         + f"{url}\n{email}\n{source}\n{end}"
     )
 
