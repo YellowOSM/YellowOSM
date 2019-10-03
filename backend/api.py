@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 import geoip2.database
 
 from lib.geo58 import Geo58
+# import lib.es_queries
+from lib.es_queries import es_standard_search, es_city_search
 
 logger = logging.getLogger("api")
 
@@ -296,11 +298,20 @@ async def locate_user_ip(req, resp):
 
 @api.route("/api/search/{query}")
 @api.route(
-    "/api/search/{query}/{top_left_lat}/"
-    "{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}"
+    "/api/search/{top_left_lat}/"
+    "{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}"
 )
+@api.route("/api/search/{city}/{query}")
 async def query_elastic_search(
-    req, resp, *, query, top_left_lat, top_left_lon, bottom_right_lat, bottom_right_lon
+    req,
+    resp,
+    *,
+    query,
+    city=None,
+    top_left_lat=None,
+    top_left_lon=None,
+    bottom_right_lat=None,
+    bottom_right_lon=None,
 ):
 
     """search elastic search index for 'query'.
@@ -311,9 +322,9 @@ async def query_elastic_search(
     url = ES_URL + "/" + ES_INDEX + "/_search"
     logger.info("es index: " + ES_INDEX)
 
-    logger.info(top_left_lat)
+    logger.info(f"top_left_lat: {top_left_lat}")
     if not top_left_lat:
-        logger.info("no bbox given")
+        logger.debug("no bbox given")
         # DACH region:
         top_left_lat, top_left_lon = 55.05918, 5.01902
         bottom_right_lat, bottom_right_lon = 45.98486, 17.25582
@@ -331,43 +342,15 @@ async def query_elastic_search(
         }
     }
 
-    es_query = json.dumps(
-        {
-            "size": 300,
-            "query": {
-                "bool": {
-                    "should": [
-                        {
-                            "query_string": {
-                                "query": urllib.parse.unquote(query.strip()) + "*",
-                                "default_operator": "AND",
-                                "fields": [
-                                    "labels.name^5",
-                                    "description^50",
-                                    #   // 'labels.website^3',
-                                    #   // 'labels.contact_website',
-                                    #   // 'labels.addr_street',
-                                    "labels.addr_city",
-                                    "labels.amenity",
-                                    "labels.craft",
-                                    "labels.emergency",
-                                    "labels.healthcare",
-                                    "labels.healthcare_speciality",
-                                    "labels.leisure",
-                                    "labels.shop",
-                                    "labels.sport",
-                                    "labels.tourism",
-                                    "labels.vending",
-                                ],
-                            }
-                        }
-                    ],
-                    "minimum_should_match": 1,
-                    "filter": es_filter,
-                }
-            },
-        }
-    )
+    query = urllib.parse.unquote(str(query))
+    city = urllib.parse.unquote(str(city))
+
+    if city:
+        logger.debug(f"QUERY: {query} in {city}")
+        es_query = es_city_search(query, city)
+    else:
+        logger.debug(f"QUERY: {query}")
+        es_query = es_standard_search(query, es_filter)
 
     logger.info(url)
     logger.info(es_query)
@@ -388,8 +371,13 @@ async def query_elastic_search(
         }
         result.append({**hit["_source"]["labels"], **loc})
 
-    logger.info(result)
-    resp.media = result
+    if result == []:
+        resp.status_code = api.status_codes.HTTP_404
+        resp.media = {"error": "Not Found"}
+        logger.info(f"Nothing found: {query}")
+    else:
+        logger.info(result)
+        resp.media = result
 
 
 if __name__ == "__main__":
