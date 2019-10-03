@@ -17,10 +17,10 @@ def get_es_filter(bounding_box):
     }
 
 
-def es_standard_search(query, es_filter):
+def es_standard_search(query, es_filter, limit=10000):
     return json.dumps(
         {
-            "size": 10000,
+            "size": int(limit),
             "query": {
                 "bool": {
                     "should": [
@@ -58,10 +58,10 @@ def es_standard_search(query, es_filter):
     )
 
 
-def es_city_search(query, city):
+def es_city_search(query, city, limit=10000):
     return json.dumps(
         {
-            "size": 10000,
+            "size": int(limit),
             "query": {
                 "bool": {
                     "must": [

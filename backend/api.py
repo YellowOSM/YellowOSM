@@ -303,6 +303,7 @@ async def locate_user_ip(req, resp):
 
 @api.route("/api/search/{query}")
 @api.route("/api/search/{city}/{query}")
+@api.route("/api/search/{city}/{query}/{limit}")
 @api.route(
     "/api/search/"
     "{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}"
@@ -313,6 +314,7 @@ async def query_elastic_search(
     *,
     query,
     city=None,
+    limit=10000,
     top_left_lat=None,
     top_left_lon=None,
     bottom_right_lat=None,
@@ -354,12 +356,12 @@ async def query_elastic_search(
             logger.debug(es_filter)
         else:
             logger.debug(f"QUERY: {query} in {city} (no bb found)")
-            es_query = es_city_search(query, city)
+            es_query = es_city_search(query, city, limit)
 
     logger.debug(f"QUERY: {query}")
 
     if not es_query:
-        es_query = es_standard_search(query, es_filter)
+        es_query = es_standard_search(query, es_filter, limit)
 
     logger.info(url)
     logger.info(es_query)
