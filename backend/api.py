@@ -347,8 +347,8 @@ async def query_elastic_search(
         logger.info(f"top_left_lat: {tl_lat}")
     if city:
         city = urllib.parse.unquote(str(city))
-        if city in cities_bb.keys():
-            tl_lat, tl_lon, br_lat, br_lon = cities_bb[city]["bb"]
+        if city.lower() in cities_bb.keys():
+            tl_lat, tl_lon, br_lat, br_lon = cities_bb[city.lower()]["bb"]
             logger.debug(
                 f"QUERY: {query} in {city} (boundingbox found)"
                 "{}{}{}{}".format(tl_lat, tl_lon, br_lat, br_lon)
