@@ -168,6 +168,7 @@ async def get_poi_info(req, resp, osm_id):
 
 
 @api.route("/api/get_vcard/{osm_id}")
+@api.route("/api/osmid/vcard/{osm_id}")
 async def get_vcard(req, resp, *, osm_id):
     """Get a vcard download for the given `osm_id`
 
@@ -250,6 +251,7 @@ async def get_vcard(req, resp, *, osm_id):
 
 
 @api.route("/api/get_json/{osm_id}")
+@api.route("/api/osmid/{osm_id}")
 async def get_json(req, resp, *, osm_id):
     r, resp = await get_poi_info(req, resp, osm_id)
 
