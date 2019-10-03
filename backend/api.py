@@ -168,7 +168,7 @@ async def get_poi_info(req, resp, osm_id):
 
 
 @api.route("/api/get_vcard/{osm_id}")
-@api.route("/api/osmid/vcard/{osm_id}")
+@api.route("/api/osmid/{osm_id}.vcard")
 async def get_vcard(req, resp, *, osm_id):
     """Get a vcard download for the given `osm_id`
 
@@ -200,12 +200,9 @@ async def get_vcard(req, resp, *, osm_id):
     addr_country = data["labels"].get("addr_country", "")
 
     version = "VERSION:3.0"
-    # version = "VERSION:4.0"
-
+    
     n = f"N:{name};;;;"
     fn = f"FN:{name}"
-    # profile = "PROFILE:VCARD"
-    # TODO if address incomplete omit address
     address = (
         (
             f"ADR;TYPE=WORK:;;{addr_street} {addr_housenumber};"
@@ -220,19 +217,9 @@ async def get_vcard(req, resp, *, osm_id):
     #     f"{addr_postcode}{addr_city}\n{addr_country}"
     # )
     email = f"EMAIL:{contact_email}"
-    # v3
     geo = f"GEO:{lat},{lon}"
-    # v4
-    # geo = f"GEO:geo: {lat}\,{lon}"
-    # v3
     phone = f"TEL;TYPE=WORK,voice;VALUE=tel:{contact_phone}"
-    # v4
-    # phone = f"TEL;TYPE=work,voice;VALUE=uri:tel:\"{contact_phone}\""
-    # logger.debug(contact_phone)
-    # v3
     fax = f"TEL;TYPE=WORK FAX;VALUE=tel:{contact_fax}"
-    # v4
-    # fax = f"TEL;TYPE=WORK FAX;VALUE=uri:tel:{contact_fax}"
     url = f"URL:{contact_website}"
     source = f"SOURCE:{API_URL}get_vcard/{osm_id}"
 
@@ -254,11 +241,6 @@ async def get_vcard(req, resp, *, osm_id):
 @api.route("/api/osmid/{osm_id}")
 async def get_json(req, resp, *, osm_id):
     r, resp = await get_poi_info(req, resp, osm_id)
-
-    # logger.info(r.status_code)
-    # logger.info(r.text)
-    # logger.info(resp.status_code)
-    # logger.info(resp.text)
 
     if resp.status_code == 504 or resp.status_code == 404:
         return
