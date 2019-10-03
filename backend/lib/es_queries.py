@@ -1,18 +1,17 @@
 """ES queries in JSON format for the API"""
 import json
-import urllib.parse
 
 
 def es_standard_search(query, es_filter):
     return json.dumps(
         {
-            "size": 300,
+            "size": 1000,
             "query": {
                 "bool": {
                     "should": [
                         {
                             "query_string": {
-                                "query": f"{query}",
+                                "query": f"{query}*",
                                 "default_operator": "AND",
                                 "fields": [
                                     "labels.name^5",
@@ -36,7 +35,7 @@ def es_standard_search(query, es_filter):
                         }
                     ],
                     "minimum_should_match": 1,
-                    "filter": es_filter,
+                    # "filter": es_filter,
                 }
             },
         }

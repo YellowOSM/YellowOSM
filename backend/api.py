@@ -343,9 +343,9 @@ async def query_elastic_search(
     }
 
     query = urllib.parse.unquote(str(query))
-    city = urllib.parse.unquote(str(city))
 
     if city:
+        city = urllib.parse.unquote(str(city))
         logger.debug(f"QUERY: {query} in {city}")
         es_query = es_city_search(query, city)
     else:
