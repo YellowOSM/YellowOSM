@@ -6,6 +6,7 @@ import urllib.parse
 
 import requests
 import responder
+from marshmallow import Schema, fields
 from dotenv import load_dotenv
 import geoip2.database
 
@@ -35,6 +36,17 @@ DEFAULT_ZOOM_LEVEL = os.getenv("DEFAULT_ZOOM_LEVEL", default=19)
 ES_URL = os.getenv("ES_URL")
 ES_INDEX = os.getenv("ES_INDEX", default="yosm")
 
+contact = {
+    "name": "YellowOSM",
+    "url": "https://yellowosm.com/#contact"
+    # "email": "",
+}
+
+license = {
+    "name": "GNU AGPL v3.0",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.en.html",
+}
+
 api = responder.API(
     debug=DEBUG,
     version="0.3b1",
@@ -44,6 +56,10 @@ api = responder.API(
         "allow_methods": ["*"],
         "allow_headers": ["*"],
     },
+    openapi="3.0.2",
+    docs_route="/api/docs",
+    contact=contact,
+    license=license,
 )
 
 
@@ -53,6 +69,45 @@ if DEBUG:
 else:
     logger.setLevel("WARNING")
 logger.debug("short url: " + SHORT_URL_REDIRECT_URL)
+
+
+@api.schema("coordinates")
+class CoordSchema(Schema):
+    lat = fields.Float()
+    lon = fields.Float()
+
+
+@api.schema("XYCoordinates")
+class XYCoordSchema(Schema):
+    x = fields.Float()
+    y = fields.Float()
+    zoom = fields.Float()
+
+
+@api.schema("Geo58-Short")
+class Geo58ShortString(Schema):
+    geo58 = fields.String()
+
+
+@api.schema("POI")
+class POISchema(Schema):
+    osmid = fields.Int()
+    osm_data_type = ["node", "way"]
+    location = fields.Nested(CoordSchema)
+    # location = fields.Pluck(CoordSchema, 'lat')
+    name = fields.Str()
+    addr_city = fields.Str()
+    addr_street = fields.Str()
+    addr_housenumber = fields.Str()
+    addr_postcode = fields.Str()
+    addr_country = fields.Str()
+    address = fields.Str()
+    opening_hours = fields.Str()
+    website = fields.Str()
+    phone = fields.Str()
+    shop = fields.Str()
+    amenity = fields.Str()
+    contact_email = fields.Str()
 
 
 @api.route("/api/")
@@ -70,9 +125,33 @@ def hello_world(req, resp):
 
 
 @api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")  # legacy
+async def convertCoordsToGeo58_old(req, resp, *, zoom, x, y):
+    """convert zoom, x, y to a Geo58 string
+    ---
+    get:
+        summary: legacy function use /api/geo58/{zoom}/{x}/{y} instead
+        description: legacy function use /api/geo58/{zoom}/{x}/{y} instead
+    """
+    return await convertCoordsToGeo58(req, resp, zoom=zoom, x=x, y=y)
+
+
 @api.route("/api/geo58/{zoom}/{x}/{y}")
 async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
-    """convert zoom, x, y to a Geo58 string"""
+    """convert zoom, x, y to a Geo58 string
+    ---
+    get:
+        summary: get Geo58 short-string
+        description: convert coordinates `z`/`x`/`y` to Geo58 short-string.
+        responses:
+            '200':
+                description: get corresponding Geo58 short-string
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Geo58-Short'
+            '406':
+                description: coordinates invalid.
+    """
     try:
         g58 = Geo58(zoom=zoom, lat=x, lon=y.strip(" /"))
     except Geo58.Geo58Exception as ex:
@@ -80,20 +159,47 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
             "Error: coords_to_geo58: Not Acceptable: coordinates invalid. [%s]", ex
         )
         resp.status_code = 406
-        resp.text = "Error: Not Acceptable: coordinates invalid. [{}]".format(ex)
+        text = "Error: Not Acceptable: coordinates invalid. [{}]".format(ex)
+        resp.media = {"error": text}
         return
     resp.media = {"geo58": g58.get_geo58()}
 
 
 @api.route("/api/geo58_to_coords/{geo58_str}")  # legacy
+async def convertGeo58ToCoords_old(req, resp, *, geo58_str):
+    """convert zoom, x, y to a Geo58 string
+    ---
+    get:
+        summary: legacy function use "/api/geo58/{geo58_str}" instead
+        description: legacy function use "/api/geo58/{geo58_str}" instead
+    """
+    return await convertGeo58ToCoords(req, resp, geo58_str=geo58_str)
+
+
 @api.route("/api/geo58/{geo58_str}")
 async def convertGeo58ToCoords(req, resp, *, geo58_str):
+    """convert zoom, x, y to a Geo58 string
+    ---
+    get:
+        summary: get coordinates `z`/`x`/`y`
+        description: convert Geo58 short-string to coordinates `z`/`x`/`y`.
+        responses:
+            '200':
+                description: get corresponding coordinates `z`/`x`/`y`.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/XYCoordinates'
+            '400':
+                description: invalid Geo58 short-code.
+    """
     try:
         g58 = Geo58(g58=geo58_str)
     except Geo58.Geo58Exception as ex:
         logger.debug("Error: geo58_to_coords: invalid short code: %s", ex)
         resp.status_code = 400
-        resp.text = "Error: Bad Request: invalid short code. [{}]".format(ex)
+        text = "Error: Bad Request: invalid short code. [{}]".format(ex)
+        resp.media = {"error": text}
         return
     zoom, x, y = g58.get_coordinates()
     resp.media = {"zoom": zoom, "x": x, "y": y}
@@ -110,7 +216,18 @@ async def convertGeo58ToCoordsEmpty(req, resp):
 
 @api.route("/api/redirect_geo58/{geo58_str}")
 async def redirect_geo58(req, resp, *, geo58_str):
-    """redirect Geo58 string to corresponding z/x/y map URL"""
+    """redirect Geo58 string to corresponding z/x/y map URL
+    ---
+    get:
+        summary: redirect to YellowOSM map
+        description: redirects to YellowOSM map with given short-string.
+            this will resolve the short-string and redirect to coordinates (`z`/`x`/`y`).
+        responses:
+            '302':
+                description: redirect
+            '400':
+                description: invalid short code
+    """
     geo58_str = str(geo58_str)
     index = geo58_str.find(";", 0, 12)
     appendix = "" if index == -1 else str(geo58_str[index:])
@@ -158,22 +275,46 @@ async def get_poi_info(req, resp, osm_id):
             url, data=es_query, headers={"Content-Type": "application/json"}
         )
     except (ConnectionError, requests.exceptions.ConnectionError) as ex:
-        resp.text = "error: could not connect to database."
         resp.status_code = 504
         logger.error(ex)
+        text = "error: could not connect to database."
+        resp.media = {"error": text}
     if json.loads(r.text)["hits"]["total"]["value"] == 0:
         resp.status_code = 404
-        resp.text = "error: no data found."
+        text = "error: no data found."
+        resp.media = {"error": text}
     return (r, resp)
 
 
 @api.route("/api/get_vcard/{osm_id}")  # legacy
+async def get_vcard_old(req, resp, *, osm_id):
+    """Get a vcard download for the given osm_id
+    ---
+    get:
+        summary: legacy function use "/api/osmid/{osm_id}.vcard" instead
+        description: legacy function use "/api/osmid/{osm_id}.vcard" instead
+    """
+    return await get_vcard(req, resp, osm_id=osm_id)
+
+
 @api.route("/api/osmid/{osm_id}.vcard")
 async def get_vcard(req, resp, *, osm_id):
-    """Get a vcard download for the given `osm_id`
-
-    returns 404 on data not found
-    or 504 on database connection error.
+    """Get a vcard download for the given osm_id
+    ---
+    get:
+        summary: get vcard
+        description: returns a vcard for the given `osm_id`
+        responses:
+            '200':
+                description: OK
+                content:
+                    text/vcard:
+                        schema:
+                            $ref: '#/components/schemas/POI'
+            '404':
+                description: osm_id not found
+            '504':
+                description: could not connect to database
     """
 
     r, resp = await get_poi_info(req, resp, osm_id)
@@ -238,8 +379,35 @@ async def get_vcard(req, resp, *, osm_id):
 
 
 @api.route("/api/get_json/{osm_id}")  # legacy
+async def get_json_old(req, resp, *, osm_id):
+    """
+    ---
+    get:
+        summary: legacy function use "/api/osmid/{osm_id}" instead
+        description: legacy function use "/api/osmid/{osm_id}" instead
+    """
+    return await get_json(req, resp, osm_id=osm_id)
+
+
 @api.route("/api/osmid/{osm_id}")
 async def get_json(req, resp, *, osm_id):
+    """Get a vcard download for the given osm_id
+    ---
+    get:
+        summary: get osm_id info
+        description: returns info for the given `osm_id`
+        responses:
+            '200':
+                description: OK
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/POI'
+            '404':
+                description: osm_id not found
+            '504':
+                description: could not connect to database
+    """
     r, resp = await get_poi_info(req, resp, osm_id)
 
     if resp.status_code == 504 or resp.status_code == 404:
@@ -312,13 +480,18 @@ async def query_elastic_search(
     bottom_right_lon=None,
 ):
 
-    """search elastic search index for 'query'.
-
-    use /api/<QUERY> for a global search
-    use /api/<CITY>/<QUERY> for a search in 'CITY'
-    use /api/<CITY>/<QUERY>/<int limit> to limit the number of search results
-    add top left and bottom right coordinates to limit the results to
-    geo-coordinates
+    """search YellowOSM for POIs (points of interest) aka businesses.
+    ---
+    get:
+        summary: get search results
+        description: Get POIs that match `query`
+        responses:
+            200:
+                description: POIs returned.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/POI'
     """
     # ES_URL and ES_INDEX from settings env
     url = ES_URL + "/" + ES_INDEX + "/_search"
