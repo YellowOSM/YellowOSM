@@ -1,4 +1,9 @@
-# import time
+"""YellowOSM Backend - API.
+
+.. moduleauthor:: Florian Klien <flowolf@klienux.org>
+
+"""
+
 import json
 import logging
 import os
@@ -36,6 +41,9 @@ DEFAULT_ZOOM_LEVEL = os.getenv("DEFAULT_ZOOM_LEVEL", default=19)
 ES_URL = os.getenv("ES_URL")
 ES_INDEX = os.getenv("ES_INDEX", default="yosm")
 
+
+# the swagger integration with responder has some serious issues when the API is
+# not served on a server root. https://github.com/taoufik07/responder/issues/242
 contact = {
     "name": "YellowOSM",
     "url": "https://yellowosm.com/#contact"
