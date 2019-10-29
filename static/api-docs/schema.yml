@@ -1,0 +1,201 @@
+components:
+  schemas:
+    Geo58-Short:
+      properties:
+        geo58:
+          type: string
+      type: object
+    POI:
+      properties:
+        addr_city:
+          type: string
+        addr_country:
+          type: string
+        addr_housenumber:
+          type: string
+        addr_postcode:
+          type: string
+        addr_street:
+          type: string
+        address:
+          type: string
+        amenity:
+          type: string
+        contact_email:
+          type: string
+        location:
+          $ref: '#/components/schemas/coordinates'
+        name:
+          type: string
+        opening_hours:
+          type: string
+        osmid:
+          format: int32
+          type: integer
+        phone:
+          type: string
+        shop:
+          type: string
+        website:
+          type: string
+      type: object
+    XYCoordinates:
+      properties:
+        x:
+          format: float
+          type: number
+        y:
+          format: float
+          type: number
+        zoom:
+          format: float
+          type: number
+      type: object
+    coordinates:
+      properties:
+        lat:
+          format: float
+          type: number
+        lon:
+          format: float
+          type: number
+      type: object
+info:
+  contact:
+    name: YellowOSM
+    url: https://yellowosm.com/#contact
+  license:
+    name: GNU AGPL v3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.en.html
+  title: Web Service
+  version: '1.0'
+openapi: 3.0.2
+paths:
+  /api/coords_to_geo58/{zoom}/{x}/{y}:
+    get:
+      description: legacy function use /api/geo58/{zoom}/{x}/{y} instead
+      summary: legacy function use /api/geo58/{zoom}/{x}/{y} instead
+  /api/geo58/{zoom}/{x}/{y}:
+    get:
+      description: convert coordinates `z`/`x`/`y` to Geo58 short-string.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Geo58-Short'
+          description: get corresponding Geo58 short-string
+        '406':
+          description: coordinates invalid.
+      summary: get Geo58 short-string
+  /api/geo58_to_coords/{geo58_str}:
+    get:
+      description: legacy function use "/api/geo58/{geo58_str}" instead
+      summary: legacy function use "/api/geo58/{geo58_str}" instead
+  /api/geo58/{geo58_str}:
+    get:
+      description: convert Geo58 short-string to coordinates `z`/`x`/`y`.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XYCoordinates'
+          description: get corresponding coordinates `z`/`x`/`y`.
+        '400':
+          description: invalid Geo58 short-code.
+      summary: get coordinates `z`/`x`/`y`
+  /api/redirect_geo58/: {}
+  /api/redirect_geo58/{geo58_str}:
+    get:
+      description: redirects to YellowOSM map with given short-string. this will resolve
+        the short-string and redirect to coordinates (`z`/`x`/`y`).
+      responses:
+        '302':
+          description: redirect
+        '400':
+          description: invalid short code
+      summary: redirect to YellowOSM map
+  /api/get_vcard/{osm_id}:
+    get:
+      description: legacy function use "/api/osmid/{osm_id}.vcard" instead
+      summary: legacy function use "/api/osmid/{osm_id}.vcard" instead
+  /api/osmid/{osm_id}.vcard:
+    get:
+      description: returns a vcard for the given `osm_id`
+      responses:
+        '200':
+          content:
+            text/vcard:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: OK
+        '404':
+          description: osm_id not found
+        '504':
+          description: could not connect to database
+      summary: get vcard
+  /api/get_json/{osm_id}:
+    get:
+      description: legacy function use "/api/osmid/{osm_id}" instead
+      summary: legacy function use "/api/osmid/{osm_id}" instead
+  /api/osmid/{osm_id}:
+    get:
+      description: returns info for the given `osm_id`
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: OK
+        '404':
+          description: osm_id not found
+        '504':
+          description: could not connect to database
+      summary: get osm_id info
+  /api/forward_ip: {}
+  /api/search/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}:
+    get:
+      description: Get POIs that match `query`
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: POIs returned.
+      summary: get search results
+  /api/search/{city}/{query}/{limit}:
+    get:
+      description: Get POIs that match `query`
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: POIs returned.
+      summary: get search results
+  /api/search/{city}/{query}:
+    get:
+      description: Get POIs that match `query`
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: POIs returned.
+      summary: get search results
+  /api/search/{query}:
+    get:
+      description: Get POIs that match `query`
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: POIs returned.
+      summary: get search results
