@@ -44,7 +44,7 @@ helper script to get data to the crawler.
 
 ### get_city_by_geo-coordinates.py
 
-generates a lookup dict for city names to bounding boxes. Result file can be found in [backend/data]
+generates a lookup dict for city names to bounding boxes. Result file can be found in [backend/data](backend/data)
 
 ### osmosis_pbf_import.sh  
 
@@ -52,11 +52,13 @@ helper script to import OSM data.
 
 ### yosm_poi.py
 
-helper class to import OSM data.
+POI class to import OSM data. Holds data for YellowOSM POIs for export/import.
 
 ### cron_data_downstream.sh  
 
-script to download OSM data.
+script to download OSM data. This is run daily on YellowOSM.com.
+
+This script pulls all other scripts together, to build one pipe-line: Geofabrik pbf -> osm2pgsql -> osmosis -> export_osm_to_elasticsearch.py -> tmp_files -> elasticsearch
 
 ### elasticsearch_data_import.sh  
 
@@ -84,4 +86,4 @@ prototyping script for data import @ localhost.
 
 ### osm2pgsql/yosm.style
 
-syle file. this basically reduces the data we import to postgres.
+style file. this basically reduces the data we import to postgres. It tells osm2pgsql what keys it should consider.
