@@ -20,7 +20,7 @@ def check_coords(cities):
 csv.field_size_limit(sys.maxsize)
 labels = []
 # read data from dump.osm
-with open("Downloads/dump.osm", newline="") as f:
+with open("dump.osm", newline="") as f:
     reader = csv.reader(f, delimiter=",", quotechar='"')
     for line in reader:
         if not line[6]:
@@ -42,7 +42,7 @@ len(groups.get_group("Graz"))
 cities = {}
 for name, group in groups:
     if len(group) > 5:
-        print(name)
+        # print(name)
         max_x = group["x"].agg(np.max)
         min_x = group["x"].agg(np.min)
         max_y = group["y"].agg(np.max)

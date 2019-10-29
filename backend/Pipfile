@@ -15,6 +15,7 @@ tox = "*"
 flake8 = "*"
 black = "*"
 sphinx = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"
