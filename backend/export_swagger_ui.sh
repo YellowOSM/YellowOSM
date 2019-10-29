@@ -18,5 +18,7 @@ mv 0.0.0.0:5000 ../static/api-docs
 cd ../static/api-docs 
 mv api/docs index.html 
 rm -r api
-wget 0.0.0.0:5000/schema.yml -O schema.yml
+rm ../schema.yml
+wget 0.0.0.0:5000/schema.yml -O ../schema.yml
+wget 0.0.0.0:5000/static/css/swagger-ui.css -O static/css/swagger-ui.css
 exit
