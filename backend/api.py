@@ -42,8 +42,6 @@ ES_URL = os.getenv("ES_URL")
 ES_INDEX = os.getenv("ES_INDEX", default="yosm")
 
 
-# the swagger integration with responder has some serious issues when the API is
-# not served on a server root. https://github.com/taoufik07/responder/issues/242
 contact = {
     "name": "YellowOSM",
     "url": "https://yellowosm.com/#contact"
@@ -55,9 +53,11 @@ license = {
     "url": "https://www.gnu.org/licenses/agpl-3.0.en.html",
 }
 
+VERSION = "0.4b1"
+
 api = responder.API(
     debug=DEBUG,
-    version="0.3b1",
+    version=VERSION,
     cors=True,
     cors_params={
         "allow_origins": ["*"],
@@ -128,7 +128,7 @@ def hello_world(req, resp):
         "We are currently running version {}\n\n"
         "If you don't know what that means, the interwebz redirected you here by"
         " mistake.\nMore Information about the project can be found here: "
-        "https://yellowosm.com".format(api.version)
+        "https://yellowosm.com".format(VERSION)
     )
 
 
