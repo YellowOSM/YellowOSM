@@ -66,6 +66,7 @@ api = responder.API(
     },
     openapi="3.0.2",
     docs_route="/api/docs",
+    # openapi_route="/schema.yml",
     contact=contact,
     license=license,
 )
@@ -134,7 +135,7 @@ def hello_world(req, resp):
 
 @api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")  # legacy
 async def convertCoordsToGeo58_old(req, resp, *, zoom, x, y):
-    """convert zoom, x, y to a Geo58 string
+    """legacy function: convert zoom, x, y to a Geo58 string
     ---
     get:
         summary: legacy function use /api/geo58/{zoom}/{x}/{y} instead
@@ -159,6 +160,29 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
                             $ref: '#/components/schemas/Geo58-Short'
             '406':
                 description: coordinates invalid.
+        parameters:
+        -   name: x
+            in: path
+            required: true
+            description: latitude from -90 to 90
+            schema:
+                type: number
+            example: 47.07424
+        -   name: y
+            in: path
+            description: longitude from -180 to 180
+            required: true
+            schema:
+                type: number
+            example: 15.43258
+        -   name: zoom
+            in: path
+            description: |
+              zoom level to be encoded in Geo58 String. must be between 5 and 20.
+            required: true
+            schema:
+                type: integer
+            example: 20
     """
     try:
         g58 = Geo58(zoom=zoom, lat=x, lon=y.strip(" /"))
@@ -175,7 +199,7 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
 
 @api.route("/api/geo58_to_coords/{geo58_str}")  # legacy
 async def convertGeo58ToCoords_old(req, resp, *, geo58_str):
-    """convert zoom, x, y to a Geo58 string
+    """legacy function: convert zoom, x, y to a Geo58 string
     ---
     get:
         summary: legacy function use "/api/geo58/{geo58_str}" instead
@@ -200,6 +224,13 @@ async def convertGeo58ToCoords(req, resp, *, geo58_str):
                             $ref: '#/components/schemas/XYCoordinates'
             '400':
                 description: invalid Geo58 short-code.
+        parameters:
+        -   name: geo58_str
+            in: path
+            required: true
+            schema:
+                type: string
+            example: 4dHEj1AKm
     """
     try:
         g58 = Geo58(g58=geo58_str)
@@ -235,6 +266,13 @@ async def redirect_geo58(req, resp, *, geo58_str):
                 description: redirect
             '400':
                 description: invalid short code
+        parameters:
+        -   name: geo58_str
+            in: path
+            required: true
+            schema:
+                type: string
+            example: 4dHEj1AKm
     """
     geo58_str = str(geo58_str)
     index = geo58_str.find(";", 0, 12)
@@ -296,7 +334,7 @@ async def get_poi_info(req, resp, osm_id):
 
 @api.route("/api/get_vcard/{osm_id}")  # legacy
 async def get_vcard_old(req, resp, *, osm_id):
-    """Get a vcard download for the given osm_id
+    """legacy function: Get a vcard download for the given osm_id
     ---
     get:
         summary: legacy function use "/api/osmid/{osm_id}.vcard" instead
@@ -323,6 +361,15 @@ async def get_vcard(req, resp, *, osm_id):
                 description: osm_id not found
             '504':
                 description: could not connect to database
+        parameters:
+        -   name: osm_id
+            in: path
+            description: osmID, same as on OpenStreetMap.
+            required: true
+            schema:
+                type: integer
+            # example: 6930351827
+            example: 317335810
     """
 
     r, resp = await get_poi_info(req, resp, osm_id)
@@ -370,7 +417,7 @@ async def get_vcard(req, resp, *, osm_id):
     phone = f"TEL;TYPE=WORK,voice;VALUE=tel:{contact_phone}"
     fax = f"TEL;TYPE=WORK FAX;VALUE=tel:{contact_fax}"
     url = f"URL:{contact_website}"
-    source = f"SOURCE:{API_URL}get_vcard/{osm_id}"
+    source = f"SOURCE:{API_URL}osm_id/{osm_id}.vcard"
 
     resp.headers = {
         "Content-Type": "text/vcard",
@@ -388,7 +435,7 @@ async def get_vcard(req, resp, *, osm_id):
 
 @api.route("/api/get_json/{osm_id}")  # legacy
 async def get_json_old(req, resp, *, osm_id):
-    """
+    """legacy function: get Info for osmID
     ---
     get:
         summary: legacy function use "/api/osmid/{osm_id}" instead
@@ -415,6 +462,14 @@ async def get_json(req, resp, *, osm_id):
                 description: osm_id not found
             '504':
                 description: could not connect to database
+        parameters:
+        -   name: osm_id
+            in: path
+            description: osmID, same as on OpenStreetMap.
+            required: true
+            schema:
+                type: integer
+            example: 317335810
     """
     r, resp = await get_poi_info(req, resp, osm_id)
 
@@ -459,7 +514,7 @@ def _locate_user_ip(req):
 
 @api.route("/api/forward_ip")
 async def locate_user_ip(req, resp):
-    """forward user based on user IP"""
+    """forward user based on client IP"""
     data = _locate_user_ip(req)
 
     redir_url = SHORT_URL_REDIRECT_URL.format(zoom=13, x=data["lat"], y=data["lon"])
@@ -469,8 +524,102 @@ async def locate_user_ip(req, resp):
 
 
 @api.route("/api/search/{query}")
+async def simple_query_elastic_search(req, resp, *, query):
+    """search YellowOSM for POIs (points of interest) aka businesses.
+    ---
+    get:
+        summary: get search results
+        description: Get POIs that match `query`
+        responses:
+            200:
+                description: POIs returned.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/POI'
+        parameters:
+        -   name: query
+            in: path
+            required: true
+            schema:
+                type: string
+            example: Scherbe Graz
+    """
+    return await query_elastic_search(req, resp, query=query)
+
+
 @api.route("/api/search/{city}/{query}")
+async def city_query_elastic_search(req, resp, *, query, city):
+    """search YellowOSM for POIs (points of interest) aka businesses.
+    ---
+    get:
+        summary: get search results
+        description: Get POIs that match `query`
+        responses:
+            200:
+                description: POIs returned.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/POI'
+        parameters:
+        -   name: query
+            in: path
+            required: true
+            schema:
+                type: string
+            example: Weikhard
+        -   name: city
+            in: path
+            description: limit search to 'city'
+            required: true
+            schema:
+                type: string
+            example: Graz
+    """
+    return await query_elastic_search(req, resp, query=query, city=city)
+
+
 @api.route("/api/search/{city}/{query}/{limit}")
+async def city_limit_query_elastic_search(req, resp, *, query, city, limit):
+    """search YellowOSM for POIs (points of interest) aka businesses.
+    ---
+    get:
+        summary: get search results
+        description: |
+            Get POIs that match `query`. search is limited to 'limit' number of results.
+        responses:
+            200:
+                description: POIs returned.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/POI'
+        parameters:
+        -   name: query
+            in: path
+            required: true
+            schema:
+                type: string
+            example: Sacher
+        -   name: city
+            in: path
+            description: limit search to 'city'
+            required: true
+            schema:
+                type: string
+            example: Wien
+        -   name: limit
+            in: path
+            description: limit number of results to 'limit'
+            required: true
+            schema:
+                type: number
+            example: 10
+    """
+    return await query_elastic_search(req, resp, query=query, city=city, limit=limit)
+
+
 @api.route(
     "/api/search/"
     "{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}"
@@ -492,7 +641,8 @@ async def query_elastic_search(
     ---
     get:
         summary: get search results
-        description: Get POIs that match `query`
+        description: |
+            Get POIs that match `query`. search is limited to bounding-box coordinates.
         responses:
             200:
                 description: POIs returned.
@@ -500,6 +650,41 @@ async def query_elastic_search(
                     application/json:
                         schema:
                             $ref: '#/components/schemas/POI'
+        parameters:
+        -   name: query
+            in: path
+            required: true
+            schema:
+                type: string
+            example: Tribeka
+        -   name: top_left_lat
+            in: path
+            description: top left latitude of bounding-box
+            required: true
+            schema:
+                type: number
+            example: 47.09086
+        -   name: top_left_lon
+            in: path
+            description: top left longitude of bounding-box
+            required: true
+            schema:
+                type: number
+            example: 15.39598
+        -   name: bottom_right_lat
+            in: path
+            description: bottom right latitude of bounding-box
+            required: true
+            schema:
+                type: number
+            example: 47.03602
+        -   name: bottom_right_lon
+            in: path
+            description: bottom right longitude of bounding-box
+            required: true
+            schema:
+                type: number
+            example: 15.48806
     """
     # ES_URL and ES_INDEX from settings env
     url = ES_URL + "/" + ES_INDEX + "/_search"

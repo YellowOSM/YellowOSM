@@ -78,6 +78,31 @@ paths:
   /api/geo58/{zoom}/{x}/{y}:
     get:
       description: convert coordinates `z`/`x`/`y` to Geo58 short-string.
+      parameters:
+      - description: latitude from -90 to 90
+        example: 47.07424
+        in: path
+        name: x
+        required: true
+        schema:
+          type: number
+      - description: longitude from -180 to 180
+        example: 15.43258
+        in: path
+        name: y
+        required: true
+        schema:
+          type: number
+      - description: 'zoom level to be encoded in Geo58 String. must be between 5
+          and 20.
+
+          '
+        example: 20
+        in: path
+        name: zoom
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -95,6 +120,13 @@ paths:
   /api/geo58/{geo58_str}:
     get:
       description: convert Geo58 short-string to coordinates `z`/`x`/`y`.
+      parameters:
+      - example: 4dHEj1AKm
+        in: path
+        name: geo58_str
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -110,6 +142,13 @@ paths:
     get:
       description: redirects to YellowOSM map with given short-string. this will resolve
         the short-string and redirect to coordinates (`z`/`x`/`y`).
+      parameters:
+      - example: 4dHEj1AKm
+        in: path
+        name: geo58_str
+        required: true
+        schema:
+          type: string
       responses:
         '302':
           description: redirect
@@ -123,6 +162,14 @@ paths:
   /api/osmid/{osm_id}.vcard:
     get:
       description: returns a vcard for the given `osm_id`
+      parameters:
+      - description: osmID, same as on OpenStreetMap.
+        example: 317335810
+        in: path
+        name: osm_id
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -142,6 +189,14 @@ paths:
   /api/osmid/{osm_id}:
     get:
       description: returns info for the given `osm_id`
+      parameters:
+      - description: osmID, same as on OpenStreetMap.
+        example: 317335810
+        in: path
+        name: osm_id
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -155,20 +210,16 @@ paths:
           description: could not connect to database
       summary: get osm_id info
   /api/forward_ip: {}
-  /api/search/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}:
+  /api/search/{query}:
     get:
       description: Get POIs that match `query`
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/POI'
-          description: POIs returned.
-      summary: get search results
-  /api/search/{city}/{query}/{limit}:
-    get:
-      description: Get POIs that match `query`
+      parameters:
+      - example: Scherbe Graz
+        in: path
+        name: query
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -180,6 +231,20 @@ paths:
   /api/search/{city}/{query}:
     get:
       description: Get POIs that match `query`
+      parameters:
+      - example: Weikhard
+        in: path
+        name: query
+        required: true
+        schema:
+          type: string
+      - description: limit search to 'city'
+        example: Graz
+        in: path
+        name: city
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -188,9 +253,82 @@ paths:
                 $ref: '#/components/schemas/POI'
           description: POIs returned.
       summary: get search results
-  /api/search/{query}:
+  /api/search/{city}/{query}/{limit}:
     get:
-      description: Get POIs that match `query`
+      description: 'Get POIs that match `query`. search is limited to ''limit'' number
+        of results.
+
+        '
+      parameters:
+      - example: Sacher
+        in: path
+        name: query
+        required: true
+        schema:
+          type: string
+      - description: limit search to 'city'
+        example: Wien
+        in: path
+        name: city
+        required: true
+        schema:
+          type: string
+      - description: limit number of results to 'limit'
+        example: 10
+        in: path
+        name: limit
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POI'
+          description: POIs returned.
+      summary: get search results
+  /api/search/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/{bottom_right_lon}/{query}:
+    get:
+      description: 'Get POIs that match `query`. search is limited to bounding-box
+        coordinates.
+
+        '
+      parameters:
+      - example: Tribeka
+        in: path
+        name: query
+        required: true
+        schema:
+          type: string
+      - description: top left latitude of bounding-box
+        example: 47.09086
+        in: path
+        name: top_left_lat
+        required: true
+        schema:
+          type: number
+      - description: top left longitude of bounding-box
+        example: 15.39598
+        in: path
+        name: top_left_lon
+        required: true
+        schema:
+          type: number
+      - description: bottom right latitude of bounding-box
+        example: 47.03602
+        in: path
+        name: bottom_right_lat
+        required: true
+        schema:
+          type: number
+      - description: bottom right longitude of bounding-box
+        example: 15.48806
+        in: path
+        name: bottom_right_lon
+        required: true
+        schema:
+          type: number
       responses:
         '200':
           content:
