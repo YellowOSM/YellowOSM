@@ -417,7 +417,7 @@ async def get_vcard(req, resp, *, osm_id):
     phone = f"TEL;TYPE=WORK,voice;VALUE=tel:{contact_phone}"
     fax = f"TEL;TYPE=WORK FAX;VALUE=tel:{contact_fax}"
     url = f"URL:{contact_website}"
-    source = f"SOURCE:{API_URL}osm_id/{osm_id}.vcard"
+    source = f"SOURCE:{API_URL}osmid/{osm_id}.vcard"
 
     resp.headers = {
         "Content-Type": "text/vcard",
