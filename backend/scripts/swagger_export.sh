@@ -13,9 +13,9 @@ wget -r 0.0.0.0:5000/api/docs
 if [ $? == "4" ]; then
   echo -e "\nrun backend on port 5000, please."; exit -1; fi
 
-rm -r ../static/api-docs
-mv 0.0.0.0:5000 ../static/api-docs
-cd ../static/api-docs 
+rm -r ../../static/api-docs
+mv 0.0.0.0:5000 ../../static/api-docs
+cd ../../static/api-docs 
 mv api/docs index.html
 rm -r api
 cd ..
