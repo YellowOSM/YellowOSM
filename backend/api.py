@@ -70,11 +70,13 @@ in our
 [Github Repo](https://github.com/YellowOSM/YellowOSM/tree/master/backend#backend-yellowosm)
 
 The API allows to search YellowOSM data, resolve and create Geo58 short-strings and get
-data or vcards for specific osmIds.
+data or vcards for specific osmIDs.
 
 [YellowOSM - Repository](https://github.com/YellowOSM/YellowOSM)
 
-[YellowOSM - Frontend]((https://github.com/YellowOSM/YellowOSM/tree/master/frontend))
+[YellowOSM - Backend]((https://github.com/YellowOSM/YellowOSM/tree/master/backend))
+
+[YellowOSM - Frontend/Map]((https://github.com/YellowOSM/YellowOSM/tree/master/frontend))
 """
 
 api = responder.API(
