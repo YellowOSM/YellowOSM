@@ -68,6 +68,11 @@ import data to elasticsearch index.
 
 convert data to elasticsearch readable format.
 
+### swagger_export.sh
+
+helper script to work around issues with python-responder, which does not serve the API-docs behind a reverse proxy.
+only needed for deployment behind reverse proxy.
+
 ### osm2pgsql/cron_import_pbf.py  
 
 WIP python version of cron_import_pbf.sh

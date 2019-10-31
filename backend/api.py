@@ -145,11 +145,7 @@ def hello_world(req, resp):
 
 @api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")  # legacy
 async def convertCoordsToGeo58_old(req, resp, *, zoom, x, y):
-    """legacy function: convert zoom, x, y to a Geo58 string
-    ---
-    get:
-        summary: legacy function use /api/geo58/{zoom}/{x}/{y} instead
-        description: legacy function use /api/geo58/{zoom}/{x}/{y} instead
+    """legacy function: convert zoom, x, y to a Geo58 string (use /api/geo58/{zoom}/{x}/{y} instead)
     """
     return await convertCoordsToGeo58(req, resp, zoom=zoom, x=x, y=y)
 
@@ -209,11 +205,7 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
 
 @api.route("/api/geo58_to_coords/{geo58_str}")  # legacy
 async def convertGeo58ToCoords_old(req, resp, *, geo58_str):
-    """legacy function: convert zoom, x, y to a Geo58 string
-    ---
-    get:
-        summary: legacy function use "/api/geo58/{geo58_str}" instead
-        description: legacy function use "/api/geo58/{geo58_str}" instead
+    """legacy function: convert zoom, x, y to a Geo58 string (use /api/geo58/{geo58_str} instead)
     """
     return await convertGeo58ToCoords(req, resp, geo58_str=geo58_str)
 
@@ -345,10 +337,7 @@ async def get_poi_info(req, resp, osm_id):
 @api.route("/api/get_vcard/{osm_id}")  # legacy
 async def get_vcard_old(req, resp, *, osm_id):
     """legacy function: Get a vcard download for the given osm_id
-    ---
-    get:
-        summary: legacy function use "/api/osmid/{osm_id}.vcard" instead
-        description: legacy function use "/api/osmid/{osm_id}.vcard" instead
+    (use /api/osmid/{osm_id}.vcard instead)
     """
     return await get_vcard(req, resp, osm_id=osm_id)
 
@@ -446,10 +435,7 @@ async def get_vcard(req, resp, *, osm_id):
 @api.route("/api/get_json/{osm_id}")  # legacy
 async def get_json_old(req, resp, *, osm_id):
     """legacy function: get Info for osmID
-    ---
-    get:
-        summary: legacy function use "/api/osmid/{osm_id}" instead
-        description: legacy function use "/api/osmid/{osm_id}" instead
+    (use /api/osmid/{osm_id} instead)
     """
     return await get_json(req, resp, osm_id=osm_id)
 
