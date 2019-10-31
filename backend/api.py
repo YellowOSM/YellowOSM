@@ -74,9 +74,9 @@ data or vcards for specific osmIDs.
 
 [YellowOSM - Repository](https://github.com/YellowOSM/YellowOSM)
 
-[YellowOSM - Backend]((https://github.com/YellowOSM/YellowOSM/tree/master/backend))
+[YellowOSM - Backend](https://github.com/YellowOSM/YellowOSM/tree/master/backend)
 
-[YellowOSM - Frontend/Map]((https://github.com/YellowOSM/YellowOSM/tree/master/frontend))
+[YellowOSM - Frontend/Map](https://github.com/YellowOSM/YellowOSM/tree/master/frontend)
 """
 
 api = responder.API(
