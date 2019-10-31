@@ -290,7 +290,7 @@ paths:
         name: limit
         required: true
         schema:
-          type: number
+          type: integer
       responses:
         '200':
           content:

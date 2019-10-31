@@ -624,7 +624,7 @@ async def city_limit_query_elastic_search(req, resp, *, query, city, limit):
             description: limit number of results to 'limit'
             required: true
             schema:
-                type: number
+                type: integer
             example: 10
     """
     return await query_elastic_search(req, resp, query=query, city=city, limit=limit)

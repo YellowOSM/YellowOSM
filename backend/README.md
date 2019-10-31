@@ -107,11 +107,6 @@ python api.py
 deactivate
 ```
 
-## Docs
-
-The Backend uses the GeoLite2-City database from maxmind to resolve Client IP addresses and locate the user (to show the most probale relevant map).
-
-
 ## api.py
 
 the main API, implemented with python-responder.
@@ -193,3 +188,8 @@ style file. this basically defines the data we import to postgres. It tells osm2
 
 this is the first step to reduce the amount of data that is in the OSM data. the second step is done by querying the
 postgres DB in export_osm_to_elasticsearch.py.
+
+
+## Geoip
+
+The Backend uses the GeoLite2-City database from maxmind to resolve Client IP addresses and locate the user (to show the most probale relevant map).
