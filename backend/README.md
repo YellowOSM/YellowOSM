@@ -64,7 +64,7 @@ This is the kind of search our map uses.
 
 #### Geo58
 
-[Geo58][https://github.com/flowolf/Geo58] is our take on a geo-coordinate short link. We want to link to businesses. 
+[Geo58](https://github.com/flowolf/Geo58) is our take on a geo-coordinate short link. We want to link to businesses. 
 The resolution we thought to be enough is about 1.1m. Geo58 is available as separate [library from PyPi](https://pypi.org/project/geo58).
 
 The short links are used in our frontend, as a share option.
