@@ -53,7 +53,16 @@ license = {
     "url": "https://www.gnu.org/licenses/agpl-3.0.en.html",
 }
 
-VERSION = "0.4b1"
+GIT_HASH = "dev"
+
+try:
+    # .git_commit_hash.txt should be populated in deploy process
+    GIT_HASH = open('.git_commit_hash.txt', 'r').read()
+except Exception:
+    pass
+
+YOSM_VERSION = "0.4b1"
+VERSION = YOSM_VERSION + "_" + GIT_HASH
 
 api = responder.API(
     debug=DEBUG,
@@ -123,11 +132,12 @@ class POISchema(Schema):
 @api.route("/api/hello")
 def hello_world(req, resp):
     resp.text = (
-        "Hello! You are looking at the backend of YellowOSM.com. It's nice isn't it? "
+        "Hello! You are looking at the backend of YellowOSM.com. It's nice isn't it? \n"
         "Do you want to see how we made it? Go to the source code: https://github.com/"
         "YellowOSM/YellowOSM. \n\n"
+        "The API-Documentation can be found here: https://yellowosm.com/api-docs/\n\n"
         "We are currently running version {}\n\n"
-        "If you don't know what that means, the interwebz redirected you here by"
+        "If you don't know what all this means, the interwebz redirected you here by"
         " mistake.\nMore Information about the project can be found here: "
         "https://yellowosm.com".format(VERSION)
     )
