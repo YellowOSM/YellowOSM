@@ -23,6 +23,6 @@ cp -a api-docs/static/* static/
 rm schema.yml
 wget 0.0.0.0:5000/schema.yml -O schema.yml
 mkdir -p static/css static/js
-wget 0.0.0.0:5000/static/css/swagger-ui.css -O ../static/css/swagger-ui.css
+wget 0.0.0.0:5000/static/css/swagger-ui.css -O static/css/swagger-ui.css
 # rm -r api-docs/static
 exit
