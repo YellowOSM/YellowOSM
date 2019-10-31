@@ -57,7 +57,7 @@ GIT_HASH = "dev"
 
 try:
     # .git_commit_hash.txt should be populated in deploy process
-    GIT_HASH = open('.git_commit_hash.txt', 'r').read()
+    GIT_HASH = open(".git_commit_hash.txt", "r").read()
 except Exception:
     pass
 
@@ -161,7 +161,8 @@ def hello_world(req, resp):
 
 @api.route("/api/coords_to_geo58/{zoom}/{x}/{y}")  # legacy
 async def convertCoordsToGeo58_old(req, resp, *, zoom, x, y):
-    """legacy function: convert zoom, x, y to a Geo58 string (use /api/geo58/{zoom}/{x}/{y} instead)
+    """legacy function: convert zoom, x, y to a Geo58 string
+    (use /api/geo58/{zoom}/{x}/{y} instead)
     """
     return await convertCoordsToGeo58(req, resp, zoom=zoom, x=x, y=y)
 
@@ -221,7 +222,8 @@ async def convertCoordsToGeo58(req, resp, *, zoom, x, y):
 
 @api.route("/api/geo58_to_coords/{geo58_str}")  # legacy
 async def convertGeo58ToCoords_old(req, resp, *, geo58_str):
-    """legacy function: convert zoom, x, y to a Geo58 string (use /api/geo58/{geo58_str} instead)
+    """legacy function: convert zoom, x, y to a Geo58 string
+    (use /api/geo58/{geo58_str} instead)
     """
     return await convertGeo58ToCoords(req, resp, geo58_str=geo58_str)
 
