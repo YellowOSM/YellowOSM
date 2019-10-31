@@ -63,6 +63,19 @@ except Exception:
 
 YOSM_VERSION = "0.4b1"
 VERSION = YOSM_VERSION + "_" + GIT_HASH
+DESC = """# YellowOSM API
+
+more information about YellowOSM and the API that lies behind these calls can be found
+in our
+[Github Repo](https://github.com/YellowOSM/YellowOSM/tree/master/backend#backend-yellowosm)
+
+The API allows to search YellowOSM data, resolve and create Geo58 short-strings and get
+data or vcards for specific osmIds.
+
+[YellowOSM - Repository](https://github.com/YellowOSM/YellowOSM)
+
+[YellowOSM - Frontend]((https://github.com/YellowOSM/YellowOSM/tree/master/frontend))
+"""
 
 api = responder.API(
     debug=DEBUG,
@@ -75,6 +88,7 @@ api = responder.API(
     },
     openapi="3.0.2",
     docs_route="/api/docs",
+    description=DESC,
     # openapi_route="/schema.yml",
     contact=contact,
     license=license,

@@ -64,6 +64,29 @@ info:
   contact:
     name: YellowOSM
     url: https://yellowosm.com/#contact
+  description: '# YellowOSM API
+
+
+    more information about YellowOSM and the API that lies behind these calls can
+    be found
+
+    in our
+
+    [Github Repo](https://github.com/YellowOSM/YellowOSM/tree/master/backend#backend-yellowosm)
+
+
+    The API allows to search YellowOSM data, resolve and create Geo58 short-strings
+    and get
+
+    data or vcards for specific osmIds.
+
+
+    [YellowOSM - Repository](https://github.com/YellowOSM/YellowOSM)
+
+
+    [YellowOSM - Frontend]((https://github.com/YellowOSM/YellowOSM/tree/master/frontend))
+
+    '
   license:
     name: GNU AGPL v3.0
     url: https://www.gnu.org/licenses/agpl-3.0.en.html
@@ -71,10 +94,7 @@ info:
   version: '1.0'
 openapi: 3.0.2
 paths:
-  /api/coords_to_geo58/{zoom}/{x}/{y}:
-    get:
-      description: legacy function use /api/geo58/{zoom}/{x}/{y} instead
-      summary: legacy function use /api/geo58/{zoom}/{x}/{y} instead
+  /api/coords_to_geo58/{zoom}/{x}/{y}: {}
   /api/geo58/{zoom}/{x}/{y}:
     get:
       description: convert coordinates `z`/`x`/`y` to Geo58 short-string.
@@ -113,10 +133,7 @@ paths:
         '406':
           description: coordinates invalid.
       summary: get Geo58 short-string
-  /api/geo58_to_coords/{geo58_str}:
-    get:
-      description: legacy function use "/api/geo58/{geo58_str}" instead
-      summary: legacy function use "/api/geo58/{geo58_str}" instead
+  /api/geo58_to_coords/{geo58_str}: {}
   /api/geo58/{geo58_str}:
     get:
       description: convert Geo58 short-string to coordinates `z`/`x`/`y`.
@@ -155,10 +172,7 @@ paths:
         '400':
           description: invalid short code
       summary: redirect to YellowOSM map
-  /api/get_vcard/{osm_id}:
-    get:
-      description: legacy function use "/api/osmid/{osm_id}.vcard" instead
-      summary: legacy function use "/api/osmid/{osm_id}.vcard" instead
+  /api/get_vcard/{osm_id}: {}
   /api/osmid/{osm_id}.vcard:
     get:
       description: returns a vcard for the given `osm_id`
@@ -182,10 +196,7 @@ paths:
         '504':
           description: could not connect to database
       summary: get vcard
-  /api/get_json/{osm_id}:
-    get:
-      description: legacy function use "/api/osmid/{osm_id}" instead
-      summary: legacy function use "/api/osmid/{osm_id}" instead
+  /api/get_json/{osm_id}: {}
   /api/osmid/{osm_id}:
     get:
       description: returns info for the given `osm_id`
