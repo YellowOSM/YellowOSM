@@ -150,16 +150,28 @@ class YOSM_POI:
             self.label_dict["wifi"] = "yes"
             del self.label_dict["internet_access"]
 
+        # set kitchen types:
+        if (
+            self.label_dict.get("vegan", "no") != "no"
+            or self.label_dict.get("diet_vegan", "no") != "no"
+        ):
+            self.desc += " " + "vegan " + " ".join(translated_info["vegan"])
+        if (
+            self.label_dict.get("vegetarian", "no") != "no"
+            or self.label_dict.get("diet_vegetarian", "no") != "no"
+        ):
+            self.desc += " " + "vegetarian " + " ".join(translated_info["vegetarian"])
+
         # vegetarian is ok if it is vegan
         if "diet_vegan" in self.label_dict:
             if self.label_dict["diet_vegan"] in ["yes", "only"]:
                 self.label_dict["vegan"] = "yes"
                 self.label_dict["vegetarian"] = "yes"
-                del self.label_dict["diet_vegan"]
+                # del self.label_dict["diet_vegan"]
         if "diet_vegetarian" in self.label_dict:
             if self.label_dict["diet_vegetarian"] in ["yes", "only"]:
                 self.label_dict["vegetarian"] = "yes"
-                del self.label_dict["diet_vegetarian"]
+                # del self.label_dict["diet_vegetarian"]
 
         # takeaway leave the same
 

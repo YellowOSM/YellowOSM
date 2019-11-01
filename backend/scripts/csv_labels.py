@@ -158,6 +158,8 @@ translated_info = {
     "post_office": ["Post", "Postamt", "Paket", "Packerl", "Brief"],
     "post_box": ["Postkasten", "Briefkasten"],
     "telephone": ["Telefon", "Telefonzelle", "Telephon"],
+    "vegan": ["vegan"],
+    "vegetarian": ["vegetarisch"],
     # "": ["",],
 }
 

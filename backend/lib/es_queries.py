@@ -45,7 +45,7 @@ def es_standard_search(query, es_filter, limit=10000):
                                     "labels.sport",
                                     "labels.tourism",
                                     "labels.vending",
-                                    "labels.cuisine",
+                                    "labels.cuisine^5",
                                 ],
                             }
                         }
@@ -70,8 +70,8 @@ def es_city_search(query, city, limit=10000):
                                 "query": f"{query}*",
                                 "default_operator": "OR",
                                 "fields": [
-                                    "labels.name^50",
-                                    "description",
+                                    "labels.name^5",
+                                    "description^50",
                                     # "labels.website^3",
                                     # "labels.contact_website",
                                     "labels.addr_street",
@@ -86,7 +86,7 @@ def es_city_search(query, city, limit=10000):
                                     "labels.sport",
                                     "labels.tourism",
                                     "labels.vending",
-                                    "labels.cuisine",
+                                    "labels.cuisine^5",
                                 ],
                             }
                         },
