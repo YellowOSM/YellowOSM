@@ -160,6 +160,7 @@ translated_info = {
     "telephone": ["Telefon", "Telefonzelle", "Telephon"],
     "vegan": ["vegan"],
     "vegetarian": ["vegetarisch"],
+    "shoes": ["Schuh", "Schuhe"],
     # "": ["",],
 }
 
