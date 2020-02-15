@@ -49,7 +49,7 @@
 
   <div class="map__wrapper">
     <div id="map" class="map" #mapElement></div>
-    <button mat-mini-fab (tap)="switchLayers()" class="map__layers-button">
+    <button mat-mini-fab *ngIf="this.osmLayerCount > 1" (tap)="switchLayers()" class="map__layers-button">
       <mat-icon aria-label="Kartendarstellung umschalten">layers</mat-icon>
     </button>
     <button mat-fab (click)="getLocation()" class="map__location-button">

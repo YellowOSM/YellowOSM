@@ -44,6 +44,7 @@ export class YellowmapComponent implements OnInit {
   esLayer: VectorLayer;
   allLayers = [];
   osmLayers = [];
+  osmLayerCount = 0;
   activeLayerIdx = 0;
   activeMapAttribution = '';
   heatmapLayer: HeatmapLayer;
@@ -109,6 +110,7 @@ export class YellowmapComponent implements OnInit {
       });
     });
 
+    this.osmLayerCount = environment.tileServerURLs.length;
     environment.tileServerURLs.forEach((result, idx) => {
       const layer = new OlTileLayer({
         source: new OlXYZ({
