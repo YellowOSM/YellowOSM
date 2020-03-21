@@ -1,5 +1,5 @@
 import {BrowserModule, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import { NgModule, Injectable } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -18,6 +18,7 @@ import * as Hammer from 'hammerjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
+@Injectable()
 export class MyHammerConfig extends HammerGestureConfig {
   overrides = <any>{
     pan: {direction: Hammer.DIRECTION_VERTICAL}
