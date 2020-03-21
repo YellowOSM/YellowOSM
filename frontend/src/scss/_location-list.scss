@@ -1,3 +1,27 @@
+.location__list-detail span.stars{
+  position: absolute;
+}
+.location__list-detail div.stars {
+  --star-size: 11px;
+  --percent: calc(var(--rating) / 5 * 100%);
+  padding-left: 5px;
+  display: inline-block;
+  font-size: var(--star-size);
+  font-family: Times; // make sure ★ appears correctly
+  line-height: 1;
+  
+  &::before {
+      content: '★★★★★';
+      letter-spacing: 1px;
+      --star-background: rgba(0,0,0,0.0);
+      background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-background) var(--percent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      bottom: 2px;
+  }
+}
+
 .location__list {
   @include pull-up-card;
 

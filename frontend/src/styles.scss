@@ -6,6 +6,12 @@
   box-sizing: border-box;
 }
 
+:root {
+  --star-background: #cccccc;
+  --star-color: #fc0;
+  --star-size: 18px;
+}
+
 $color-primary: #ffd303;
 $color-secondary: #000;
 $color-gray: #888;

@@ -72,6 +72,7 @@ export class LocationDetailComponent implements OnInit, OnChanges {
 
     this.locationType = this.selectedFeature.values_.locationType;
     this.locationSubType = this.selectedFeature.values_.locationSubType;
+    // this.locationStars = this.getStars(this.selectedFeature.values_.labels.stars);
     this.labels = this.selectedFeature.values_.labels;
     const lonLat = toLonLat(this.selectedFeature.getGeometry().getCoordinates());
     this.latLonStr = lonLat[1] + '%2C' + lonLat[0];
@@ -175,4 +176,5 @@ export class LocationDetailComponent implements OnInit, OnChanges {
     }
     return className;
   }
+
 }

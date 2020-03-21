@@ -1,0 +1,17 @@
+.location-detail div.stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    --star-size: 18px;
+    display: inline-block;
+    font-size: var(--star-size);
+    font-family: Times; // make sure ★ appears correctly
+    line-height: 1;
+    margin: 0px 5px 0px 0px;
+
+    &::before {
+        content: '★★★★★';
+        letter-spacing: 1.5px;
+        background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-background) var(--percent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}

@@ -30,6 +30,9 @@
 
     <ul class="location-detail__main">
       <li>
+        <!-- FIXXXXME -->
+        <div class="stars" *ngIf="labels['stars'] && labels['stars'] > 0" [style.--rating]="labels['stars']"></div>
+      
         <span *ngIf="locationSubType">{{ locationSubType }}</span>
         <span *ngIf="locationSubType && (open_now == true || open_now == false)"> ⋅ </span>
         <span class="location-open" *ngIf="open_now === true">jetzt geöffnet</span>
