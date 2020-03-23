@@ -1,4 +1,5 @@
 import {BrowserModule, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
+import { HammerModule } from '@angular/platform-browser';
 import { NgModule, Injectable } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
@@ -44,6 +45,7 @@ export class MyHammerConfig extends HammerGestureConfig {
     MaterialModule,
     ReactiveFormsModule,
     MatomoModule,
+    HammerModule,
     ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [
