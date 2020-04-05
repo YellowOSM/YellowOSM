@@ -26,14 +26,8 @@ state_url="http://download.geofabrik.de/europe/${region}-updates/state.txt"
 # download_path="https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf"
 # download_path="https://download.geofabrik.de/europe/austria-latest.osm.pbf"
 download_path="https://download.geofabrik.de/europe/${region}-latest.osm.pbf"
-# TODO:
-# add
-# http://download.geofabrik.de/europe/germany-latest.osm.pbf
-# http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
-#
-# or use DACH http://download.geofabrik.de/europe/dach-latest.osm.pbf
-#download_sub_path="https://download.geofabrik.de/europe/dach-"
-#
+
+# maybe add:
 # http://download.geofabrik.de/europe/denmark-latest.osm.pbf
 # http://download.geofabrik.de/europe/belgium-latest.osm.pbf
 
