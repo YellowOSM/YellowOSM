@@ -39,7 +39,7 @@ mkdir -p $WORKOSM_DIR
 if ! test -f $pbffile || [ $pbffile = "`find $pbffile -mmin +720`" ]; then
   # curl ${download_sub_path}`date -d "yesterday" '+%y%m%d'`.osm.pbf -o $pbffile
   curl ${download_path} -o $pbffile
-  # state file generated below:
+  # state file generated below
   # curl ${state_url} -o $statefile
 fi
 
@@ -58,6 +58,7 @@ REPLICATION_BASE_URL="$(osmium fileinfo -g 'header.option.osmosis_replication_ba
 echo -e "baseUrl=${REPLICATION_BASE_URL}\nmaxInterval=90000" > "${WORKOSM_DIR}/configuration.txt"
 
 REPLICATION_SEQUENCE_NUMBER="$( printf "%09d" "$(osmium fileinfo -g 'header.option.osmosis_replication_sequence_number' "${PBF_FILE}")" | sed ':a;s@\B[0-9]\{3\}\>@/&@;ta' )"
+# state file generated
 curl -s -L -o "${WORKOSM_DIR}/state.txt" "${REPLICATION_BASE_URL}/${REPLICATION_SEQUENCE_NUMBER}.state.txt"
 
 else
