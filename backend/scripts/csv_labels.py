@@ -93,7 +93,6 @@ labels = [
     "payment:credit_cards",
     "payment:notes",
     "payment:bitcoin",
-    "landuse",
 ]
 
 translated_info = {
@@ -280,10 +279,6 @@ yosm_types = OrderedDict(
             "supermarket": "",
             "warehouse": "",
         },
-        "landuse":{
-            "type": "landuse",
-            "commercial": "",
-        }
     }
 )
 
