@@ -31,7 +31,6 @@ download_path="https://download.geofabrik.de/europe/${region}-latest.osm.pbf"
 # http://download.geofabrik.de/europe/denmark-latest.osm.pbf
 # http://download.geofabrik.de/europe/belgium-latest.osm.pbf
 
-
 if [ "$1" == "--init" ] ; then
 # init
 echo "init"
