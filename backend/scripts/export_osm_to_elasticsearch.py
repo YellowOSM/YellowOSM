@@ -212,7 +212,7 @@ export_craft = { "key": "craft",
                     "sawmill",
                     "shoemaker",
                     "winery",
-                    # erweitern auf alle...
+                    # anything is ok.
                     ]
                 }
 export_healthcare = { "key": "healthcare",
@@ -297,6 +297,9 @@ export_building = {'key': 'building',
                 'warehouse',
                 ]
             }
+export_landuse = {'key': 'landuse',
+                  'values': ['industrial']}
+
 classes_to_export = [
     export_amenity,
     export_leisure, # leave this in here, even if it's also a special_access_classes element
@@ -305,6 +308,7 @@ classes_to_export = [
     export_place,
     export_industrial,
     export_building,
+    export_landuse,
     ]
 
 # get all keys, with any value

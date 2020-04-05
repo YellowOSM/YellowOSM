@@ -159,16 +159,17 @@ node,way   payment:coins       text  linear
 node,way   payment:credit_cards  text  linear
 node,way   payment:notes       text  linear
 node,way   payment:bitcoin     text  linear
+way        landuse             text  polygon
 
 
 # Area tags
 # We don't make columns for these tags, but objects with them are areas.
 # Mainly for use with hstore
-way         abandoned:aeroway       text    polygon,nocolumn
-way         abandoned:amenity       text    polygon,nocolumn
-way         abandoned:building      text    polygon,nocolumn
-way         abandoned:landuse       text    polygon,nocolumn
-way         abandoned:power         text    polygon,nocolumn
+way         abandoned:aeroway       text    delete
+way         abandoned:amenity       text    delete
+way         abandoned:building      text    delete
+way         abandoned:landuse       text    delete
+way         abandoned:power         text    delete
 way         area:highway            text    polygon,nocolumn
 
 # Deleted tags

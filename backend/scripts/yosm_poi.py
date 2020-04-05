@@ -339,4 +339,8 @@ class YOSM_POI:
             if self.name.lower() in yosm_types["building"]:
                 self.label_dict["dont_import"] = True
                 return True
+        if "landuse" == self.yosm_type:
+            if self.name.lower() in yosm_types["landuse"]:
+                self.label_dict["dont_import"] = True
+                return True
         return False
