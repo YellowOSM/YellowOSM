@@ -97,8 +97,8 @@ deploy_backend:
     - 'which rsync || ( apt-get update -y && apt-get install rsync -y )'
   script:
     - ls -R backend
+    - rsync -azvh --delete backend/* backend/.* root@${YOSMv1}:backend/ 
     - cd backend/
-    - rsync -azvh --delete . .* root@${YOSMv1}:backend/ 
     - ssh root@toddvm5.klienux.at 'cd docker-compose/responder/; mv Dockerfile docker-compose.yml ../ 2> /dev/null;'
     - echo -e $BACKEND_ENV_DEV > .env
     - echo $CI_COMMIT_SHORT_SHA > .git_commit_hash.txt
