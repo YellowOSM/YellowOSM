@@ -161,6 +161,7 @@ translated_info = {
     "vegan": ["vegan"],
     "vegetarian": ["vegetarisch"],
     "shoes": ["Schuh", "Schuhe"],
+    "metal_construction": ["Schlosserei", "Schlosser"],
     # "": ["",],
 }
 
@@ -220,6 +221,8 @@ yosm_types = OrderedDict(
             "stonemason": "",
             "handicraft": "",
             "builder": "",
+            "metal_construction": "",
+            "beekeeper": "",
         },
         "tourism": {
             "type": "tourism",  # for all of type tourism that don't have type
