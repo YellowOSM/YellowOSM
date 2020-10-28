@@ -18,6 +18,7 @@ import { MatomoModule } from 'ngx-matomo';
 import * as Hammer from 'hammerjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { MomentumScrollDirective } from './momentum-scroll.directive';
 
 @Injectable()
 export class MyHammerConfig extends HammerGestureConfig {
@@ -34,7 +35,8 @@ export class MyHammerConfig extends HammerGestureConfig {
     LocationListComponent,
     AboutComponent,
     PageNotFoundComponent,
-    Geo58RedirectComponent
+    Geo58RedirectComponent,
+    MomentumScrollDirective
   ],
   imports: [
     BrowserModule,
