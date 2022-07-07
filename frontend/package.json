@@ -29,7 +29,7 @@
     "hammerjs": "^2.0.8",
     "i18next-client": "^1.11.4",
     "material-design-icons": "^3.0.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "ngx-matomo": "^0.1.4",
     "ol": "^5.3.3",
     "opening_hours": "^3.5.0",
